@@ -1,0 +1,31 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<!-- Tables -->
+    <changeSet author="thalabi" id="4">
+        <createTable tableName="student_note">
+            <column name="student_id" type="long">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="note_id" type="long">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+	<!-- Foreign keys -->
+    <changeSet author="thalabi" id="5">
+        <addForeignKeyConstraint
+        	baseColumnNames="student_id" baseTableName="student_note"
+			referencedColumnNames="id" referencedTableName="student"
+			constraintName="student_note_fk_1" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"/>
+    </changeSet>
+    <changeSet author="thalabi" id="6">
+        <addForeignKeyConstraint
+        	baseColumnNames="note_id" baseTableName="student_note"
+        	referencedColumnNames="id" referencedTableName="note"
+        	constraintName="student_note_fk_2" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"/>
+    </changeSet>
+
+
+</databaseChangeLog>

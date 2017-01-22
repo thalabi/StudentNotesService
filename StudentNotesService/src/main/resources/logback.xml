@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration packagingData="true" >
+
+	<property resource="application.properties" />
+	<property name="applicationPackage" value="com.kerneldc.education.studentNotes" />
+<!-- 	<property name="applicationPackage2" value="com.viewSaveAndRestore" /> -->
+<!-- 	<property name="applicationPackage3" value="com.kerneldc" /> -->
+
+	<if condition='property("logConsole").equals("on")'>
+    <then>
+		<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+			<encoder>
+<!-- 				<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%method\(\) - %msg%n</pattern> -->
+<!-- 				<pattern>%d{HH:mm:ss.SSS} %-5level %logger{0}.%method\(\) - %msg%n</pattern> -->
+				<pattern>%d{HH:mm:ss.SSS} %-5level %logger.%method\(\) - %msg%n</pattern>
+<!-- 				<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{0}.%method\(\) - %msg%n</pattern> -->
+			</encoder>
+		</appender>
+	</then>
+	</if>
+
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${logFile}</file>
+
+	    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>${logFile}-%d{yyyy-MM-dd}</fileNamePattern>
+			<!-- keep 7 days' worth of history capped at 10MB total size -->
+			<maxHistory>7</maxHistory>
+			<totalSizeCap>10MB</totalSizeCap>
+	    </rollingPolicy>
+
+    	<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%method\(\) - %msg%n</pattern>
+    	</encoder>
+
+	</appender> 
+
+	<logger name="${applicationPackage}" level="debug" />
+<!-- 	<logger name="${applicationPackage2}" level="debug" /> -->
+<!-- 	<logger name="${applicationPackage3}" level="debug" /> -->
+
+	<logger name="${applicationPackage}.common.util.SpringInjectionProvider" level="info" />
+<!-- 	<logger name="${applicationPackage2}.common.util.SpringInjectionProvider" level="info" /> -->
+
+	<logger name="org.springframework.jdbc.datasource.DataSourceTransactionManager" level="debug" />
+	<logger name="org.hibernate.engine.transaction.internal.TransactionImpl" level="debug" />
+	
+	<logger name="org.hibernate" level="info" />
+	<logger name="org.hibernate.SQL" level="trace" /> <!-- shows the sql statements -->
+ 	<!-- <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="trace" /> --> <!-- shows the values in sql statements -->
+ 	<!-- <logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="trace" /> --> <!-- shows the values in sql statements -->
+	
+	<logger name="org.springframework.security" level="info" />
+
+	<root level="info">
+		<if condition='property("logConsole").equals("on")'>
+		<then>
+			<appender-ref ref="STDOUT" />
+		</then>
+		</if>
+		<appender-ref ref="FILE" />
+	</root>
+
+</configuration>

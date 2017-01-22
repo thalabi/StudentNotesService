@@ -1,0 +1,21 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet author="thalabi" id="note-data">
+		<sql>
+		
+INSERT INTO PUBLIC.NOTE(TIMESTAMP, TEXT, VERSION) VALUES 
+( TIMESTAMP '2016-12-10 16:00:30.839', 'note 1', 0), 
+( TIMESTAMP '2016-12-10 16:00:30.841', 'note 2', 0), 
+( TIMESTAMP '2016-12-10 16:00:30.842', 'note 3', 0), 
+( TIMESTAMP '2016-12-10 16:00:30.842', 'note 4', 0), 
+( TIMESTAMP '2016-12-10 16:00:30.843', 'note 5', 0);
+
+		</sql>
+		<rollback>
+			<sql>
+delete from note;
+			</sql>
+		</rollback>
+	</changeSet>
+</databaseChangeLog>	

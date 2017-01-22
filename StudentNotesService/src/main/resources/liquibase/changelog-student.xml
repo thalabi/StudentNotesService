@@ -1,0 +1,27 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<!-- Tables -->
+    <changeSet author="Tarif Halabi" id="1">
+        <createTable tableName="student">
+            <column autoIncrement="true" name="id" type="long">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="first_name" type="varchar(64)"/>
+            <column name="last_name" type="varchar(64)"/>
+            <column name="grade" type="varchar(16)"/>
+            <column name="version" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+	<!-- Indexes -->
+    <changeSet author="Tarif Halabi" id="2">
+        <createIndex indexName="student_unique_1" tableName="student" unique="true">
+            <column name="first_name"/>
+            <column name="last_name"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
