@@ -27,11 +27,11 @@ public class Note extends AbstractPersistableEntity {
 	@Column(name = "TEXT")
 	private String text;
 	
-	@ManyToOne
-	@JoinTable(name = "STUDENT_NOTE",
-		joinColumns = @JoinColumn(name = "NOTE_ID"),
-		inverseJoinColumns = @JoinColumn( name="STUDENT_ID"))
-	private Student student;
+//	@ManyToOne
+//	@JoinTable(name = "STUDENT_NOTE",
+//		joinColumns = @JoinColumn(name = "NOTE_ID"),
+//		inverseJoinColumns = @JoinColumn( name="STUDENT_ID"))
+//	private Student student;
 
 	
 	public Long getId() {
@@ -52,10 +52,10 @@ public class Note extends AbstractPersistableEntity {
 	public void setText(String text) {
 		this.text = text;
 	}
-	public Student getStudent() {
-		return student;
-	}
-	public void setStudent(Student student) {
-		this.student = student;
-	}
+//	public Student getStudent() {
+//		return student;
+//	}
+//	public void setStudent(Student student) {
+//		this.student = student;
+//	}
 }

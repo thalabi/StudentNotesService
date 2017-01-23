@@ -118,7 +118,7 @@ public class StudentNotesResource {
 	@Path("/deleteNoteById/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
 	public void deleteNoteById(
-		@PathParam("id") Long id) {
+		@PathParam("id") Long id) throws Exception {
 		
 		LOGGER.debug("begin ...");
 		LOGGER.debug("end ...");

@@ -3,9 +3,14 @@ package com.kerneldc.education.studentNote;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.transaction.Transactional;
-
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,10 +21,17 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.education.studentNotes.StudentNotesApplication;
+import com.kerneldc.education.studentNotes.domain.Note;
+import com.kerneldc.education.studentNotes.domain.Student;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = StudentNotesApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -141,7 +153,86 @@ public class StudentNotesApplicationTests {
 	@Test
 	public void testDeleteNoteById() {
 		
-		testRestTemplate.delete(BASE_URI+"/deleteNoteById/2");
-		assertEquals(true, true);
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<String>("",httpHeaders);
+		Map<String,Object> urlVariables = new HashMap<>();
+		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/deleteNoteById/2",
+				HttpMethod.DELETE, httpEntity, String.class, urlVariables);
+		assertEquals(HttpStatus.OK, response.getStatusCode());
 	}
+	
+	@Test
+	public void testSaveStudentAddStudent() {
+		
+		Student student = new Student();
+		student.setFirstName("new first name");
+		student.setLastName("new last name");
+		student.setGrade("1");
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode jsonStudent = objectMapper.valueToTree(student);
+
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonStudent,httpHeaders);
+
+		JsonNode newJsonStudent = testRestTemplate.postForObject(BASE_URI+"/saveStudent", httpEntity, JsonNode.class);
+		
+		JsonNode newStudent = null;
+		newStudent = objectMapper.convertValue(newJsonStudent, JsonNode.class);
+		Long newId = newStudent.get("id").asLong();
+		String newFirstName = newStudent.get("firstName").asText();
+		String newLastName = newStudent.get("lastName").asText();
+		String newGrade = newStudent.get("grade").asText();
+		Long newVersion = newStudent.get("version").asLong();
+
+		Assert.assertTrue(student.getFirstName().equals(newFirstName) &&
+				student.getLastName().equals(newLastName) &&
+				student.getGrade().equals(newGrade) &&
+				newId.compareTo(0l) > 0 &&
+				newVersion.equals(0l));
+	}
+
+	@Test
+	public void testSaveStudentAddStudentWithNotes() {
+		
+		Student student = new Student();
+		student.setFirstName("new first name with notes");
+		student.setLastName("new last name with notes");
+		student.setGrade("2");
+		Note note1 = new Note();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+		LocalDateTime timestamp1 = LocalDateTime.parse("2017-01-22 20:08", formatter);
+		note1.setTimestamp(Timestamp.valueOf(timestamp1));
+		note1.setText("new note1 text");
+		Note note2 = new Note();
+		LocalDateTime timestamp2 = LocalDateTime.parse("2017-01-22 20:18", formatter);
+		note2.setTimestamp(Timestamp.valueOf(timestamp2));
+		note2.setText("new note2 text");
+
+		student.setNoteList(Arrays.asList(note1, note2));
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode jsonStudent = objectMapper.valueToTree(student);
+
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonStudent,httpHeaders);
+
+		JsonNode newJsonStudent = testRestTemplate.postForObject(BASE_URI+"/saveStudent", httpEntity, JsonNode.class);
+		
+		JsonNode newStudent = null;
+		newStudent = objectMapper.convertValue(newJsonStudent, JsonNode.class);
+		Long newId = newStudent.get("id").asLong();
+		String newFirstName = newStudent.get("firstName").asText();
+		String newLastName = newStudent.get("lastName").asText();
+		String newGrade = newStudent.get("grade").asText();
+		Long newVersion = newStudent.get("version").asLong();
+
+		Assert.assertTrue(student.getFirstName().equals(newFirstName) &&
+				student.getLastName().equals(newLastName) &&
+				student.getGrade().equals(newGrade) &&
+				newId.compareTo(0l) > 0 &&
+				newVersion.equals(0l));
+	}
+
 }
