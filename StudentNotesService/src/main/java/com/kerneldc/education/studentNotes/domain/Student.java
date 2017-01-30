@@ -14,13 +14,18 @@ import javax.persistence.JoinTable;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @Entity
 @Table(name = "STUDENT", uniqueConstraints=@UniqueConstraint(columnNames={"FIRST_NAME", "LAST_NAME"}))
 @NamedEntityGraph(name = "Student.noteList", 
 					attributeNodes = @NamedAttributeNode(value = "noteList"))
+@XmlRootElement
 public class Student extends AbstractPersistableEntity {
 
 	@Id
@@ -35,6 +40,7 @@ public class Student extends AbstractPersistableEntity {
 	private String grade;
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("timestamp")
 	@JoinTable(
 		name = "STUDENT_NOTE",
 		joinColumns = @JoinColumn(name = "STUDENT_ID"),
@@ -65,6 +71,8 @@ public class Student extends AbstractPersistableEntity {
 	public void setGrade(String grade) {
 		this.grade = grade;
 	}
+	@XmlElementWrapper(name="noteList")
+	@XmlElement(name="note")
 	public List<Note> getNoteList() {
 		return noteList;
 	}

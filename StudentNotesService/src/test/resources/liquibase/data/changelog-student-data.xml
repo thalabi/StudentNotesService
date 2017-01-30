@@ -6,8 +6,8 @@
 		
 INSERT INTO PUBLIC.STUDENT(FIRST_NAME, LAST_NAME, GRADE, version) VALUES 
 ('kareem', 'halabi', 'SK', 0), 
-('', 'halabi', 'GR-4', 0), 
-('Mr Parent', '', 'Other', 0);
+('', 'halabi', '4', 0), 
+('Mr Parent', '', '', 0);
 
 		</sql>
 		<rollback>

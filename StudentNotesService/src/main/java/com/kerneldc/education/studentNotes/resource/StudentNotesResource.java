@@ -1,5 +1,12 @@
 package com.kerneldc.education.studentNotes.resource;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -10,6 +17,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,10 +127,41 @@ public class StudentNotesResource {
 	@Path("/deleteNoteById/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
 	public void deleteNoteById(
-		@PathParam("id") Long id) throws Exception {
+		@PathParam("id") Long id) {
 		
 		LOGGER.debug("begin ...");
 		LOGGER.debug("end ...");
 		noteRepository.delete(id);
 	}
+	
+	@GET
+	@Path("/pdfAll")
+	@Produces("application/pdf")
+	public Response pdfAll() {
+
+		LOGGER.debug("begin ...");
+		StreamingOutput stream = new StreamingOutput() {
+		    @Override
+		    public void write(OutputStream os) throws IOException {
+		    	Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+
+		    	BufferedInputStream pdfFile = new BufferedInputStream(new FileInputStream("C://Downloads/CGQGD_KS002015041220280700-122352.pdf"));
+		    	byte[] contents = new byte[1024];
+		    	int bytesRead=0;
+                String stringContents;
+                
+                while( (bytesRead = pdfFile.read(contents)) != -1){
+                       
+                        stringContents = new String(contents, 0, bytesRead);
+                        writer.write(stringContents);
+                }
+		    		
+		    	pdfFile.close();
+		    	writer.flush();
+		    }
+		};		
+		LOGGER.debug("end ...");
+		return Response.ok(stream).build();
+	}
+	
 }

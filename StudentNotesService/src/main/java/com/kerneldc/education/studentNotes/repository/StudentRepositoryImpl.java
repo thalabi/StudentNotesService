@@ -9,10 +9,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +18,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaContext;
 
-import com.kerneldc.education.studentNotes.domain.Note_;
 import com.kerneldc.education.studentNotes.domain.Student;
 import com.kerneldc.education.studentNotes.domain.Student_;
 
@@ -50,9 +47,9 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom {
     	Root<Student> student = criteriaQuery.from(Student.class);
     	Order lastNameOrder = builder.asc(student.get(Student_.lastName));
     	Order firstNameOrder = builder.asc(student.get(Student_.firstName));
-    	Order timestampOrder =  builder.asc(student.join(Student_.noteList, JoinType.LEFT).get(Note_.timestamp));
+    	//Order timestampOrder =  builder.asc(student.join(Student_.noteList, JoinType.LEFT).get(Note_.timestamp));
     	//Order idOrder =  builder.asc(student.join(Student_.noteSet).get(Note_.Id));
-    	criteriaQuery.select(student).distinct(true).orderBy(lastNameOrder, firstNameOrder, timestampOrder);
+    	criteriaQuery.select(student).distinct(true).orderBy(lastNameOrder, firstNameOrder/*, timestampOrder*/);
     	
     	TypedQuery<Student> typedQuery = entityManager.createQuery(criteriaQuery);
 //    	typedQuery.setHint("javax.persistence.fetchgraph", entityManager.getEntityGraph("Student.noteList"));
@@ -63,7 +60,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom {
 	}
 
 	@Override
-	@Transactional
+	//@Transactional(propagation=Propagation.NESTED)
 	public Student updateStudent(Student detachedStudent) {
 		
 		Student student = getStudentById(detachedStudent.getId());
