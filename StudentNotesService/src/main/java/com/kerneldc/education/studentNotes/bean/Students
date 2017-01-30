@@ -1,0 +1,3 @@
+@XmlRootElement
+public class Students {
+}
