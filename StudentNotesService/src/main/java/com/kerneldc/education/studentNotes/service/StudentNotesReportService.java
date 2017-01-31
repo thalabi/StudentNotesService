@@ -1,11 +1,13 @@
 package com.kerneldc.education.studentNotes.service;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Date;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -26,26 +28,26 @@ import org.apache.fop.apps.MimeConstants;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
-import com.kerneldc.education.studentNotes.domain.Student;
+import com.kerneldc.education.studentNotes.bean.Students;
 
 @Service
 public class StudentNotesReportService {
 
-	private final static String XSL_FILE = "studentNotes.xsl";
+	private final static String XSL_FILE = "studentsToFo.xsl";
 
 	public byte[] generateReport (
-		Student student) throws JAXBException, ParserConfigurationException, SAXException, IOException, TransformerException {
+		Students students) throws JAXBException, ParserConfigurationException, SAXException, IOException, TransformerException {
 		
-		byte[] navLogReportBeanXmlByteArray = beanToXml(student); 
+		byte[] navLogReportBeanXmlByteArray = beanToXml(students); 
 		//byte[] navLogReportBeanXmlFoByteArray = xmlToXslFo(navLogReportBeanXmlByteArray, XSL_FILE); 
 		//return xmlToXslFo(navLogReportBeanXmlByteArray, XSL_FILE);
 		return navLogReportBeanXmlByteArray;
 	}
 	
 	public byte[] beanToXml (
-		Student student) throws JAXBException {
+		Students students) throws JAXBException {
 
-        JAXBContext jaxbContext = JAXBContext.newInstance(student.getClass()); 
+        JAXBContext jaxbContext = JAXBContext.newInstance(students.getClass()); 
         Marshaller marshaller = jaxbContext.createMarshaller(); 
   
         // output pretty printed 
@@ -53,39 +55,28 @@ public class StudentNotesReportService {
   
         ByteArrayOutputStream xmlByteArrayOutputStream = new ByteArrayOutputStream(); 
  
-        marshaller.marshal(student, xmlByteArrayOutputStream); 
+        marshaller.marshal(students, xmlByteArrayOutputStream); 
          
         return xmlByteArrayOutputStream.toByteArray(); 
 	}
 	
-	public void xmlToPdf() {
-		try {
-			System.out.println("FOP ExampleXML2PDF\n");
-			System.out.println("Preparing...");
-
-			// Setup input and output files
-
-			File xmlfile = new File(ClassLoader.getSystemResource("projectteam.xml").getFile());
-			//File xmlfile = new File(ClassLoader.getSystemResource("studentBean.xml").getFile());
-			File xsltfile = new File(ClassLoader.getSystemResource("projectteam2fo.xsl").getFile());
+	public void xmlToPdf(
+		byte[] studentsXmlByteArray) {
+		
+			File xsltfile = new File(ClassLoader.getSystemResource(XSL_FILE).getFile());
 			File pdffile = new File("c://temp/pdf.pdf");
 
-			System.out.println("Input: XML (" + xmlfile + ")");
-			System.out.println("Stylesheet: " + xsltfile);
-			System.out.println("Output: PDF (" + pdffile + ")");
-			System.out.println();
-			System.out.println("Transforming...");
-			// configure fopFactory as desired
+			// Configure fopFactory as desired
 			final FopFactory fopFactory = FopFactory.newInstance(new File(".").toURI());
 
+			// Configure foUserAgent as desired
 			FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
-			// configure foUserAgent as desired
-
-			// Setup output
-			OutputStream out = new FileOutputStream(pdffile);
-			out = new BufferedOutputStream(out);
 
 			try {
+				// Setup output
+				OutputStream out = new FileOutputStream(pdffile);
+				out = new BufferedOutputStream(out);
+
 				// Construct fop with desired output format
 				Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, out);
 
@@ -94,10 +85,10 @@ public class StudentNotesReportService {
 				Transformer transformer = factory.newTransformer(new StreamSource(xsltfile));
 
 				// Set the value of a <param> in the stylesheet
-				transformer.setParameter("versionParam", "2.0");
+				transformer.setParameter("timeGenerated", new Date());
 
 				// Setup input for XSLT transformation
-				Source src = new StreamSource(xmlfile);
+				Source src = new StreamSource(new ByteArrayInputStream(studentsXmlByteArray));
 
 				// Resulting SAX events (the generated FO) must be piped through
 				// to FOP
@@ -105,14 +96,12 @@ public class StudentNotesReportService {
 
 				// Start XSLT transformation and FOP processing
 				transformer.transform(src, res);
-			} finally {
 				out.close();
+
+			} catch (Exception e) {
+				e.printStackTrace(System.err);
 			}
 
 			System.out.println("Success!");
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
-			System.exit(-1);
-		}
 	}
 }

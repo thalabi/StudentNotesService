@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<students>
+    <student>
+        <firstName>first name testBeanToXml</firstName>
+        <lastName>last name testBeanToXml</lastName>
+        <grade>5</grade>
+        <notes>
+            <note>
+                <timestamp>2017-01-29 16:11</timestamp>
+                <text>note 1 text testBeanToXml</text>
+            </note>
+            <note>
+                <timestamp>2017-01-29 16:12</timestamp>
+                <text>note 2 text testBeanToXml</text>
+            </note>
+        </notes>
+    </student>
+    <student>
+        <firstName>first name 2 testBeanToXml</firstName>
+        <lastName>last name 2 testBeanToXml</lastName>
+        <grade>4</grade>
+        <notes/>
+    </student>
+</students>

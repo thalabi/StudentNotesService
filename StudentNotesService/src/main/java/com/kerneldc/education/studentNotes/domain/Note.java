@@ -8,22 +8,25 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.kerneldc.education.studentNotes.util.XmlTimestampAdapter;
 
 @Entity
 @Table(name = "NOTE")
-@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Note extends AbstractPersistableEntity {
 
 	@Id
 	@Column(name = "ID")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-    //@JsonProperty
+	@XmlTransient
 	private Long id;
 	@Column(name = "TIMESTAMP")
+	@XmlJavaTypeAdapter(XmlTimestampAdapter.class)
 	private Timestamp timestamp;
 	@Column(name = "TEXT")
 	private String text;
@@ -41,7 +44,6 @@ public class Note extends AbstractPersistableEntity {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	@XmlJavaTypeAdapter(XmlTimestampAdapter.class)
 	public Timestamp getTimestamp() {
 		return timestamp;
 	}

@@ -3,11 +3,15 @@ package com.kerneldc.education.studentNotes.domain;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 @MappedSuperclass
+@XmlAccessorType(XmlAccessType.FIELD)
 public abstract class AbstractPersistableEntity {
 	
 	public AbstractPersistableEntity() {
@@ -16,7 +20,7 @@ public abstract class AbstractPersistableEntity {
 	
 	@Version
 	@Column(name = "VERSION")
-	//@JsonIgnore
+	@XmlTransient
 	private Long version;
 
 	public Long getVersion() {

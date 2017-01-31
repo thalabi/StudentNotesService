@@ -17,20 +17,24 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @Table(name = "STUDENT", uniqueConstraints=@UniqueConstraint(columnNames={"FIRST_NAME", "LAST_NAME"}))
 @NamedEntityGraph(name = "Student.noteList", 
 					attributeNodes = @NamedAttributeNode(value = "noteList"))
-@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Student extends AbstractPersistableEntity {
 
 	@Id
 	@Column(name = "ID")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@XmlTransient
 	private Long id;
 	@Column(name = "FIRST_NAME")
 	private String firstName;
@@ -45,6 +49,8 @@ public class Student extends AbstractPersistableEntity {
 		name = "STUDENT_NOTE",
 		joinColumns = @JoinColumn(name = "STUDENT_ID"),
 		inverseJoinColumns = @JoinColumn(name="NOTE_ID"))
+	@XmlElementWrapper(name="notes")
+	@XmlElement(name="note")
 	private List<Note> noteList = new ArrayList<>();
 
 	public Long getId() {
@@ -71,8 +77,7 @@ public class Student extends AbstractPersistableEntity {
 	public void setGrade(String grade) {
 		this.grade = grade;
 	}
-	@XmlElementWrapper(name="noteList")
-	@XmlElement(name="note")
+
 	public List<Note> getNoteList() {
 		return noteList;
 	}
