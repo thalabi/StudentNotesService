@@ -9,6 +9,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.xml.sax.SAXException;
 
 import com.kerneldc.education.studentNotes.StudentNotesApplication;
 import com.kerneldc.education.studentNotes.bean.Students;
@@ -33,7 +36,6 @@ public class StudentNotesReportServiceTests {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 	private static final SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-	private final static String XSL_FILE = "studentNotes.xsl";
 	
 	@Autowired
 	private StudentRepository studentRepository;
@@ -171,20 +173,22 @@ public class StudentNotesReportServiceTests {
 	*/
 	}
 
-//	@Test
-//    public void testXmlToXslFo() throws IOException, ParserConfigurationException, SAXException, TransformerException {
-//		
-//		byte[] xmlBytes = IOUtils.toByteArray(ClassLoader.getSystemResourceAsStream("studentBean.xml"));
-//		LOGGER.info("xmlBytes.length: {}", xmlBytes.length);
-//		byte[] foByteArray = studentNotesReportService.xmlToXslFo(xmlBytes, XSL_FILE);
-//		LOGGER.info("foByteArray.length: {}", foByteArray.length);
-//		String foString = new String(foByteArray, StandardCharsets.UTF_8);
-//		LOGGER.info("foString: {}", foString);
-//	}
 	@Test
 	public void testXmlToPdf() throws IOException {
 		
 		byte[] studentsXmlByteArray = IOUtils.toByteArray(ClassLoader.getSystemResourceAsStream("students.xml"));
-		studentNotesReportService.xmlToPdf(studentsXmlByteArray);
+		byte[] pdfByteArray = studentNotesReportService.xmlToPdf(studentsXmlByteArray);
+		LOGGER.debug("pdfByteArray.length: {}", pdfByteArray.length);
+		assert (pdfByteArray.length > 0);
+	}
+	
+	@Test
+	public void testGenerateReport() throws JAXBException, ParserConfigurationException, SAXException, IOException, TransformerException {
+		
+		Students students = new Students();
+		students.setStudentList(studentRepository.getAllStudents());
+		byte[] pdfByteArray = studentNotesReportService.generateReport(students);
+		LOGGER.debug("pdfByteArray.length: {}", pdfByteArray.length);
+		assert (pdfByteArray.length > 0);
 	}
 }

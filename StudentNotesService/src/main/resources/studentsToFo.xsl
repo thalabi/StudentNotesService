@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.1" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format" exclude-result-prefixes="fo">
+  
   <xsl:output method="xml" version="1.0" omit-xml-declaration="no" indent="yes"/>
+  
   <xsl:param name="timeGenerated" select="'N/A'"/> 
+  <xsl:param name="reportTitle" select="'Student Notes'"/>
+
   <!-- ========================= -->
   <!-- root element: students -->
   <!-- ========================= -->
@@ -10,22 +14,35 @@
     <fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
     
       <fo:layout-master-set>
-        <fo:simple-page-master master-name="simpleA4" page-height="29.7cm" page-width="21cm" margin-top="2cm" margin-bottom="2cm" margin-left="2cm" margin-right="2cm">
-          <fo:region-body/>
+        <fo:simple-page-master master-name="simpleA4" page-width="8.5in" page-height="11in"
+        						margin-top="2em" margin-bottom="2em" margin-left="3em" margin-right="3em">
+        						
+          <fo:region-body margin-top="2em" margin-bottom="2em"/>
+		  <fo:region-before extent="2em"/> <!-- extent should be equal or less than margin-top of region-body -->
+		  <fo:region-after extent="2em"/> <!-- extent should be equal or less than margin-bottom of region-body -->
         </fo:simple-page-master>
       </fo:layout-master-set>
       
       <fo:page-sequence master-reference="simpleA4">
+
+		<fo:static-content flow-name="xsl-region-before">
+	        <fo:block text-align="center">
+		        <xsl:value-of select="$reportTitle"/>
+	        </fo:block>
+        </fo:static-content>
+		<fo:static-content flow-name="xsl-region-after">
+	        <fo:block text-align="center">
+	        	<fo:page-number/>
+	        </fo:block>
+        </fo:static-content>
+        
         <fo:flow flow-name="xsl-region-body">
-<!--           <fo:block font-size="12pt" font-weight="bold" space-after="5mm">Student: <xsl:value-of select="firstName"/> <xsl:value-of select="lastName"/>, <xsl:value-of select="grade"/> -->
-<!--           </fo:block> -->
-<!--           <fo:block font-size="12pt" space-after="5mm">Version <xsl:value-of select="$versionParam"/> -->
-<!--           </fo:block> -->
                 <xsl:apply-templates select="student"/>
         </fo:flow>
+
       </fo:page-sequence>
-    </fo:root>
-    
+      
+    </fo:root>    
   </xsl:template>
   <!-- ========================= -->
   <!-- child element: student     -->

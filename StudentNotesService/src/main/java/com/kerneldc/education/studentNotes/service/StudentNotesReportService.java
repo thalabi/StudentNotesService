@@ -1,12 +1,9 @@
 package com.kerneldc.education.studentNotes.service;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Date;
 
 import javax.xml.bind.JAXBContext;
@@ -38,10 +35,10 @@ public class StudentNotesReportService {
 	public byte[] generateReport (
 		Students students) throws JAXBException, ParserConfigurationException, SAXException, IOException, TransformerException {
 		
-		byte[] navLogReportBeanXmlByteArray = beanToXml(students); 
+		byte[] xmlBytes = beanToXml(students); 
 		//byte[] navLogReportBeanXmlFoByteArray = xmlToXslFo(navLogReportBeanXmlByteArray, XSL_FILE); 
-		//return xmlToXslFo(navLogReportBeanXmlByteArray, XSL_FILE);
-		return navLogReportBeanXmlByteArray;
+		return xmlToPdf(xmlBytes);
+		//return navLogReportBeanXmlByteArray;
 	}
 	
 	public byte[] beanToXml (
@@ -60,11 +57,10 @@ public class StudentNotesReportService {
         return xmlByteArrayOutputStream.toByteArray(); 
 	}
 	
-	public void xmlToPdf(
+	public byte[] xmlToPdf(
 		byte[] studentsXmlByteArray) {
 		
 			File xsltfile = new File(ClassLoader.getSystemResource(XSL_FILE).getFile());
-			File pdffile = new File("c://temp/pdf.pdf");
 
 			// Configure fopFactory as desired
 			final FopFactory fopFactory = FopFactory.newInstance(new File(".").toURI());
@@ -74,11 +70,10 @@ public class StudentNotesReportService {
 
 			try {
 				// Setup output
-				OutputStream out = new FileOutputStream(pdffile);
-				out = new BufferedOutputStream(out);
+				ByteArrayOutputStream pdfByteArrayOutputStream = new ByteArrayOutputStream();
 
 				// Construct fop with desired output format
-				Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, out);
+				Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, pdfByteArrayOutputStream);
 
 				// Setup XSLT
 				TransformerFactory factory = TransformerFactory.newInstance();
@@ -96,12 +91,13 @@ public class StudentNotesReportService {
 
 				// Start XSLT transformation and FOP processing
 				transformer.transform(src, res);
-				out.close();
+				//out.close();
+				return pdfByteArrayOutputStream.toByteArray();
 
 			} catch (Exception e) {
 				e.printStackTrace(System.err);
 			}
 
-			System.out.println("Success!");
+			return null;
 	}
 }

@@ -19,16 +19,22 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import javax.xml.bind.JAXBException;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.xml.sax.SAXException;
 
+import com.kerneldc.education.studentNotes.bean.Students;
 import com.kerneldc.education.studentNotes.domain.Note;
 import com.kerneldc.education.studentNotes.domain.Student;
 import com.kerneldc.education.studentNotes.repository.NoteRepository;
 import com.kerneldc.education.studentNotes.repository.StudentRepository;
+import com.kerneldc.education.studentNotes.service.StudentNotesReportService;
 
 @Component
 @Path("/StudentNotesService")
@@ -40,6 +46,8 @@ public class StudentNotesResource {
 	private StudentRepository studentRepository;
 	@Autowired
 	private NoteRepository noteRepository;
+	@Autowired
+	private StudentNotesReportService studentNotesReportService;
 
 	public StudentNotesResource() {
 		LOGGER.info("Initialized ...");
@@ -135,9 +143,9 @@ public class StudentNotesResource {
 	}
 	
 	@GET
-	@Path("/pdfAll")
+	@Path("/pdfAllTestFile")
 	@Produces("application/pdf")
-	public Response pdfAll() {
+	public Response pdfAllTestFile() {
 
 		LOGGER.debug("begin ...");
 		StreamingOutput stream = new StreamingOutput() {
@@ -164,4 +172,16 @@ public class StudentNotesResource {
 		return Response.ok(stream).build();
 	}
 	
+	@GET
+	@Path("/pdfAll")
+	@Produces("application/pdf")
+	public Response pdfAll() throws JAXBException, ParserConfigurationException, SAXException, IOException, TransformerException {
+
+		LOGGER.debug("begin ...");
+		Students students = new Students();
+		students.setStudentList(studentRepository.getAllStudents());
+		byte[] pdfByteArray = studentNotesReportService.generateReport(students);
+		LOGGER.debug("end ...");
+		return Response.ok(pdfByteArray).build();
+	}
 }
