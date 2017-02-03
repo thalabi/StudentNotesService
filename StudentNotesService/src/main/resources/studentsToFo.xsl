@@ -32,7 +32,7 @@
         </fo:static-content>
 		<fo:static-content flow-name="xsl-region-after">
 	        <fo:block text-align="center">
-	        	<fo:page-number/>
+	        	Page <fo:page-number/> generated on <xsl:value-of select="$timeGenerated"/>
 	        </fo:block>
         </fo:static-content>
         
@@ -48,21 +48,21 @@
   <!-- child element: student     -->
   <!-- ========================= -->
   <xsl:template match="student">
-  		<fo:block font-size="12pt">Student:
-          <fo:inline font-size="12pt" font-weight="bold"><xsl:value-of select="firstName"/>              <xsl:value-of select="lastName"/>, <xsl:value-of select="grade"/></fo:inline>
+  		<fo:block>
+          <fo:inline font-size="12pt" font-weight="bold"><xsl:value-of select="concat(firstName, ' ', lastName, ', ', grade)"/></fo:inline>
 		</fo:block>          
         
-<!--           <fo:block font-size="12pt" space-after="5mm">Version <xsl:value-of select="$versionParam"/> -->
-<!--           </fo:block> -->
-          <xsl:apply-templates select="notes"/>
-
+		<fo:block space-before="0.3cm">
+			<xsl:apply-templates select="notes"/>
+		</fo:block>
+			<fo:block space-before="0.3cm">
+			</fo:block>
+		
   </xsl:template>
   <!-- ========================= -->
   <!-- child element: notes     -->
   <!-- ========================= -->
   <xsl:template match="notes">
-          <fo:block font-size="8pt" space-after="2mm">Generated on <xsl:value-of select="$timeGenerated"/>
-          </fo:block>
           <fo:block font-size="10pt">
 <!--             <fo:table table-layout="fixed" width="100%" border-collapse="separate"> -->
 <!--               <fo:table-column column-width="4cm"/> -->
@@ -83,12 +83,7 @@
 <!--       </xsl:if> -->
 <!--       <fo:table-cell> -->
         <fo:block>
-          <xsl:value-of select="timestamp"/>
-        </fo:block>
-<!--       </fo:table-cell> -->
-<!--       <fo:table-cell> -->
-        <fo:block>
-          <xsl:value-of select="text"/>
+          <xsl:value-of select="timestamp"/> - <xsl:value-of select="text"/>
         </fo:block>
 <!--       </fo:table-cell> -->
 <!--     </fo:table-row> -->

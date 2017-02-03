@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.xml.bind.JAXBContext;
@@ -30,7 +31,8 @@ import com.kerneldc.education.studentNotes.bean.Students;
 @Service
 public class StudentNotesReportService {
 
-	private final static String XSL_FILE = "studentsToFo.xsl";
+	private static final String XSL_FILE = "studentsToFo.xsl";
+	private static final SimpleDateFormat generatedFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a");
 
 	public byte[] generateReport (
 		Students students) throws JAXBException, ParserConfigurationException, SAXException, IOException, TransformerException {
@@ -78,7 +80,7 @@ public class StudentNotesReportService {
 				Transformer transformer = factory.newTransformer(new StreamSource(Thread.currentThread().getContextClassLoader().getResourceAsStream((XSL_FILE))));
 
 				// Set the value of a <param> in the stylesheet
-				transformer.setParameter("timeGenerated", new Date());
+				transformer.setParameter("timeGenerated", generatedFormat.format(new Date()));
 
 				// Setup input for XSLT transformation
 				Source src = new StreamSource(new ByteArrayInputStream(studentsXmlByteArray));
