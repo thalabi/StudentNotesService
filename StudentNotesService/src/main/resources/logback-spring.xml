@@ -2,7 +2,11 @@
 
 <configuration packagingData="true" >
 
-	<property resource="application.properties" />
+<!-- 	<property resource="application.properties" /> -->
+<!-- 	Instead of using line above to specify the resource file, use logback-spring.xml and springProperty instead -->
+	<springProperty scope="context" name="logConsole" source="logConsole"
+        defaultValue="on"/>
+        
 	<property name="applicationPackage" value="com.kerneldc.education.studentNotes" />
 <!-- 	<property name="applicationPackage2" value="com.viewSaveAndRestore" /> -->
 <!-- 	<property name="applicationPackage3" value="com.kerneldc" /> -->
