@@ -59,8 +59,6 @@ public class StudentNotesReportService {
 	
 	public byte[] xmlToPdf(
 		byte[] studentsXmlByteArray) {
-		
-			File xsltfile = new File(ClassLoader.getSystemResource(XSL_FILE).getFile());
 
 			// Configure fopFactory as desired
 			final FopFactory fopFactory = FopFactory.newInstance(new File(".").toURI());
@@ -77,7 +75,7 @@ public class StudentNotesReportService {
 
 				// Setup XSLT
 				TransformerFactory factory = TransformerFactory.newInstance();
-				Transformer transformer = factory.newTransformer(new StreamSource(xsltfile));
+				Transformer transformer = factory.newTransformer(new StreamSource(Thread.currentThread().getContextClassLoader().getResourceAsStream((XSL_FILE))));
 
 				// Set the value of a <param> in the stylesheet
 				transformer.setParameter("timeGenerated", new Date());
