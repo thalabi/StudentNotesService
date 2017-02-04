@@ -27,7 +27,6 @@ public class StudentRepositoryTests {
 	@Test
     public void testSaveStudentChangeFirstLastNameAndGrade() {
 		
-		LOGGER.debug("begin ...");
 		Student student = studentRepository.findOne(1l);
 		student.setFirstName(student.getFirstName()+" v1");
 		student.setLastName(student.getLastName()+" v1");
@@ -40,7 +39,6 @@ public class StudentRepositoryTests {
 			updatedStudent.getLastName().equals(student.getLastName()) &&
 			updatedStudent.getGrade().equals("5") &&
 			updatedStudent.getVersion().equals(student.getVersion()+1));
-		LOGGER.debug("end ...");
     }
 
 }

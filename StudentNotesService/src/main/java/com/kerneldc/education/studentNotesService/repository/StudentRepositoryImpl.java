@@ -18,8 +18,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaContext;
 
-import com.kerneldc.education.studentNotes.domain.Student_;
 import com.kerneldc.education.studentNotesService.domain.Student;
+import com.kerneldc.education.studentNotesService.domain.Student_;
+
 
 public class StudentRepositoryImpl implements StudentRepositoryCustom {
 
