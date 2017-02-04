@@ -31,9 +31,29 @@
 	        </fo:block>
         </fo:static-content>
 		<fo:static-content flow-name="xsl-region-after">
-	        <fo:block text-align="center">
-	        	Page <fo:page-number/> generated on <xsl:value-of select="$timeGenerated"/>
-	        </fo:block>
+            <fo:table table-layout="fixed" width="100%" border-collapse="separate">
+              <fo:table-column column-width="45%"/>
+              <fo:table-column column-width="10%"/>
+              <fo:table-column column-width="45%"/>
+              <fo:table-body>
+                <fo:table-row>
+			      <fo:table-cell>
+				      <fo:block>
+				      </fo:block>
+			      </fo:table-cell>                
+			      <fo:table-cell>
+				      <fo:block text-align="center">
+						<fo:page-number/>
+				      </fo:block>
+			      </fo:table-cell>                
+			      <fo:table-cell>
+				      <fo:block text-align="right" font-size="8pt">
+						Report generated on <xsl:value-of select="$timeGenerated"/>			      
+				      </fo:block>
+			      </fo:table-cell>                
+				</fo:table-row>              
+              </fo:table-body>
+            </fo:table>
         </fo:static-content>
         
         <fo:flow flow-name="xsl-region-body">
