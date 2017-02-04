@@ -1,4 +1,4 @@
-package com.kerneldc.education.studentNotes.domain;
+package com.kerneldc.education.studentNotesService.domain;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;

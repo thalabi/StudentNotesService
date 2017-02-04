@@ -1,4 +1,4 @@
-package com.kerneldc.education.studentNotes.util;
+package com.kerneldc.education.studentNotesService.util;
 
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;

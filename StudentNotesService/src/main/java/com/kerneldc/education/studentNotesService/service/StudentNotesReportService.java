@@ -1,4 +1,4 @@
-package com.kerneldc.education.studentNotes.service;
+package com.kerneldc.education.studentNotesService.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -26,7 +26,7 @@ import org.apache.fop.apps.MimeConstants;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
-import com.kerneldc.education.studentNotes.bean.Students;
+import com.kerneldc.education.studentNotesService.bean.Students;
 
 @Service
 public class StudentNotesReportService {

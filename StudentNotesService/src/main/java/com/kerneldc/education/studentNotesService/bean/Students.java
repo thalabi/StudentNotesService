@@ -1,4 +1,4 @@
-package com.kerneldc.education.studentNotes.bean;
+package com.kerneldc.education.studentNotesService.bean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.kerneldc.education.studentNotes.domain.Student;
+import com.kerneldc.education.studentNotesService.domain.Student;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)

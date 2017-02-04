@@ -1,8 +1,8 @@
-package com.kerneldc.education.studentNotes.repository;
+package com.kerneldc.education.studentNotesService.repository;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.kerneldc.education.studentNotes.domain.Note;
+import com.kerneldc.education.studentNotesService.domain.Note;
 
 public interface NoteRepository extends CrudRepository<Note, Long> {
 

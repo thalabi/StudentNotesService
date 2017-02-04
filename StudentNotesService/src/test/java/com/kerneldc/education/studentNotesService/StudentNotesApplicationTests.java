@@ -1,4 +1,4 @@
-package com.kerneldc.education.studentNote;
+package com.kerneldc.education.studentNotesService;
 
 import static org.junit.Assert.assertEquals;
 
@@ -28,9 +28,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kerneldc.education.studentNotes.StudentNotesApplication;
-import com.kerneldc.education.studentNotes.domain.Note;
-import com.kerneldc.education.studentNotes.domain.Student;
+import com.kerneldc.education.studentNotesService.StudentNotesApplication;
+import com.kerneldc.education.studentNotesService.domain.Note;
+import com.kerneldc.education.studentNotesService.domain.Student;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = StudentNotesApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)

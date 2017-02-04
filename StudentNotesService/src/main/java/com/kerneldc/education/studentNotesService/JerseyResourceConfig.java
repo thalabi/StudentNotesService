@@ -1,9 +1,9 @@
-package com.kerneldc.education.studentNotes;
+package com.kerneldc.education.studentNotesService;
 
 import org.glassfish.jersey.server.ResourceConfig;
 
-import com.kerneldc.education.studentNotes.resource.StudentNotesResource;
-import com.kerneldc.education.studentNotes.util.JacksonObjectMapperProvider;
+import com.kerneldc.education.studentNotesService.resource.StudentNotesResource;
+import com.kerneldc.education.studentNotesService.util.JacksonObjectMapperProvider;
 
 public class JerseyResourceConfig extends ResourceConfig {
 

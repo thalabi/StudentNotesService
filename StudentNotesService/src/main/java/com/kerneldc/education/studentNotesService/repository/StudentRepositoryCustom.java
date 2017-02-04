@@ -1,8 +1,8 @@
-package com.kerneldc.education.studentNotes.repository;
+package com.kerneldc.education.studentNotesService.repository;
 
 import java.util.List;
 
-import com.kerneldc.education.studentNotes.domain.Student;
+import com.kerneldc.education.studentNotesService.domain.Student;
 
 public interface StudentRepositoryCustom {
 

@@ -8,8 +8,8 @@
         defaultValue="on"/>
 	<springProperty scope="context" name="logFile" source="logFile"
         defaultValue="${user.home}/StudentNotesService.log"/>
-        
-	<property name="applicationPackage" value="com.kerneldc.education.studentNotes" />
+
+	<property name="applicationPackage" value="com.kerneldc.education.studentNotesService" />
 <!-- 	<property name="applicationPackage2" value="com.viewSaveAndRestore" /> -->
 <!-- 	<property name="applicationPackage3" value="com.kerneldc" /> -->
 

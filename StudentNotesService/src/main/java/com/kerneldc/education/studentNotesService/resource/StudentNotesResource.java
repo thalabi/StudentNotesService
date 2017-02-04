@@ -1,4 +1,4 @@
-package com.kerneldc.education.studentNotes.resource;
+package com.kerneldc.education.studentNotesService.resource;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
@@ -29,12 +29,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
-import com.kerneldc.education.studentNotes.bean.Students;
-import com.kerneldc.education.studentNotes.domain.Note;
-import com.kerneldc.education.studentNotes.domain.Student;
-import com.kerneldc.education.studentNotes.repository.NoteRepository;
-import com.kerneldc.education.studentNotes.repository.StudentRepository;
-import com.kerneldc.education.studentNotes.service.StudentNotesReportService;
+import com.kerneldc.education.studentNotesService.bean.Students;
+import com.kerneldc.education.studentNotesService.domain.Note;
+import com.kerneldc.education.studentNotesService.domain.Student;
+import com.kerneldc.education.studentNotesService.repository.NoteRepository;
+import com.kerneldc.education.studentNotesService.repository.StudentRepository;
+import com.kerneldc.education.studentNotesService.service.StudentNotesReportService;
 
 @Component
 @Path("/StudentNotesService")

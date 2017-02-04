@@ -1,4 +1,4 @@
-package com.kerneldc.education.studentNotes.domain;
+package com.kerneldc.education.studentNotesService.domain;
 
 import java.sql.Timestamp;
 
@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.kerneldc.education.studentNotes.util.XmlTimestampAdapter;
+import com.kerneldc.education.studentNotesService.util.XmlTimestampAdapter;
 
 @Entity
 @Table(name = "NOTE")

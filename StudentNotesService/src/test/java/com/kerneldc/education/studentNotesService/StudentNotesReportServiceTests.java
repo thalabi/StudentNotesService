@@ -1,4 +1,4 @@
-package com.kerneldc.education.studentNote;
+package com.kerneldc.education.studentNotesService;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -23,12 +23,12 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.xml.sax.SAXException;
 
-import com.kerneldc.education.studentNotes.StudentNotesApplication;
-import com.kerneldc.education.studentNotes.bean.Students;
-import com.kerneldc.education.studentNotes.domain.Note;
-import com.kerneldc.education.studentNotes.domain.Student;
-import com.kerneldc.education.studentNotes.repository.StudentRepository;
-import com.kerneldc.education.studentNotes.service.StudentNotesReportService;
+import com.kerneldc.education.studentNotesService.StudentNotesApplication;
+import com.kerneldc.education.studentNotesService.bean.Students;
+import com.kerneldc.education.studentNotesService.domain.Note;
+import com.kerneldc.education.studentNotesService.domain.Student;
+import com.kerneldc.education.studentNotesService.repository.StudentRepository;
+import com.kerneldc.education.studentNotesService.service.StudentNotesReportService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = StudentNotesApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)

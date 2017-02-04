@@ -1,4 +1,4 @@
-package com.kerneldc.education.studentNotes.domain;
+package com.kerneldc.education.studentNotesService.domain;
 
 import java.util.ArrayList;
 import java.util.List;

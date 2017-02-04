@@ -1,4 +1,4 @@
-package com.kerneldc.education.studentNotes;
+package com.kerneldc.education.studentNotesService;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -11,22 +11,24 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
-//@ApplicationPath("/api")
 public class SpringBootConfig {
 
-//	public SpringBootConfig() {
-//
-//		// Specifying a package does not work due to Jersey classpath scanning limitations
-//		// See: https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-1.4-Release-Notes#jersey-classpath-scanning-limitations
-//		// Listing of Jersey resources is required as a workaround
-//		//
-//		//packages(true, "com.kerneldc.HeroServiceSpringBoot.resource");
-//		register(StudentNotesResource.class);
-//		
-//		//register(ReverseEndpoint.class);
-//
-//	}
+	/**
+	 * Configure Jersey as a filter 
+	 * @return
+	 */
+	@Bean
+	public FilterRegistrationBean jerseyFilterRegistration() {
+	    FilterRegistrationBean bean = new FilterRegistrationBean();
+	    bean.setName("jerseyFilter");
+	    ResourceConfig rc = new JerseyResourceConfig();
+	    bean.setFilter(new ServletContainer(rc));
+	    bean.setOrder(Ordered.LOWEST_PRECEDENCE);
+	    //bean.setUrlPatterns(Lists.newArrayList("/api/*"));
+	    //bean.addInitParameter(ServletProperties.FILTER_STATIC_CONTENT_REGEX, "/admin/.*");
 
+	    return bean;
+	}
 	/**
 	 * Allow cross origin requests
 	 * @return
@@ -49,20 +51,4 @@ public class SpringBootConfig {
 		return bean;
 	}
 		
-	/**
-	 * Configure Jersey as a filter 
-	 * @return
-	 */
-	@Bean
-	public FilterRegistrationBean jerseyFilterRegistration() {
-	    FilterRegistrationBean bean = new FilterRegistrationBean();
-	    bean.setName("jerseyFilter");
-	    ResourceConfig rc = new JerseyResourceConfig();
-	    bean.setFilter(new ServletContainer(rc));
-	    bean.setOrder(Ordered.LOWEST_PRECEDENCE);
-	    //bean.setUrlPatterns(Lists.newArrayList("/api/*"));
-	    //bean.addInitParameter(ServletProperties.FILTER_STATIC_CONTENT_REGEX, "/admin/.*");
-
-	    return bean;
-	}
 }

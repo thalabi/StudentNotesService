@@ -1,4 +1,4 @@
-package com.kerneldc.education.studentNotes.repository;
+package com.kerneldc.education.studentNotesService.repository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,8 +18,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaContext;
 
-import com.kerneldc.education.studentNotes.domain.Student;
 import com.kerneldc.education.studentNotes.domain.Student_;
+import com.kerneldc.education.studentNotesService.domain.Student;
 
 public class StudentRepositoryImpl implements StudentRepositoryCustom {
 

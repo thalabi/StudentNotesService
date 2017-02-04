@@ -1,4 +1,4 @@
-package com.kerneldc.education.studentNotes.util;
+package com.kerneldc.education.studentNotesService.util;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
