@@ -29,6 +29,9 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom {
 	@Autowired
 	private JpaContext jpaContext;
 	
+	/* (non-Javadoc)
+	 * @see com.kerneldc.education.studentNotesService.repository.StudentRepositoryCustom#getStudentById(java.lang.Long)
+	 */
 	@Override
 	public Student getStudentById(Long id) {
 		EntityManager entityManager = jpaContext.getEntityManagerByManagedType(Student.class);
