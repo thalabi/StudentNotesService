@@ -161,4 +161,35 @@ public class StudentRepositoryTests implements InitializingBean {
 			optionalStudent.get().getNoteList().get(0).getTimestamp().equals(note.getTimestamp()) &&
 			optionalStudent.get().getNoteList().get(0).getText().equals(note.getText()));
 	}
+
+	@Test
+    public void testGetStudentById() {
+
+		Student student = new Student();
+		student.setFirstName("first name - testGetStudentById");
+		student.setLastName("last name - testGetStudentById");
+		student.setGrade("2");
+		Note note1 = new Note();
+		note1.setTimestamp(new Timestamp(System.currentTimeMillis()));
+		note1.setText("note 1 - testGetStudentById");
+		student.getNoteList().add(note1);
+		Note note2 = new Note();
+		note2.setTimestamp(new Timestamp(note1.getTimestamp().getTime() - 60000)); // the second note 1 minute earlier
+		note2.setText("note 2 - testGetStudentById");
+		student.getNoteList().add(note2);
+		Long newId = studentRepository.save(student).getId();
+		entityManager.flush();
+		entityManager.clear();
+		Student newStudent = studentRepository.getStudentById(newId);
+		Note newNote2 = newStudent.getNoteList().get(0);
+		Note newNote1 = newStudent.getNoteList().get(1);
+		// Test that the note with the earlier timestamp is the first note retrieved ie the order by timestamp works
+		Assert.assertTrue(
+			newNote2.getId() != null &&
+			newNote2.getTimestamp().equals(note2.getTimestamp()) &&
+			newNote2.getText().equals(note2.getText()) &&
+			newNote1.getId() != null &&
+			newNote1.getTimestamp().equals(note1.getTimestamp()) &&
+			newNote1.getText().equals(note1.getText()));
+	}
 }
