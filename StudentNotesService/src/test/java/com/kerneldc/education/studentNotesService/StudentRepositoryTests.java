@@ -192,4 +192,12 @@ public class StudentRepositoryTests implements InitializingBean {
 			newNote1.getTimestamp().equals(note1.getTimestamp()) &&
 			newNote1.getText().equals(note1.getText()));
 	}
+	
+	@Test
+	public void testGetLatestActiveStudents() {
+		List<Student> students = studentRepository.getLatestActiveStudents(1);
+		System.out.println(students.size());
+		System.out.println(students.get(0).getNoteList().size());
+		Assert.assertTrue(students.size() == 1);
+	}
 }

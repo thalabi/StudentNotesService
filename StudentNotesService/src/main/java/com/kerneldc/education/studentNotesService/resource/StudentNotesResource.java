@@ -184,4 +184,16 @@ public class StudentNotesResource {
 		LOGGER.debug("end ...");
 		return Response.ok(pdfByteArray).build();
 	}
+
+	@GET
+	@Path("/getLatestActiveStudents/{limit}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Student> getLatestActiveStudents(
+		@PathParam("limit") int limit) {
+		
+		LOGGER.debug("begin ...");
+		LOGGER.debug("end ...");
+		return studentRepository.getLatestActiveStudents(limit);
+	}
+
 }

@@ -20,4 +20,6 @@ public interface StudentRepositoryCustom {
 	
 	// not used, remove
 	Student updateStudent(Student student);
+	
+	List<Student> getLatestActiveStudents(int limit);
 }

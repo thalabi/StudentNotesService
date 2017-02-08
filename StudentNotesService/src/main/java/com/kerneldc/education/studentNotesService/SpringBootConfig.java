@@ -5,7 +5,6 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -23,7 +22,7 @@ public class SpringBootConfig {
 	    bean.setName("jerseyFilter");
 	    ResourceConfig rc = new JerseyResourceConfig();
 	    bean.setFilter(new ServletContainer(rc));
-	    bean.setOrder(Ordered.LOWEST_PRECEDENCE);
+	    bean.setOrder(1);
 	    //bean.setUrlPatterns(Lists.newArrayList("/api/*"));
 	    //bean.addInitParameter(ServletProperties.FILTER_STATIC_CONTENT_REGEX, "/admin/.*");
 
@@ -47,7 +46,7 @@ public class SpringBootConfig {
 		
 		FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
 		
-		bean.setOrder(Ordered.LOWEST_PRECEDENCE);
+		bean.setOrder(0);
 		return bean;
 	}
 		
