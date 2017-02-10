@@ -1,11 +1,11 @@
 package com.kerneldc.education.studentNotesService.repository;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
@@ -25,7 +25,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaContext;
 
-import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.domain.Student_;
 
@@ -87,7 +86,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 	
 	@Override
 	@Transactional
-	public List<Student> getLatestActiveStudents(int limit) {
+	public Set<Student> getLatestActiveStudents(int limit) {
 
 		/*		
 		Query q = entityManager.createNativeQuery(
@@ -128,48 +127,50 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 //		return lo;
 
 		SQLQuery query = session.createSQLQuery(
-				"select distinct " +
-                        "s.id student_id, " +
-                        "s.first_name, " +
-                        "s.last_name, " +
-                        "s.grade, " +
-                        "s.version student_version, " +
-                        "n.id note_id, " +
-                        "n.timestamp, " +
-                        "n.text, " +
-                        "n.version note_version " +
-                        "from student s join student_note sn on s.id = sn.student_id join note n on sn.note_id = n.id where s.id in (\r\n" +
-        				"select student_id from (\r\n" + 
-        				"select sn.student_id, max(n.timestamp)\r\n" + 
-        				"from student_note sn join note n on sn.note_id = n.id\r\n" + 
-        				"group by sn.student_id\r\n" + 
-        				"order by max(n.timestamp) desc\r\n" + 
-        				"limit 5\r\n" + 
-        				")\r\n" + ")"				);
-		 query.addRoot("s", Student.class)
+			"select\r\n" + 
+			"	s.id student_id,\r\n" + 
+			"	s.first_name,\r\n" + 
+			"	s.last_name,\r\n" + 
+			"	s.grade,\r\n" + 
+			"	s.version student_version,\r\n" + 
+			"	n.id note_id,\r\n" + 
+			"	n.timestamp,\r\n" + 
+			"	n.text,\r\n" + 
+			"	n.version note_version\r\n" + 
+			"from student s join student_note sn on s.id = sn.student_id\r\n" + 
+			"			   join note n on sn.note_id = n.id\r\n" + 
+			"where s.id in	(\r\n" + 
+			"				select student_id\r\n" + 
+			"					from ( \r\n" + 
+			"						select sn.student_id, max(n.timestamp) \r\n" + 
+			"						from student_note sn join note n on sn.note_id = n.id \r\n" + 
+			"						group by sn.student_id \r\n" + 
+			"						order by max(n.timestamp) desc \r\n" + 
+			"						limit :limit \r\n" + 
+			"						)\r\n" + 
+			"				)\r\n" + 
+			"order by last_name, first_name, timestamp"
+		);
+		query.addRoot("s", Student.class)
 	         .addProperty("id", "student_id")
 	         .addProperty("firstName", "first_name")
 	         .addProperty("lastName", "last_name")
 	         .addProperty("grade", "grade")
 	         .addProperty("version", "student_version");
-         query.addFetch("n", "s", "noteList")
+        query.addFetch("n", "s", "noteList")
 	         .addProperty("key", "student_id")
 	         .addProperty("element", "note_id")
 	         .addProperty("element.id", "note_id")
 	         .addProperty("element.timestamp", "timestamp")
 	         .addProperty("element.text", "text")
 	         .addProperty("element.version", "note_version");
- 		List<Object[]> result = query.list();
- 		LOGGER.debug("result.size(): {}", result.size());
- 		Set<Student> students = new HashSet<>();
- 		for (Object[] tuple : result) {
- 			Student s = (Student)tuple[0];
- 			students.add(s);
- 			LOGGER.debug("s.getId(): {}, s.getNoteList().size(): {}, ((Note)tuple[1]).getId()", s.getId(), s.getNoteList().size(), ((Note)tuple[1]).getId());
- 		}
- 		LOGGER.debug("students.size(): {}", students.size());
- 		
- 		return new ArrayList(students);
+        query.setParameter("limit", limit);
+        
+ 		@SuppressWarnings("unchecked")
+		List<Object[]> result = query.list();
+ 		// Use LinkedHashSet so as to preserve the order
+ 		LinkedHashSet<Student> students = result.stream().map(o->(Student)o[0]).collect(Collectors.toCollection(LinkedHashSet::new));
+ 		return students;
 	}
 
 }

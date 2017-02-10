@@ -1,6 +1,7 @@
 package com.kerneldc.education.studentNotesService.repository;
 
 import java.util.List;
+import java.util.Set;
 
 import com.kerneldc.education.studentNotesService.domain.Student;
 
@@ -21,5 +22,5 @@ public interface StudentRepositoryCustom {
 	// not used, remove
 	Student updateStudent(Student student);
 	
-	List<Student> getLatestActiveStudents(int limit);
+	Set<Student> getLatestActiveStudents(int limit);
 }

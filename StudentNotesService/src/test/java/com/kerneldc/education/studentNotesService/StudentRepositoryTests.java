@@ -1,8 +1,10 @@
 package com.kerneldc.education.studentNotesService;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
@@ -193,11 +195,13 @@ public class StudentRepositoryTests implements InitializingBean {
 			newNote1.getText().equals(note1.getText()));
 	}
 	
+	// TODO test should limit to 2 and take the first student pick his/her last note and compare it
+	// to the second student last note. The time stamp of the first should be later than the second
 	@Test
 	public void testGetLatestActiveStudents() {
-		List<Student> students = studentRepository.getLatestActiveStudents(1);
+		Set<Student> students = studentRepository.getLatestActiveStudents(1);
 		System.out.println(students.size());
-		System.out.println(students.get(0).getNoteList().size());
+		System.out.println(new ArrayList<Student>(students).get(0).getNoteList().size());
 		Assert.assertTrue(students.size() == 1);
 	}
 }

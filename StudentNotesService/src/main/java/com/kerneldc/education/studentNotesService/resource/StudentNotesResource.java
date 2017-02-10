@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -188,7 +189,7 @@ public class StudentNotesResource {
 	@GET
 	@Path("/getLatestActiveStudents/{limit}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Student> getLatestActiveStudents(
+	public Set<Student> getLatestActiveStudents(
 		@PathParam("limit") int limit) {
 		
 		LOGGER.debug("begin ...");
