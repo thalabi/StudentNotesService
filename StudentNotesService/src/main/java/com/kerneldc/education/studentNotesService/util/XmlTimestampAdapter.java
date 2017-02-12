@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class XmlTimestampAdapter extends XmlAdapter<String, Timestamp> {
 
-	private static final SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	private static final SimpleDateFormat timestampFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a");
 	
 	@Override
 	public Timestamp unmarshal(String v) throws Exception {

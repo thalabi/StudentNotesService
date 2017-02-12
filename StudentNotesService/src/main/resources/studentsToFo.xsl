@@ -75,8 +75,8 @@
 		<fo:block space-before="0.3cm">
 			<xsl:apply-templates select="notes"/>
 		</fo:block>
-			<fo:block space-before="0.3cm">
-			</fo:block>
+		<fo:block space-before="0.3cm">
+		</fo:block>
 		
   </xsl:template>
   <!-- ========================= -->
@@ -102,7 +102,7 @@
 <!--         <xsl:attribute name="font-weight">bold</xsl:attribute> -->
 <!--       </xsl:if> -->
 <!--       <fo:table-cell> -->
-        <fo:block>
+        <fo:block space-after="0.2cm">
           <xsl:value-of select="timestamp"/> - <xsl:value-of select="text"/>
         </fo:block>
 <!--       </fo:table-cell> -->
