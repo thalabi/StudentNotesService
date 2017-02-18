@@ -3,6 +3,7 @@ package com.kerneldc.education.studentNotesService;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import com.kerneldc.education.studentNotesService.resource.StudentNotesResource;
+import com.kerneldc.education.studentNotesService.security.resource.SecurityResource;
 import com.kerneldc.education.studentNotesService.util.JacksonObjectMapperProvider;
 
 public class JerseyResourceConfig extends ResourceConfig {
@@ -18,6 +19,7 @@ public class JerseyResourceConfig extends ResourceConfig {
 		//
 		//packages(true, "com.kerneldc.HeroServiceSpringBoot.resource");
 		register(StudentNotesResource.class);
+		register(SecurityResource.class);
 		
 	}
 }
