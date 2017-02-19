@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.education.studentNotesService.StudentNotesApplication;
 import com.kerneldc.education.studentNotesService.security.bean.User;
+import com.kerneldc.education.studentNotesService.security.service.JwtToken;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = StudentNotesApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -29,6 +30,9 @@ public class SecurityResourceTests {
 	
 	@Autowired
 	private TestRestTemplate testRestTemplate;
+	
+	@Autowired
+	private JwtToken jwtToken;
 	
 	@Test
     public void testHello() {
@@ -56,8 +60,38 @@ public class SecurityResourceTests {
 			newUser.getPassword().equals(password) &&
 			newUser.getFirstName().equals("first name") &&
 			newUser.getLastName().equals("last name") &&
-			newUser.getToken().equals("fake-jwt-token")
+			newUser.getToken().length() > 0
+			);
+		Assert.assertTrue(
+			jwtToken.getUsernameFromToken(newUser.getToken()).equals(username)
 			);
     }
+
+//	@Test
+//	public void testAuthenticateWithValidJwt() throws JsonProcessingException {
+//		
+//		String username = "thalabi";
+//		String password = "xxxxxxxxxxxxxxxx";
+//		String usernameAndPassword = "{\"username\":\""+username+"\",\"password\":\""+password+"\"}";
+//		
+//		HttpHeaders httpHeaders = new HttpHeaders();
+//		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+//		HttpEntity<String> httpEntity = new HttpEntity<String>(usernameAndPassword,httpHeaders);
+//
+//		JsonNode newJsonUser = testRestTemplate.postForObject(BASE_URI+"/authenticateWithValidJwt", httpEntity, JsonNode.class);
+//		ObjectMapper objectMapper = new ObjectMapper();
+//		User newUser = objectMapper.treeToValue(newJsonUser, User.class);
+//		Assert.assertTrue(
+//			newUser.getId().equals(7l) &&
+//			newUser.getUsername().equals(username) &&
+//			newUser.getPassword().equals(password) &&
+//			newUser.getFirstName().equals("first name") &&
+//			newUser.getLastName().equals("last name") &&
+//			newUser.getToken().length() > 0
+//			);
+//		Assert.assertTrue(
+//			jwtToken.getUsernameFromToken(newUser.getToken()).equals(username)
+//			);
+//    }
 
 }
