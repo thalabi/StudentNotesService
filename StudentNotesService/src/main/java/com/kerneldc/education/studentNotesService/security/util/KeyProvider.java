@@ -1,4 +1,4 @@
-package com.kerneldc.education.studentNotesService.security.service;
+package com.kerneldc.education.studentNotesService.security.util;
 
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;

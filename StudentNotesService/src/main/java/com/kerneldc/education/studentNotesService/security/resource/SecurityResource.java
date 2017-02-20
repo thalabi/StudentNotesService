@@ -18,7 +18,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.education.studentNotesService.security.bean.User;
-import com.kerneldc.education.studentNotesService.security.service.JwtToken;
+import com.kerneldc.education.studentNotesService.security.util.JwtTokenUtil;
 
 @Component
 @Path("/StudentNotesService/Security")
@@ -27,7 +27,7 @@ public class SecurityResource {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 
 	@Autowired
-	private JwtToken jwtToken;
+	private JwtTokenUtil jwtTokenUtil;
 	
 	public SecurityResource() {
 		LOGGER.info("Initialized ...");
@@ -76,7 +76,7 @@ public class SecurityResource {
     	user.setId(7l);
     	user.setFirstName("first name");
     	user.setLastName("last name");
-    	user.setToken(jwtToken.generate(user.getUsername()));
+    	user.setToken(jwtTokenUtil.generate(user.getUsername()));
     	LOGGER.debug("end ...");
     	return user;
     }

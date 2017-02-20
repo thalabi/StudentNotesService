@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.education.studentNotesService.StudentNotesApplication;
 import com.kerneldc.education.studentNotesService.security.bean.User;
-import com.kerneldc.education.studentNotesService.security.service.JwtToken;
+import com.kerneldc.education.studentNotesService.security.util.JwtTokenUtil;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = StudentNotesApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -32,7 +32,7 @@ public class SecurityResourceTests {
 	private TestRestTemplate testRestTemplate;
 	
 	@Autowired
-	private JwtToken jwtToken;
+	private JwtTokenUtil jwtTokenUtil;
 	
 	@Test
     public void testHello() {
@@ -63,7 +63,7 @@ public class SecurityResourceTests {
 			newUser.getToken().length() > 0
 			);
 		Assert.assertTrue(
-			jwtToken.getUsernameFromToken(newUser.getToken()).equals(username)
+			jwtTokenUtil.getUsernameFromToken(newUser.getToken()).equals(username)
 			);
     }
 
@@ -90,7 +90,7 @@ public class SecurityResourceTests {
 //			newUser.getToken().length() > 0
 //			);
 //		Assert.assertTrue(
-//			jwtToken.getUsernameFromToken(newUser.getToken()).equals(username)
+//			jwtTokenUtil.getUsernameFromToken(newUser.getToken()).equals(username)
 //			);
 //    }
 

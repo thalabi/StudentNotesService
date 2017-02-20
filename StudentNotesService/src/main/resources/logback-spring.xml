@@ -58,7 +58,7 @@
  	<!-- <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="trace" /> --> <!-- shows the values in sql statements -->
  	<!-- <logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="trace" /> --> <!-- shows the values in sql statements -->
 	
-	<logger name="org.springframework.security" level="info" />
+	<logger name="org.springframework.security" level="debug" />
 
 	<root level="info">
 		<if condition='property("logConsole").equals("on")'>

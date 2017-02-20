@@ -18,7 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.kerneldc.education.studentNotesService.StudentNotesApplication;
-import com.kerneldc.education.studentNotesService.security.service.JwtToken;
+import com.kerneldc.education.studentNotesService.security.util.JwtTokenUtil;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -31,24 +31,24 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JwtTokenTests {
 
 	@Autowired
-	private JwtToken jwtToken;
+	private JwtTokenUtil jwtTokenUtil;
 	
 	@Test
     public void testGenerate() {
-        Assert.assertTrue(jwtToken.generate("username").length() != 0);
+        Assert.assertTrue(jwtTokenUtil.generate("username").length() != 0);
     }
 
 	@Test
     public void testGetUsernameFromToken() {
-		String token = jwtToken.generate("username");
-		String username = jwtToken.getUsernameFromToken(token);
+		String token = jwtTokenUtil.generate("username");
+		String username = jwtTokenUtil.getUsernameFromToken(token);
         Assert.assertTrue("username".equals(username));
     }
 
 	@Test
     public void testGetPermissionsFromToken() {
-		String token = jwtToken.generate("username", "permission1", "permission2", "permission3");
-		String[] permissions = jwtToken.getPermissionsFromToken(token);
+		String token = jwtTokenUtil.generate("username", "permission1", "permission2", "permission3");
+		String[] permissions = jwtTokenUtil.getPermissionsFromToken(token);
         Assert.assertTrue(Arrays.equals(permissions, new String[]{"permission1", "permission2", "permission3"}));
     }
 

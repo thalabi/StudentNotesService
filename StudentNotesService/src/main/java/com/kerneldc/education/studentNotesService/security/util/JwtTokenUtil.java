@@ -1,4 +1,4 @@
-package com.kerneldc.education.studentNotesService.security.service;
+package com.kerneldc.education.studentNotesService.security.util;
 
 import java.security.Key;
 import java.util.HashMap;
@@ -10,12 +10,14 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.kerneldc.education.studentNotesService.security.bean.User;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
-public class JwtToken {
+public class JwtTokenUtil {
 
 	@Autowired
 	private KeyProvider keyProvider; 
@@ -25,6 +27,7 @@ public class JwtToken {
 	public void init() {
 		key = keyProvider.getKey();
 	}
+	
 	public String generate(String username, String... permissions) {
 		
 		Map<String, Object> claims = new HashMap<>();
@@ -36,7 +39,14 @@ public class JwtToken {
 				  .compact();
 		return compactJws;
 	}
-	
+
+	public User parseToken(String token) {
+		
+		User user = new User();
+		user.setUsername(getUsernameFromToken(token));
+		user.setToken(token);
+		return user;
+	}
 	public String getUsernameFromToken(String token) {
         String username;
         try {
@@ -68,5 +78,5 @@ public class JwtToken {
         }
         return permissions;
     }
-	
+
 }
