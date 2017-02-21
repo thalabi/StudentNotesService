@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.education.studentNotesService.security.bean.User;
+import com.kerneldc.education.studentNotesService.security.service.TokenAuthenticationService;
 import com.kerneldc.education.studentNotesService.security.util.JwtTokenUtil;
 
 @Component
@@ -28,6 +29,9 @@ public class SecurityResource {
 
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
+	
+	@Autowired
+	private TokenAuthenticationService tokenAuthenticationService;
 	
 	public SecurityResource() {
 		LOGGER.info("Initialized ...");
@@ -76,7 +80,8 @@ public class SecurityResource {
     	user.setId(7l);
     	user.setFirstName("first name");
     	user.setLastName("last name");
-    	user.setToken(jwtTokenUtil.generate(user.getUsername()));
+    	//user.setToken(jwtTokenUtil.generate(user.getUsername()));
+    	user.setToken(tokenAuthenticationService.createJwtTokenforAuthentication(user.getUsername()));
     	LOGGER.debug("end ...");
     	return user;
     }

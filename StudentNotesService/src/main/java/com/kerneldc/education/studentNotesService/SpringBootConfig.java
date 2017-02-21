@@ -32,22 +32,22 @@ public class SpringBootConfig {
 	 * Allow cross origin requests
 	 * @return
 	 */
-	@Bean
-	public FilterRegistrationBean corsFilter() {
-		
-		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowCredentials(true);
-		config.addAllowedOrigin("*");
-		config.addAllowedHeader("*");
-		config.addAllowedMethod("*");
-		
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", config);
-		
-		FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
-		
-		bean.setOrder(0);
-		return bean;
-	}
+//	@Bean
+//	public FilterRegistrationBean corsFilter() {
+//		
+//		CorsConfiguration config = new CorsConfiguration();
+//		config.setAllowCredentials(true);
+//		config.addAllowedOrigin("*");
+//		config.addAllowedHeader("*");
+//		config.addAllowedMethod("*");
+//		
+//		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//		source.registerCorsConfiguration("/**", config);
+//		
+//		FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
+//		
+//		bean.setOrder(0);
+//		return bean;
+//	}
 		
 }

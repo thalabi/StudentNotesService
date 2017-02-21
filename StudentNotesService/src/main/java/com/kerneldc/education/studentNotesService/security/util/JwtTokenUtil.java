@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,9 @@ public class JwtTokenUtil {
 	
 	@PostConstruct
 	public void init() {
-		key = keyProvider.getKey();
+		//key = keyProvider.getKey();
+		// TODO for testing only. remove after.
+		key = new SecretKeySpec("secret".getBytes(),"AES");
 	}
 	
 	public String generate(String username, String... permissions) {
@@ -47,18 +50,14 @@ public class JwtTokenUtil {
 		user.setToken(token);
 		return user;
 	}
+	
 	public String getUsernameFromToken(String token) {
         String username;
-        try {
-        	Claims claims = Jwts.parser()
-                	.setSigningKey(key)
-                	.parseClaimsJws(token)
-                	.getBody();
-        	username = claims.getSubject();
-        } catch (Exception e) {
-        	e.printStackTrace();
-            username = null;
-        }
+    	Claims claims = Jwts.parser()
+            	.setSigningKey(key)
+            	.parseClaimsJws(token)
+            	.getBody();
+    	username = claims.getSubject();
         return username;
     }
 
