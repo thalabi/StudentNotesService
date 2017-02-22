@@ -18,8 +18,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.education.studentNotesService.security.bean.User;
-import com.kerneldc.education.studentNotesService.security.service.TokenAuthenticationService;
-import com.kerneldc.education.studentNotesService.security.util.JwtTokenUtil;
+import com.kerneldc.education.studentNotesService.security.service.AuthenticationService;
 
 @Component
 @Path("/StudentNotesService/Security")
@@ -28,10 +27,7 @@ public class SecurityResource {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 
 	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
-	
-	@Autowired
-	private TokenAuthenticationService tokenAuthenticationService;
+	private AuthenticationService authenticationService;
 	
 	public SecurityResource() {
 		LOGGER.info("Initialized ...");
@@ -66,6 +62,15 @@ public class SecurityResource {
 //    	return user;
 //    }
 
+	/**
+	 * Authenticates the supplied username and password and return a user object with the
+	 * generated jwt token
+	 * @param usernameAndPassword in json format
+	 * @return User object including the generated jwt token
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
 	@POST
 	@Path("/authenticate")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -77,11 +82,12 @@ public class SecurityResource {
     	LOGGER.debug("begin ...");
 		ObjectMapper objectMapper = new ObjectMapper();
     	User user = objectMapper.readValue(usernameAndPassword, User.class);
-    	user.setId(7l);
-    	user.setFirstName("first name");
-    	user.setLastName("last name");
-    	//user.setToken(jwtTokenUtil.generate(user.getUsername()));
-    	user.setToken(tokenAuthenticationService.createJwtTokenforAuthentication(user.getUsername()));
+//    	user.setId(7l);
+//    	user.setFirstName("first name");
+//    	user.setLastName("last name");
+//    	user.setToken(jwtTokenUtil.generate(user.getUsername()));
+    	//user.setToken(tokenAuthenticationService.createJwtTokenforAuthentication(user.getUsername()));
+    	user = authenticationService.authenticate(user);
     	LOGGER.debug("end ...");
     	return user;
     }

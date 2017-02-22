@@ -16,16 +16,21 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
-import com.kerneldc.education.studentNotesService.security.service.TokenAuthenticationService;
+import com.kerneldc.education.studentNotesService.security.service.AuthenticationService;
 
-
+/**
+ * Filter that uses the token in the request header to generate an authenticated user object
+ * and storing in in the security context holder
+ * @author Tarif Halabi 2
+ *
+ */
 @Component
 public class StatelessAuthenticationFilter extends GenericFilterBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 
     @Autowired
-    private TokenAuthenticationService tokenAuthenticationService;
+    private AuthenticationService authenticationService;
 
     public StatelessAuthenticationFilter() {
 		LOGGER.debug("begin ...");
@@ -38,7 +43,7 @@ public class StatelessAuthenticationFilter extends GenericFilterBean {
 
 		LOGGER.debug("begin ...");
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
-        Authentication authentication =	tokenAuthenticationService.getExistingAuthentication(httpRequest);
+        Authentication authentication =	authenticationService.getExistingAuthentication(httpRequest);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         chain.doFilter(request, response);

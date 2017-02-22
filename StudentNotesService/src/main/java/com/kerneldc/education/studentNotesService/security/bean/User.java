@@ -1,18 +1,30 @@
 package com.kerneldc.education.studentNotesService.security.bean;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 public class User implements UserDetails {
 
-	Long id;
-	String username;
-	String password;
-	String firstName;
-	String lastName;
-	String token;
+	private static final long serialVersionUID = 1L;
+
+	private Long id;
+	private String username;
+	private String password;
+	private String firstName;
+	private String lastName;
+	private String[] permisions = new String[]{};
+	//@JsonIgnore
+	@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
+	private Collection<GrantedAuthority> authorities = new ArrayList<>();
+	private String token;
 	
 	public Long getId() {
 		return id;
@@ -44,6 +56,12 @@ public class User implements UserDetails {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+	public String[] getPermisions() {
+		return permisions;
+	}
+	public void setPermisions(String[] permisions) {
+		this.permisions = permisions;
+	}
 	public String getToken() {
 		return token;
 	}
@@ -52,23 +70,32 @@ public class User implements UserDetails {
 	}
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
-		return null;
+		return authorities;
 	}
+	public void setAuthorities(Collection<GrantedAuthority> authorities) {
+		this.authorities = authorities;
+	}
+	@JsonIgnore
 	@Override
 	public boolean isAccountNonExpired() {
 		return true;
 	}
+	@JsonIgnore
 	@Override
 	public boolean isAccountNonLocked() {
 		return true;
 	}
+	@JsonIgnore
 	@Override
 	public boolean isCredentialsNonExpired() {
 		return true;
 	}
+	@JsonIgnore
 	@Override
 	public boolean isEnabled() {
 		return true;
 	}
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 }
