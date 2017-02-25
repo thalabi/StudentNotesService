@@ -6,8 +6,8 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+
+import javax.annotation.PostConstruct;
 
 import org.glassfish.jersey.internal.util.ExceptionUtils;
 import org.junit.Assert;
@@ -15,6 +15,8 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -25,6 +27,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,12 +36,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
+import com.kerneldc.education.studentNotesService.security.bean.User;
+import com.kerneldc.education.studentNotesService.security.constants.Constants;
+import com.kerneldc.education.studentNotesService.security.util.SimpleGrantedAuthorityMixIn;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = StudentNotesApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class StudentNotesApplicationTests {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 	private static final String BASE_URI = "/StudentNotesService";
 	
 	@Autowired
@@ -47,57 +54,88 @@ public class StudentNotesApplicationTests {
 	@Autowired
 	private StudentRepository studentRepository;
 
+	private HttpHeaders httpHeaders;
+	private User user;
+	
+	@PostConstruct
+	public void setUp() throws JsonProcessingException {
+		String username = "thalabi";
+		String password = "xxxxxxxxxxxxxxxx";
+		String usernameAndPassword = "{\"username\":\""+username+"\",\"password\":\""+password+"\"}";
+		
+		httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<String>(usernameAndPassword,httpHeaders);
+
+		JsonNode newJsonUser = testRestTemplate.postForObject(BASE_URI+"/Security/authenticate", httpEntity, JsonNode.class);
+		System.out.println(newJsonUser);
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixIn.class);
+		user = objectMapper.treeToValue(newJsonUser, User.class);
+		LOGGER.debug("user.getToken(): {}", user.getToken());
+		httpHeaders.set(Constants.AUTH_HEADER_NAME, user.getToken());
+	}
+	
 	@Test
     public void t01testHello() {
-        String hello = testRestTemplate.getForObject(BASE_URI, String.class);
-        assertEquals("Hello", hello);
+		//HttpHeaders httpHeaders = new HttpHeaders();
+		//httpHeaders.set(Constants.AUTH_HEADER_NAME, user.getToken());
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+        ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI, HttpMethod.GET, httpEntity, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Hello", response.getBody());
     }
 
 	@Test
     public void t02testGetAllStudents() {
-        String allStudents = testRestTemplate.getForObject(BASE_URI+"/getAllStudents", String.class);
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+        //String allStudents = testRestTemplate.getForObject(BASE_URI+"/getAllStudents", String.class);
+		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/getAllStudents", HttpMethod.GET, httpEntity, String.class);
         String expected = "[{\"version\":0,\"id\":3,\"firstName\":\"Mr Parent\",\"lastName\":\"\",\"grade\":\"\",\"noteList\":[{\"version\":0,\"id\":4,\"timestamp\":1481403630842,\"text\":\"note 4\"},{\"version\":0,\"id\":5,\"timestamp\":1481403630843,\"text\":\"note 5\"}]},{\"version\":0,\"id\":2,\"firstName\":\"\",\"lastName\":\"halabi\",\"grade\":\"4\",\"noteList\":[]},{\"version\":0,\"id\":1,\"firstName\":\"kareem\",\"lastName\":\"halabi\",\"grade\":\"SK\",\"noteList\":[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":0,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3\"}]}]";
-        assertEquals(expected, allStudents);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expected, response.getBody());
     }
 
 	@Test
     public void t03testGetAllNotes() {
-        String allNotes = testRestTemplate.getForObject(BASE_URI+"/getAllNotes", String.class);
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/getAllNotes", HttpMethod.GET, httpEntity, String.class);
         String expected = "[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":0,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3\"},{\"version\":0,\"id\":4,\"timestamp\":1481403630842,\"text\":\"note 4\"},{\"version\":0,\"id\":5,\"timestamp\":1481403630843,\"text\":\"note 5\"}]";
-        assertEquals(expected, allNotes);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expected, response.getBody());
     }
 	
 	@Test
     public void t04testGetStudentById() {
-        String allNotes = testRestTemplate.getForObject(BASE_URI+"/getStudentById/1", String.class);
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/getStudentById/1", HttpMethod.GET, httpEntity, String.class);
         String expected = "{\"version\":0,\"id\":1,\"firstName\":\"kareem\",\"lastName\":\"halabi\",\"grade\":\"SK\",\"noteList\":[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":0,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3\"}]}";
-        assertEquals(expected, allNotes);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expected, response.getBody());
     }
 
 	@Test
     public void t05testSaveStudentChangeFirstLastNameAndGrade() {
 		
 		String data = "{\"id\":2,\"firstName\":\"first name v1\",\"lastName\":\"last name v2\",\"grade\":\"4 v2\",\"noteList\":[], \"version\":0}";
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<String> httpEntity = new HttpEntity<String>(data,httpHeaders);
 
-		String actual = testRestTemplate.postForObject(BASE_URI+"/saveStudent", httpEntity, String.class);
+		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, String.class);
 		String expected = "{\"version\":1,\"id\":2,\"firstName\":\"first name v1\",\"lastName\":\"last name v2\",\"grade\":\"4 v2\",\"noteList\":[]}";
-		assertEquals(expected, actual);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expected, response.getBody());
     }
 
 	@Test
 	public void t06testSaveStudentAddNote() {
 		
 		String data = "{\"version\":0,\"id\":3,\"firstName\":\"Mr Parent\",\"lastName\":\"\",\"grade\":\"\",\"noteList\":[{\"version\":0,\"id\":4,\"timestamp\":1481403630842,\"text\":\"note 4\"},{\"version\":0,\"id\":5,\"timestamp\":1481403630843,\"text\":\"note 5\"},{\"timestamp\":1481403630843,\"text\":\"note new note\"}]}";
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<String> httpEntity = new HttpEntity<String>(data,httpHeaders);
 
-		String actual = testRestTemplate.postForObject(BASE_URI+"/saveStudent", httpEntity, String.class);
+		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, String.class);
 		String expected = "{\"version\":1,\"id\":3,\"firstName\":\"Mr Parent\",\"lastName\":\"\",\"grade\":\"\",\"noteList\":[{\"version\":0,\"id\":4,\"timestamp\":1481403630842,\"text\":\"note 4\"},{\"version\":0,\"id\":5,\"timestamp\":1481403630843,\"text\":\"note 5\"},{\"version\":0,\"id\":6,\"timestamp\":1481403630843,\"text\":\"note new note\"}]}";
-		assertEquals(expected, actual);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expected, response.getBody());
     }
 	
 	@Test
@@ -120,13 +158,12 @@ public class StudentNotesApplicationTests {
 		ObjectMapper objectMapper = new ObjectMapper();
 		JsonNode jsonStudent = objectMapper.valueToTree(student);
 
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonStudent,httpHeaders);
 
-		JsonNode newJsonStudent = testRestTemplate.postForObject(BASE_URI+"/saveStudent", httpEntity, JsonNode.class);
+		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, JsonNode.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
-		Student newStudent = objectMapper.treeToValue(newJsonStudent, Student.class);
+		Student newStudent = objectMapper.treeToValue(response.getBody(), Student.class);
 		Assert.assertTrue(
 			newStudent.getNoteList().size() == 0);
     }
@@ -135,19 +172,19 @@ public class StudentNotesApplicationTests {
 	public void t08testSaveStudentModifyNote() {
 		
 		String data = "{\"version\":0,\"id\":1,\"firstName\":\"kareem\",\"lastName\":\"halabi\",\"grade\":\"SK\",\"noteList\":[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":0,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3 modified\"}]}";
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<String> httpEntity = new HttpEntity<String>(data,httpHeaders);
 
-		String actual = testRestTemplate.postForObject(BASE_URI+"/saveStudent", httpEntity, String.class);
+		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, String.class);
 		String expected = "{\"version\":1,\"id\":1,\"firstName\":\"kareem\",\"lastName\":\"halabi\",\"grade\":\"SK\",\"noteList\":[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":1,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3 modified\"}]}";
-		assertEquals(expected, actual);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(expected, response.getBody());
     }
 
 	@Test
 	public void t09testDeleteStudentById() {
 		
 		testRestTemplate.delete(BASE_URI+"/deleteStudentById/1");
+		//TODO check the repository that the row is deleted
 		assertEquals(true, true);
 	}
 
@@ -170,12 +207,10 @@ public class StudentNotesApplicationTests {
 		ObjectMapper objectMapper = new ObjectMapper();
 		JsonNode jsonNote = objectMapper.valueToTree(note1);
 		
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonNote,httpHeaders);
 
-		JsonNode newJsonNote = testRestTemplate.postForObject(BASE_URI+"/saveNote", httpEntity, JsonNode.class);
-		Note newNote = objectMapper.treeToValue(newJsonNote, Note.class);
+		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/saveNote", HttpMethod.POST, httpEntity, JsonNode.class);
+		Note newNote = objectMapper.treeToValue(response.getBody(), Note.class);
 		Assert.assertTrue(
 			newNote.getId().equals(note1.getId()) &&
 			newNote.getTimestamp().equals(note1.getTimestamp()) &&
@@ -184,19 +219,7 @@ public class StudentNotesApplicationTests {
     }
 
 	@Test
-	public void t11testDeleteNoteById() {
-		
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<String> httpEntity = new HttpEntity<String>("",httpHeaders);
-		Map<String,Object> urlVariables = new HashMap<>();
-		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/deleteNoteById/2",
-				HttpMethod.DELETE, httpEntity, String.class, urlVariables);
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-	}
-	
-	@Test
-	public void t12testSaveStudentAddStudent() {
+	public void t11testSaveStudentAddStudent() {
 		
 		Student student = new Student();
 		student.setFirstName("new first name");
@@ -205,8 +228,6 @@ public class StudentNotesApplicationTests {
 		ObjectMapper objectMapper = new ObjectMapper();
 		JsonNode jsonStudent = objectMapper.valueToTree(student);
 
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonStudent,httpHeaders);
 		try {
 			Thread.sleep(1000);
@@ -214,9 +235,9 @@ public class StudentNotesApplicationTests {
 			Assert.fail(ExceptionUtils.exceptionStackTraceAsString(e));
 			;
 		}
-		JsonNode newJsonStudent = testRestTemplate.postForObject(BASE_URI+"/saveStudent", httpEntity, JsonNode.class);
+		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, JsonNode.class);
 		
-		JsonNode newStudent = objectMapper.convertValue(newJsonStudent, JsonNode.class);
+		JsonNode newStudent = objectMapper.convertValue(response.getBody(), JsonNode.class);
 		Long newId = newStudent.get("id").asLong();
 		String newFirstName = newStudent.get("firstName").asText();
 		String newLastName = newStudent.get("lastName").asText();
@@ -231,7 +252,7 @@ public class StudentNotesApplicationTests {
 	}
 
 	@Test
-	public void t13testSaveStudentAddStudentWithNotes() {
+	public void t12testSaveStudentAddStudentWithNotes() {
 		
 		Student student = new Student();
 		student.setFirstName("new first name with notes");
@@ -251,14 +272,12 @@ public class StudentNotesApplicationTests {
 		ObjectMapper objectMapper = new ObjectMapper();
 		JsonNode jsonStudent = objectMapper.valueToTree(student);
 
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonStudent,httpHeaders);
 
-		JsonNode newJsonStudent = testRestTemplate.postForObject(BASE_URI+"/saveStudent", httpEntity, JsonNode.class);
+		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, JsonNode.class);
 		
 		JsonNode newStudent = null;
-		newStudent = objectMapper.convertValue(newJsonStudent, JsonNode.class);
+		newStudent = objectMapper.convertValue(response.getBody(), JsonNode.class);
 		Long newId = newStudent.get("id").asLong();
 		String newFirstName = newStudent.get("firstName").asText();
 		String newLastName = newStudent.get("lastName").asText();
@@ -272,4 +291,15 @@ public class StudentNotesApplicationTests {
 				newVersion.equals(0l));
 	}
 
+	/**
+	 * Run as last test as it causes some aop error
+	 */
+	@Test
+	public void t99testDeleteNoteById() {
+		
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/deleteNoteById/2",
+				HttpMethod.DELETE, httpEntity, String.class);
+		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+	}
 }

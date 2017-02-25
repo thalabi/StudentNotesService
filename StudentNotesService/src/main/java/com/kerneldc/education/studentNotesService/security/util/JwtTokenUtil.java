@@ -1,9 +1,9 @@
 package com.kerneldc.education.studentNotesService.security.util;
 
+import java.io.IOException;
 import java.security.Key;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -12,8 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.education.studentNotesService.security.bean.User;
 
 import io.jsonwebtoken.Claims;
@@ -35,19 +39,6 @@ public class JwtTokenUtil {
 		LOGGER.debug("key: {}", key.toString());
 	}
 	
-	public String generate(String username, String... permissions) {
-		
-		Map<String, Object> claims = new HashMap<>();
-		claims.put(Claims.SUBJECT, username);
-		claims.put("permissions", permissions);
-		String compactJws = Jwts.builder()
-				  .setClaims(claims)
-				  .signWith(SignatureAlgorithm.HS512, key)
-				  .compact();
-		LOGGER.debug("Generated token {} for username {} and permissions {}", compactJws, username, permissions);
-		return compactJws;
-	}
-
 	public String generate(String username, Collection<? extends GrantedAuthority>authorities) {
 		
 		Map<String, Object> claims = new HashMap<>();
@@ -61,8 +52,7 @@ public class JwtTokenUtil {
 		return compactJws;
 	}
 
-	@SuppressWarnings("unchecked")
-	public User parseToken(String token) {
+	public User parseToken(String token) throws IOException {
 		
 		User user = new User();
 		LOGGER.debug("Attempting to parse token {}", token);
@@ -71,7 +61,15 @@ public class JwtTokenUtil {
             	.parseClaimsJws(token)
             	.getBody();
     	user.setUsername(claims.getSubject());
-    	user.setAuthorities((Collection<GrantedAuthority>)claims.get("authorities"));
+
+    	ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixIn.class);
+		// claims object is json, it needs to be deserialized
+    	JsonNode jsonNodeList = objectMapper.convertValue(claims.get("authorities"), JsonNode.class);
+    	Collection<GrantedAuthority> authorities = objectMapper.readValue(objectMapper.writeValueAsString(jsonNodeList), new TypeReference<Collection<SimpleGrantedAuthority>>(){});
+    	LOGGER.debug("authorities: {}", authorities);
+    	
+    	user.setAuthorities(authorities);
     	user.setToken(token);
 		LOGGER.debug("Token parsed. User is {}", user);
 		return user;
@@ -87,21 +85,23 @@ public class JwtTokenUtil {
         return username;
     }
 
-	public String[] getPermissionsFromToken(String token) {
-        String[] permissions;
+	public Collection<GrantedAuthority> getAuthoritiesFromToken(String token) {
+		Collection<GrantedAuthority> authorities;
         try {
         	Claims claims = Jwts.parser()
                 	.setSigningKey(key)
                 	.parseClaimsJws(token)
                 	.getBody();
-        	@SuppressWarnings("unchecked")
-			List<String> list = (List<String>)claims.get("permissions");
-			permissions = list.toArray(new String[0]);
+        	ObjectMapper objectMapper = new ObjectMapper();
+    		objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixIn.class);
+    		// claims object is json, it needs to be deserialized
+        	JsonNode jsonNodeList = objectMapper.convertValue(claims.get("authorities"), JsonNode.class);
+        	authorities = objectMapper.readValue(objectMapper.writeValueAsString(jsonNodeList), new TypeReference<Collection<SimpleGrantedAuthority>>(){});
         } catch (Exception e) {
         	e.printStackTrace();
-           	permissions = null;
+        	authorities = null;
         }
-        return permissions;
+        return authorities;
     }
 
 }

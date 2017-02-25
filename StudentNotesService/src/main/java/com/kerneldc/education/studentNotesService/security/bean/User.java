@@ -6,10 +6,11 @@ import java.util.Collection;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public class User implements UserDetails {
 
@@ -20,9 +21,7 @@ public class User implements UserDetails {
 	private String password;
 	private String firstName;
 	private String lastName;
-	private String[] permisions = new String[]{};
-	//@JsonIgnore
-	@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.PROPERTY, property="@class")
+	@JsonDeserialize(as = ArrayList.class, contentAs=SimpleGrantedAuthority.class)
 	private Collection<GrantedAuthority> authorities = new ArrayList<>();
 	private String token;
 	
@@ -55,12 +54,6 @@ public class User implements UserDetails {
 	}
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
-	}
-	public String[] getPermisions() {
-		return permisions;
-	}
-	public void setPermisions(String[] permisions) {
-		this.permisions = permisions;
 	}
 	public String getToken() {
 		return token;

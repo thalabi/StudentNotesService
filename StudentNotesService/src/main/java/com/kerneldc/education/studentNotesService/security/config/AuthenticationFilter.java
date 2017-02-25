@@ -8,8 +8,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,14 +25,14 @@ import com.kerneldc.education.studentNotesService.security.service.Authenticatio
  *
  */
 @Component
-public class StatelessAuthenticationFilter extends GenericFilterBean {
+public class AuthenticationFilter extends GenericFilterBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 
     @Autowired
     private AuthenticationService authenticationService;
 
-    public StatelessAuthenticationFilter() {
+    public AuthenticationFilter() {
 		LOGGER.debug("begin ...");
 		LOGGER.debug("end ...");
 	}
@@ -43,7 +43,7 @@ public class StatelessAuthenticationFilter extends GenericFilterBean {
 
 		LOGGER.debug("begin ...");
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
-        Authentication authentication =	authenticationService.getExistingAuthentication(httpRequest);
+        Authentication authentication =	authenticationService.getAuthenticationFromToken(httpRequest);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         chain.doFilter(request, response);

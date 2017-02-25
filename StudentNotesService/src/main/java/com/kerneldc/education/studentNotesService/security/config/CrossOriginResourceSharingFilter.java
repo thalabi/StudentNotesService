@@ -14,7 +14,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
-import com.kerneldc.education.studentNotesService.security.service.AuthenticationService;
+import com.kerneldc.education.studentNotesService.security.constants.Constants;
 
 @Component
 public class CrossOriginResourceSharingFilter extends GenericFilterBean {
@@ -40,7 +40,7 @@ public class CrossOriginResourceSharingFilter extends GenericFilterBean {
         response.setHeader("Access-Control-Allow-Origin", origin);
         response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
         response.setHeader("Access-Control-Allow-Headers", "Content-Type, Origin, Accept, " +
-                "Access-Control-Allow-Headers, Access-Control-Request-Headers, " + AuthenticationService.AUTH_HEADER_NAME);
+                "Access-Control-Allow-Headers, Access-Control-Request-Headers, " + Constants.AUTH_HEADER_NAME);
         //response.setHeader("Access-Control-Max-Age", "3600");
     }
 

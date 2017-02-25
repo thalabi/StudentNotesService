@@ -82,11 +82,6 @@ public class SecurityResource {
     	LOGGER.debug("begin ...");
 		ObjectMapper objectMapper = new ObjectMapper();
     	User user = objectMapper.readValue(usernameAndPassword, User.class);
-//    	user.setId(7l);
-//    	user.setFirstName("first name");
-//    	user.setLastName("last name");
-//    	user.setToken(jwtTokenUtil.generate(user.getUsername()));
-    	//user.setToken(tokenAuthenticationService.createJwtTokenforAuthentication(user.getUsername()));
     	user = authenticationService.authenticate(user);
     	LOGGER.debug("end ...");
     	return user;

@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.kerneldc.education.studentNotesService.security.config.CrossOriginResourceSharingFilter;
 import com.kerneldc.education.studentNotesService.security.config.RestAuthenticationEntryPoint;
-import com.kerneldc.education.studentNotesService.security.config.StatelessAuthenticationFilter;
+import com.kerneldc.education.studentNotesService.security.config.AuthenticationFilter;
 import com.kerneldc.education.studentNotesService.security.service.UserLoginService;
 
 @Configuration
@@ -24,7 +24,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 	@Autowired
-	private StatelessAuthenticationFilter statelessAuthenticationFilter;
+	private AuthenticationFilter authenticationFilter;
     @Autowired
     private UserLoginService userLoginService;
     @Autowired
@@ -47,7 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
             .and()
             .addFilterBefore(crossOriginResourceSharingFilter, ChannelProcessingFilter.class)
-            .addFilterBefore(statelessAuthenticationFilter,
+            .addFilterBefore(authenticationFilter,
             	UsernamePasswordAuthenticationFilter.class)
             ;
     }

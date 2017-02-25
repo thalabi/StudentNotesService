@@ -1,5 +1,6 @@
 package com.kerneldc.education.studentNotesService.security.service;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,8 +13,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.kerneldc.education.studentNotesService.security.bean.User;
 import com.kerneldc.education.studentNotesService.security.bean.UserAuthentication;
+import com.kerneldc.education.studentNotesService.security.constants.Constants;
 import com.kerneldc.education.studentNotesService.security.util.JwtTokenUtil;
 
 import io.jsonwebtoken.JwtException;
@@ -22,7 +25,6 @@ import io.jsonwebtoken.JwtException;
 public class AuthenticationService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
-	public static final String AUTH_HEADER_NAME = "X-AUTH-TOKEN";
 	
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
@@ -40,17 +42,18 @@ public class AuthenticationService {
 	 * Extracts the 
 	 * @param request
 	 * @return
+	 * @throws IOException 
 	 */
-    public Authentication getExistingAuthentication(final HttpServletRequest request) {
+    public Authentication getAuthenticationFromToken(final HttpServletRequest request) throws IOException {
 		LOGGER.debug("begin ...");
-        String jwtToken = request.getHeader(AUTH_HEADER_NAME);
+        String jwtToken = request.getHeader(Constants.AUTH_HEADER_NAME);
         LOGGER.debug("jwtToken: {}", jwtToken);
         if (jwtToken != null) {
             try {
                 User user = jwtTokenUtil.parseToken(jwtToken);
                 LOGGER.debug("user == null: {}", user == null);
                 return new UserAuthentication(user);
-            } catch (UsernameNotFoundException | JwtException e) {
+            } catch (UsernameNotFoundException | JwtException | JsonProcessingException e) {
             	LOGGER.info("Invalid token");
                 return null;
             }
@@ -67,7 +70,6 @@ public class AuthenticationService {
     	newUser.setPassword(user.getPassword());
     	newUser.setFirstName(user.getUsername() + " first name");
     	newUser.setLastName(user.getUsername() + " last name");
-//    	newUser.setPermisions(new String[]{"permission1","permission2","permission3"});
     	newUser.setAuthorities(Arrays.asList(new SimpleGrantedAuthority("authority1"), new SimpleGrantedAuthority("authority2"), new SimpleGrantedAuthority("authority3")));
     	newUser.setToken(jwtTokenUtil.generate(newUser.getUsername(), newUser.getAuthorities()));
     	LOGGER.debug("end ...");
