@@ -1,6 +1,7 @@
 package com.kerneldc.education.studentNotesService.security.service;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,6 +31,11 @@ public class AuthenticationService {
 	
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
+	
+	@Value("${webapp.username}")
+	private String username;
+	@Value("${webapp.password}")
+	private String password;
 
 	public AuthenticationService() {
 		LOGGER.debug("begin ...");
@@ -62,8 +70,18 @@ public class AuthenticationService {
         return null;
     }
 
-    public User authenticate(User user) {
+    public User authenticate(User user) throws UsernameNotFoundException, BadCredentialsException {
     	LOGGER.debug("begin ...");
+    	LOGGER.debug("username: {}, password: {}", username, password);
+    	
+    	if (!user.getUsername().equals(username)) {
+    		LOGGER.warn("Username '{}' not found", user.getUsername());
+    		throw new UsernameNotFoundException("");
+    	}
+    	if (!user.getPassword().equals(password)) {
+    		LOGGER.warn("Password '{}' not valid", user.getPassword());
+    		throw new BadCredentialsException("");
+    	}
     	User newUser = new User();
     	newUser.setId(7l);
     	newUser.setUsername(user.getUsername());

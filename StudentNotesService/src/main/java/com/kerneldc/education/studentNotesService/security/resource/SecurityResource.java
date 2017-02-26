@@ -8,10 +8,13 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -43,25 +46,6 @@ public class SecurityResource {
 
     // curl -i -H "Content-Type: application/json" -X POST -d '{"username":"thalabi","password":"xxxxxxxxxxxxxxxx"}' http://localhost:8080/StudentNotesService/Security/authenticate
 	   
-//    @POST
-//	@Path("/authenticate")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//	@Produces(MediaType.APPLICATION_JSON)
-//    public User authenticate(
-//    	String usernameAndPassword) throws JsonParseException, JsonMappingException, IOException {
-//
-//    	// TODO send 401 unauthoried if authentication fails
-//    	LOGGER.debug("begin ...");
-//		ObjectMapper objectMapper = new ObjectMapper();
-//    	User user = objectMapper.readValue(usernameAndPassword, User.class);
-//    	user.setId(7l);
-//    	user.setFirstName("first name");
-//    	user.setLastName("last name");
-//    	user.setToken("fake-jwt-token");
-//    	LOGGER.debug("end ...");
-//    	return user;
-//    }
-
 	/**
 	 * Authenticates the supplied username and password and return a user object with the
 	 * generated jwt token
@@ -75,15 +59,22 @@ public class SecurityResource {
 	@Path("/authenticate")
     @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-    public User authenticate(
-    	String usernameAndPassword) throws JsonParseException, JsonMappingException, IOException {
+    public Response authenticate(
+    	String usernameAndPassword) {
 
-    	// TODO send 401 unauthoried if authentication fails
     	LOGGER.debug("begin ...");
 		ObjectMapper objectMapper = new ObjectMapper();
-    	User user = objectMapper.readValue(usernameAndPassword, User.class);
-    	user = authenticationService.authenticate(user);
+    	User user;
+		try {
+			user = objectMapper.readValue(usernameAndPassword, User.class);
+	    	user = authenticationService.authenticate(user);
+		} catch (IOException | UsernameNotFoundException | BadCredentialsException e) {
+			LOGGER.warn("Authentication failed for credentials found in request: {}", usernameAndPassword);
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
     	LOGGER.debug("end ...");
-    	return user;
+
+    	return Response.ok(user).build();
     }
+	
 }

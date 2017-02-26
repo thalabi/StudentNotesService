@@ -18,6 +18,7 @@ import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -54,20 +55,27 @@ public class StudentNotesApplicationTests {
 	@Autowired
 	private StudentRepository studentRepository;
 
+	@Value("${webapp.username}")
+	private String username;
+	@Value("${webapp.password}")
+	private String password;
+
 	private HttpHeaders httpHeaders;
 	private User user;
 	
 	@PostConstruct
 	public void setUp() throws JsonProcessingException {
-		String username = "thalabi";
-		String password = "xxxxxxxxxxxxxxxx";
 		String usernameAndPassword = "{\"username\":\""+username+"\",\"password\":\""+password+"\"}";
 		
 		httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<String> httpEntity = new HttpEntity<String>(usernameAndPassword,httpHeaders);
 
-		JsonNode newJsonUser = testRestTemplate.postForObject(BASE_URI+"/Security/authenticate", httpEntity, JsonNode.class);
+		//JsonNode newJsonUser = testRestTemplate.postForObject(BASE_URI+"/Security/authenticate", httpEntity, JsonNode.class);
+		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/Security/authenticate", HttpMethod.POST, httpEntity, JsonNode.class);
+		Assert.assertTrue(response.getStatusCode() == HttpStatus.OK);
+		
+		JsonNode newJsonUser = response.getBody();
 		System.out.println(newJsonUser);
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixIn.class);

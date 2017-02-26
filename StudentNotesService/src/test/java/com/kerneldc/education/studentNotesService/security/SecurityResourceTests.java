@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -43,7 +44,12 @@ public class SecurityResourceTests {
 	
 	@Autowired
 	private JwtTokenUtil jwtTokenUtil;
-	
+
+	@Value("${webapp.username}")
+	private String username;
+	@Value("${webapp.password}")
+	private String password;
+
 	@Test
     public void testHelloWithNoCredentials() {
         ResponseEntity<String> response = testRestTemplate.getForEntity(BASE_URI, String.class);
@@ -53,16 +59,18 @@ public class SecurityResourceTests {
 	@Test
     public void testHelloWithCredentials() throws JsonProcessingException {
 
-		String username = "thalabi";
-		String password = "xxxxxxxxxxxxxxxx";
 		String usernameAndPassword = "{\"username\":\""+username+"\",\"password\":\""+password+"\"}";
 		
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<String> httpEntity = new HttpEntity<String>(usernameAndPassword,httpHeaders);
 
-		JsonNode newJsonUser = testRestTemplate.postForObject(BASE_URI+"/authenticate", httpEntity, JsonNode.class);
-		System.out.println(newJsonUser);
+		//JsonNode newJsonUser = testRestTemplate.postForObject(BASE_URI+"/authenticate", httpEntity, JsonNode.class);
+		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/authenticate", HttpMethod.POST, httpEntity, JsonNode.class);
+		Assert.assertTrue(response.getStatusCode() == HttpStatus.OK);
+		
+		JsonNode newJsonUser = response.getBody();
+		LOGGER.debug("User returned from /authenticate endpoint is: {}", newJsonUser);
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixIn.class);
 		User user = objectMapper.treeToValue(newJsonUser, User.class);
@@ -72,23 +80,24 @@ public class SecurityResourceTests {
 		httpHeaders.set(Constants.AUTH_HEADER_NAME, user.getToken());
 		httpHeaders.forEach((k,v)->{LOGGER.debug("header: {}, content: {}", k, v);});
 		httpEntity = new HttpEntity<String>(httpHeaders);
-        ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI, HttpMethod.GET, httpEntity, String.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("Hello", response.getBody());
+        ResponseEntity<String> helloResponse = testRestTemplate.exchange(BASE_URI, HttpMethod.GET, httpEntity, String.class);
+        assertEquals(HttpStatus.OK, helloResponse.getStatusCode());
+        assertEquals("Hello", helloResponse.getBody());
     }
 
 	@Test
 	public void testAuthenticate() throws JsonProcessingException {
 		
-		String username = "thalabi";
-		String password = "xxxxxxxxxxxxxxxx";
 		String usernameAndPassword = "{\"username\":\""+username+"\",\"password\":\""+password+"\"}";
 		
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<String> httpEntity = new HttpEntity<String>(usernameAndPassword,httpHeaders);
 
-		JsonNode newJsonUser = testRestTemplate.postForObject(BASE_URI+"/authenticate", httpEntity, JsonNode.class);
+		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/authenticate", HttpMethod.POST, httpEntity, JsonNode.class);
+		Assert.assertTrue(response.getStatusCode() == HttpStatus.OK);
+		
+		JsonNode newJsonUser = response.getBody();
 		System.out.println(newJsonUser);
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixIn.class);
@@ -106,31 +115,29 @@ public class SecurityResourceTests {
 			);
     }
 
-//	@Test
-//	public void testAuthenticateWithValidJwt() throws JsonProcessingException {
-//		
-//		String username = "thalabi";
-//		String password = "xxxxxxxxxxxxxxxx";
-//		String usernameAndPassword = "{\"username\":\""+username+"\",\"password\":\""+password+"\"}";
-//		
-//		HttpHeaders httpHeaders = new HttpHeaders();
-//		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-//		HttpEntity<String> httpEntity = new HttpEntity<String>(usernameAndPassword,httpHeaders);
-//
-//		JsonNode newJsonUser = testRestTemplate.postForObject(BASE_URI+"/authenticateWithValidJwt", httpEntity, JsonNode.class);
-//		ObjectMapper objectMapper = new ObjectMapper();
-//		User newUser = objectMapper.treeToValue(newJsonUser, User.class);
-//		Assert.assertTrue(
-//			newUser.getId().equals(7l) &&
-//			newUser.getUsername().equals(username) &&
-//			newUser.getPassword().equals(password) &&
-//			newUser.getFirstName().equals("first name") &&
-//			newUser.getLastName().equals("last name") &&
-//			newUser.getToken().length() > 0
-//			);
-//		Assert.assertTrue(
-//			jwtTokenUtil.getUsernameFromToken(newUser.getToken()).equals(username)
-//			);
-//    }
+	@Test
+	public void testAuthenticateWithWrongUsername() throws JsonProcessingException {
+		
+		String usernameAndPassword = "{\"username\":\"WRONGUSERNAME\",\"password\":\""+password+"\"}";
+		
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<String>(usernameAndPassword,httpHeaders);
 
+		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/authenticate", HttpMethod.POST, httpEntity, JsonNode.class);
+		Assert.assertTrue(response.getStatusCode() == HttpStatus.UNAUTHORIZED);
+    }
+
+	@Test
+	public void testAuthenticateWithWrongPassword() throws JsonProcessingException {
+		
+		String usernameAndPassword = "{\"username\":\""+username+"\",\"password\":\"WRONGPASSWORD\"}";
+		
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> httpEntity = new HttpEntity<String>(usernameAndPassword,httpHeaders);
+
+		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/authenticate", HttpMethod.POST, httpEntity, JsonNode.class);
+		Assert.assertTrue(response.getStatusCode() == HttpStatus.UNAUTHORIZED);
+    }
 }
