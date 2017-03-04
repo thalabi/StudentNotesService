@@ -9,6 +9,8 @@
   <include file="liquibase/changelog-note.xml"/> 
   <include file="liquibase/changelog-student-note.xml"/> 
   
+  <include file="liquibase/changelog-student-data-convert.xml"/>
+  
 <!--   <include file="liquibase/data/changelog-student-data.xml"/> -->
 <!--   <include file="liquibase/data/changelog-note-data.xml"/> -->
 <!--   <include file="liquibase/data/changelog-student-note-data.xml"/> -->
