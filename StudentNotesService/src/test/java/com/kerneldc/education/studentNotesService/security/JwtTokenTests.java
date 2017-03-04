@@ -17,8 +17,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.kerneldc.education.studentNotesService.StudentNotesApplication;
 import com.kerneldc.education.studentNotesService.security.util.JwtTokenUtil;
 
-
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = StudentNotesApplication.class)
 public class JwtTokenTests {
