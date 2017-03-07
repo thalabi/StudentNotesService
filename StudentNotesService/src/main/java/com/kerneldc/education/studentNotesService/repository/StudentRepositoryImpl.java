@@ -1,5 +1,6 @@
 package com.kerneldc.education.studentNotesService.repository;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -60,11 +61,11 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
     	CriteriaBuilder builder = entityManager.getCriteriaBuilder();
     	CriteriaQuery<Student> criteriaQuery = builder.createQuery(Student.class);
     	Root<Student> student = criteriaQuery.from(Student.class);
-    	Order lastNameOrder = builder.asc(student.get(Student_.lastName));
     	Order firstNameOrder = builder.asc(student.get(Student_.firstName));
+    	Order lastNameOrder = builder.asc(student.get(Student_.lastName));
     	//Order timestampOrder =  builder.asc(student.join(Student_.noteList, JoinType.LEFT).get(Note_.timestamp));
     	//Order idOrder =  builder.asc(student.join(Student_.noteSet).get(Note_.Id));
-    	criteriaQuery.select(student).distinct(true).orderBy(lastNameOrder, firstNameOrder/*, timestampOrder*/);
+    	criteriaQuery.select(student).distinct(true).orderBy(firstNameOrder, lastNameOrder/*, timestampOrder*/);
     	
     	TypedQuery<Student> typedQuery = entityManager.createQuery(criteriaQuery);
 //    	typedQuery.setHint("javax.persistence.fetchgraph", entityManager.getEntityGraph("Student.noteList"));
@@ -149,7 +150,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 			"						limit :limit \r\n" + 
 			"						)\r\n" + 
 			"				)\r\n" + 
-			"order by last_name, first_name, timestamp"
+			"order by first_name, last_name, timestamp"
 		);
 		query.addRoot("s", Student.class)
 	         .addProperty("id", "student_id")
@@ -166,6 +167,47 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 	         .addProperty("element.version", "note_version");
         query.setParameter("limit", limit);
         
+ 		@SuppressWarnings("unchecked")
+		List<Object[]> result = query.list();
+ 		// Use LinkedHashSet so as to preserve the order
+ 		LinkedHashSet<Student> students = result.stream().map(o->(Student)o[0]).collect(Collectors.toCollection(LinkedHashSet::new));
+ 		return students;
+	}
+
+	@Override
+	@Transactional
+	public Set<Student> getStudentsByTimestampRange(Timestamp fromTimestamp, Timestamp toTimestamp) {
+		Session session = entityManager.unwrap(Session.class);
+		SQLQuery query = session.createSQLQuery(
+			"			select \r\n" + 
+			"				s.id student_id, \r\n" + 
+			"				s.first_name, \r\n" + 
+			"				s.last_name, \r\n" + 
+			"				s.grade, \r\n" + 
+			"				s.version student_version, \r\n" + 
+			"				n.id note_id, \r\n" + 
+			"				n.timestamp, \r\n" + 
+			"				n.text, \r\n" + 
+			"				n.version note_version \r\n" + 
+			"			from student s join student_note sn on s.id = sn.student_id \r\n" + 
+			"						   join note n on sn.note_id = n.id \r\n" + 
+			"                    where n.timestamp between :fromTimestamp and :toTimestamp"
+		);
+		query.addRoot("s", Student.class)
+	        .addProperty("id", "student_id")
+	        .addProperty("firstName", "first_name")
+	        .addProperty("lastName", "last_name")
+	        .addProperty("grade", "grade")
+	        .addProperty("version", "student_version");
+		query.addFetch("n", "s", "noteList")
+	        .addProperty("key", "student_id")
+	        .addProperty("element", "note_id")
+	        .addProperty("element.id", "note_id")
+	        .addProperty("element.timestamp", "timestamp")
+	        .addProperty("element.text", "text")
+	        .addProperty("element.version", "note_version");
+		query.setParameter("fromTimestamp", fromTimestamp);
+		query.setParameter("toTimestamp", toTimestamp);
  		@SuppressWarnings("unchecked")
 		List<Object[]> result = query.list();
  		// Use LinkedHashSet so as to preserve the order

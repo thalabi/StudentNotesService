@@ -1,5 +1,6 @@
 package com.kerneldc.education.studentNotesService.repository;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 
@@ -23,4 +24,5 @@ public interface StudentRepositoryCustom {
 	Student updateStudent(Student student);
 	
 	Set<Student> getLatestActiveStudents(int limit);
+	Set<Student> getStudentsByTimestampRange(Timestamp fromTimestamp, Timestamp toTimestamp);
 }
