@@ -226,7 +226,11 @@ public class StudentNotesResource {
 		LocalDate toDate = LocalDate.of(timestampRange.getToYear(), timestampRange.getToMonth(), timestampRange.getToDay());
 		Students students = new Students();
 		students.setStudentList(studentRepository.getStudentsByTimestampRange(Timestamp.valueOf(fromDate.atStartOfDay()), Timestamp.valueOf(toDate.atStartOfDay())));
-		byte[] pdfByteArray = studentNotesReportService.generateReport(students);
+		byte[] pdfByteArray = null;
+		if (students.getStudentList().size() != 0) {
+			pdfByteArray = studentNotesReportService.generateReport(students);
+		}
+		// TODO print an empty pdf when there are no students returned
 		LOGGER.debug("end ...");
 		return Response.ok(pdfByteArray).build();
 	}

@@ -181,19 +181,24 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 	public Set<Student> getStudentsByTimestampRange(Timestamp fromTimestamp, Timestamp toTimestamp) {
 		Session session = entityManager.unwrap(Session.class);
 		SQLQuery query = session.createSQLQuery(
-			"			select \r\n" + 
-			"				s.id student_id, \r\n" + 
-			"				s.first_name, \r\n" + 
-			"				s.last_name, \r\n" + 
-			"				s.grade, \r\n" + 
-			"				s.version student_version, \r\n" + 
-			"				n.id note_id, \r\n" + 
-			"				n.timestamp, \r\n" + 
-			"				n.text, \r\n" + 
-			"				n.version note_version \r\n" + 
-			"			from student s join student_note sn on s.id = sn.student_id \r\n" + 
-			"						   join note n on sn.note_id = n.id \r\n" + 
-			"          where n.timestamp between :fromTimestamp and :toTimestamp"
+			"select \n" + 
+			"	s.id student_id, \n" + 
+			"	s.first_name, \n" + 
+			"	s.last_name, \n" + 
+			"	s.grade, \n" + 
+			"	s.version student_version, \n" + 
+			"	n.id note_id, \n" + 
+			"	n.timestamp, \n" + 
+			"	n.text, \n" + 
+			"	n.version note_version \n" + 
+			"from student s join student_note sn on s.id = sn.student_id \n" + 
+			"   join note n on sn.note_id = n.id \n" + 
+			"where s.id in      ( \n" + 
+			"					select sn.student_id\n" + 
+			"                     from student_note sn join note n on sn.note_id = n.id  \n" + 
+			"                    where n.timestamp between :fromTimestamp and :toTimestamp\n" +
+			"					) \n" + 		
+			"order by first_name, last_name, timestamp\n" 
 		);
 		query.addRoot("s", Student.class)
 	        .addProperty("id", "student_id")
