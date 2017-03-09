@@ -2,6 +2,7 @@ package com.kerneldc.education.studentNotesService.bean;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -24,4 +25,10 @@ public class Students {
 	public void setStudentList(List<Student> studentList) {
 		this.studentList = studentList;
 	}
+
+	// utility
+	public void setStudentList(Set<Student> studentList) {
+		this.studentList = new ArrayList<>(studentList);
+	}
+	
 }

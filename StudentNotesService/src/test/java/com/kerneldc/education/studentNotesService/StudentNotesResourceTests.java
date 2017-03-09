@@ -325,14 +325,24 @@ public class StudentNotesResourceTests {
 		
 		Student[] students = objectMapper.treeToValue(response.getBody(), Student[].class);
 		
+		for (Student student: students) LOGGER.debug("student: {}", student); 
 		assertEquals(2, students.length);
 		
-		for (Student student: students) LOGGER.debug("student: {}", student); 
 //		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/getAllNotes", HttpMethod.GET, httpEntity, String.class);
 //        String expected = "[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":0,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3\"},{\"version\":0,\"id\":4,\"timestamp\":1481403630842,\"text\":\"note 4\"},{\"version\":0,\"id\":5,\"timestamp\":1481403630843,\"text\":\"note 5\"}]";
 //        assertEquals(HttpStatus.OK, response.getStatusCode());
 //        assertEquals(expected, response.getBody());
 	}
+
+	@Test
+    public void t15testPdfAll() {
+		//TODO
+	}
+	@Test
+    public void t16testPdfStudentsByTimestampRange() {
+		//TODO
+	}
+
 	
 	/**
 	 * Run as last test as it causes some aop error

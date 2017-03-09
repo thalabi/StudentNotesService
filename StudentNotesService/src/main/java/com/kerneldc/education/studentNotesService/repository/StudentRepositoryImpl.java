@@ -1,6 +1,7 @@
 package com.kerneldc.education.studentNotesService.repository;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -174,6 +175,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
  		return students;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
 	public Set<Student> getStudentsByTimestampRange(Timestamp fromTimestamp, Timestamp toTimestamp) {
@@ -208,10 +210,10 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 	        .addProperty("element.version", "note_version");
 		query.setParameter("fromTimestamp", fromTimestamp);
 		query.setParameter("toTimestamp", toTimestamp);
- 		@SuppressWarnings("unchecked")
+ 		
 		List<Object[]> result = query.list();
  		// Use LinkedHashSet so as to preserve the order
- 		LinkedHashSet<Student> students = result.stream().map(o->(Student)o[0]).collect(Collectors.toCollection(LinkedHashSet::new));
+ 		LinkedHashSet<Student> students = result.stream().map(o->(Student)o[0]).peek(s->LOGGER.debug("s: {}", s)).collect(Collectors.toCollection(LinkedHashSet::new));
  		return students;
 	}
 

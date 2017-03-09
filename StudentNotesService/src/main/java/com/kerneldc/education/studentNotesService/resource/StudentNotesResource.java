@@ -215,4 +215,19 @@ public class StudentNotesResource {
 		return studentRepository.getStudentsByTimestampRange(Timestamp.valueOf(fromDate.atStartOfDay()), Timestamp.valueOf(toDate.atStartOfDay()));
 	}
 
+	@POST
+	@Path("/pdfStudentsByTimestampRange")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Produces("application/pdf")
+	public Response pdfStudentsByTimestampRange(TimestampRange timestampRange) throws JAXBException, ParserConfigurationException, SAXException, IOException, TransformerException {
+
+		LOGGER.debug("begin ...");
+		LocalDate fromDate = LocalDate.of(timestampRange.getFromYear(), timestampRange.getFromMonth(), timestampRange.getFromDay());
+		LocalDate toDate = LocalDate.of(timestampRange.getToYear(), timestampRange.getToMonth(), timestampRange.getToDay());
+		Students students = new Students();
+		students.setStudentList(studentRepository.getStudentsByTimestampRange(Timestamp.valueOf(fromDate.atStartOfDay()), Timestamp.valueOf(toDate.atStartOfDay())));
+		byte[] pdfByteArray = studentNotesReportService.generateReport(students);
+		LOGGER.debug("end ...");
+		return Response.ok(pdfByteArray).build();
+	}
 }
