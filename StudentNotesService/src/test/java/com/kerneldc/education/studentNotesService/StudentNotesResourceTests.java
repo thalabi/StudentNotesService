@@ -34,6 +34,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kerneldc.education.studentNotesService.bean.TimestampRange;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
@@ -44,7 +45,7 @@ import com.kerneldc.education.studentNotesService.security.util.SimpleGrantedAut
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = StudentNotesApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class StudentNotesApplicationTests {
+public class StudentNotesResourceTests {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 	private static final String BASE_URI = "/StudentNotesService";
@@ -300,6 +301,39 @@ public class StudentNotesApplicationTests {
 				newVersion.equals(0l));
 	}
 
+	@Test
+    public void t13testGetLatestActiveStudents() {
+		//TODO
+	}
+	
+	@Test
+    public void t04testGetStudentsByTimestampRange() throws JsonProcessingException {
+		TimestampRange timestampRange = new TimestampRange();
+		timestampRange.setFromYear(2016);
+		timestampRange.setFromMonth(1);
+		timestampRange.setFromDay(1);
+		timestampRange.setToYear(2017);
+		timestampRange.setToMonth(12);
+		timestampRange.setToDay(31);
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode jsonTimestampRange = objectMapper.valueToTree(timestampRange);
+
+		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonTimestampRange,httpHeaders);
+		
+		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/getStudentsByTimestampRange", HttpMethod.POST, httpEntity, JsonNode.class);
+		
+		Student[] students = objectMapper.treeToValue(response.getBody(), Student[].class);
+		
+		assertEquals(2, students.length);
+		
+		for (Student student: students) LOGGER.debug("student: {}", student); 
+//		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/getAllNotes", HttpMethod.GET, httpEntity, String.class);
+//        String expected = "[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":0,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3\"},{\"version\":0,\"id\":4,\"timestamp\":1481403630842,\"text\":\"note 4\"},{\"version\":0,\"id\":5,\"timestamp\":1481403630843,\"text\":\"note 5\"}]";
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        assertEquals(expected, response.getBody());
+	}
+	
 	/**
 	 * Run as last test as it causes some aop error
 	 */

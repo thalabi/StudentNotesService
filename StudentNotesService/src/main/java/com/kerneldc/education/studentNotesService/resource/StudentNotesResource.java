@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -31,6 +33,7 @@ import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
 import com.kerneldc.education.studentNotesService.bean.Students;
+import com.kerneldc.education.studentNotesService.bean.TimestampRange;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.repository.NoteRepository;
@@ -195,6 +198,21 @@ public class StudentNotesResource {
 		LOGGER.debug("begin ...");
 		LOGGER.debug("end ...");
 		return studentRepository.getLatestActiveStudents(limit);
+	}
+
+	// curl -H -i -H "Content-Type: application/json" -X POST -d '{"fromYear": 2017, "fromMonth": 1, "fromDay": 31, "toYear": 2017, "toMonth": 2, "toDay": 28}' -H "X-AUTH-TOKEN: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJKb2huRG9lIiwiYXV0aG9yaXRpZXMiOlt7ImF1dGhvcml0eSI6ImF1dGhvcml0eTEifSx7ImF1dGhvcml0eSI6ImF1dGhvcml0eTIifSx7ImF1dGhvcml0eSI6ImF1dGhvcml0eTMifV19.8wrCM-3YdqNU_zgzTXWNLkOalRdHTOkHfCoaGbmlaxYhQ0RjA7yntid_ayRbQb_t65el0G7eAiGhhBMqLSqXeQ" http://localhost:8080/StudentNotesService/getStudentsByTimestampRange
+	@POST
+	@Path("/getStudentsByTimestampRange")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Set<Student> getStudentsByTimestampRange(TimestampRange timestampRange) {
+		
+		LOGGER.debug("begin ...");
+		LocalDate fromDate = LocalDate.of(timestampRange.getFromYear(), timestampRange.getFromMonth(), timestampRange.getFromDay());
+		LocalDate toDate = LocalDate.of(timestampRange.getToYear(), timestampRange.getToMonth(), timestampRange.getToDay());
+		LOGGER.debug("timestampRange: {}", timestampRange);
+		LOGGER.debug("end ...");
+		return studentRepository.getStudentsByTimestampRange(Timestamp.valueOf(fromDate.atStartOfDay()), Timestamp.valueOf(toDate.atStartOfDay()));
 	}
 
 }

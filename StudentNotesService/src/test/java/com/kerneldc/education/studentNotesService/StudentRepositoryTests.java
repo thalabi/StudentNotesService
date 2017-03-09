@@ -2,6 +2,7 @@ package com.kerneldc.education.studentNotesService;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -203,5 +204,26 @@ public class StudentRepositoryTests implements InitializingBean {
 		System.out.println(students.size());
 		System.out.println(new ArrayList<Student>(students).get(0).getNoteList().size());
 		Assert.assertTrue(students.size() == 1);
+	}
+
+	// TODO test should check that each student returned has a note with a timestamp in the range
+	// also should check the remaining students ie not selected, none have a timestamp in the range
+	// Add to the above, need to add more notes with timestamps that are apart so as to run the test
+	// right now the database has all timestamps almost the same 
+	@Test
+	public void testGetStudentsByTimestampRange() {
+		Calendar c1 = Calendar.getInstance();
+		c1.set(2016, 0, 01, 0, 0); // jan 1, 2016
+		Calendar c2 = Calendar.getInstance();
+		c2.set(2017, 11, 31, 0, 0); // dec 31, 2017
+		System.out.println(c1.getTime());
+		System.out.println(c2.getTime());
+		Timestamp fromTimestamp = new Timestamp(c1.getTimeInMillis());
+		Timestamp toTimestamp = new Timestamp(c2.getTimeInMillis());
+		Set<Student> students = studentRepository.getStudentsByTimestampRange(fromTimestamp, toTimestamp);
+		System.out.println(students.size());
+		System.out.println(students);
+		//System.out.println(new ArrayList<Student>(students).get(0).getNoteList().size());
+		//Assert.assertTrue(students.size() == 1);
 	}
 }
