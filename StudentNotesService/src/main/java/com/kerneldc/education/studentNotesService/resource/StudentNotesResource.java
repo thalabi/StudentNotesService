@@ -34,6 +34,7 @@ import org.xml.sax.SAXException;
 
 import com.kerneldc.education.studentNotesService.bean.Students;
 import com.kerneldc.education.studentNotesService.bean.TimestampRange;
+import com.kerneldc.education.studentNotesService.bean.TimestampRange2;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.repository.NoteRepository;
@@ -213,6 +214,18 @@ public class StudentNotesResource {
 		LOGGER.debug("timestampRange: {}", timestampRange);
 		LOGGER.debug("end ...");
 		return studentRepository.getStudentsByTimestampRange(Timestamp.valueOf(fromDate.atStartOfDay()), Timestamp.valueOf(toDate.atStartOfDay()));
+	}
+
+	@POST
+	@Path("/getStudentsByTimestampRange2")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Set<Student> getStudentsByTimestampRange2(TimestampRange2 timestampRange2) {
+		
+		LOGGER.debug("begin ...");
+		LOGGER.debug("timestampRange2: {}", timestampRange2);
+		LOGGER.debug("end ...");
+		return studentRepository.getStudentsByTimestampRange(timestampRange2.getFromTimestamp(), timestampRange2.getToTimestamp());
 	}
 
 	@POST

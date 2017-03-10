@@ -1,7 +1,6 @@
 package com.kerneldc.education.studentNotesService.repository;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
