@@ -217,7 +217,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
  		
 		List<Object[]> result = query.list();
  		// Use LinkedHashSet so as to preserve the order
- 		LinkedHashSet<Student> students = result.stream().map(o->(Student)o[0]).peek(s->LOGGER.debug("s: {}", s)).collect(Collectors.toCollection(LinkedHashSet::new));
+ 		LinkedHashSet<Student> students = result.stream().map(o->(Student)o[0]).collect(Collectors.toCollection(LinkedHashSet::new));
  		return students;
 	}
 

@@ -1,8 +1,11 @@
 package com.kerneldc.education.studentNotesService;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -13,12 +16,15 @@ import javax.transaction.Transactional;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.repository.JpaContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.kerneldc.education.studentNotesService.bean.Grades;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
@@ -28,6 +34,8 @@ import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 @Transactional
 public class StudentRepositoryTests implements InitializingBean {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
+	
 	@Autowired
 	private StudentRepository studentRepository;
 	
@@ -47,7 +55,7 @@ public class StudentRepositoryTests implements InitializingBean {
 		Student student = studentRepository.findOne(1l);
 		student.setFirstName(student.getFirstName()+" v1");
 		student.setLastName(student.getLastName()+" v1");
-		student.setGrade("5");
+		student.setGrade(Grades.FIVE.getValue());
 		Student updatedStudent = studentRepository.save(student);
 		entityManager.flush();
 		Assert.assertTrue(
@@ -126,7 +134,7 @@ public class StudentRepositoryTests implements InitializingBean {
 		Student student = new Student();
 		student.setFirstName("first name - testSaveNewStudentWithNoNotes");
 		student.setLastName("last name - testSaveNewStudentWithNoNotes");
-		student.setGrade("Other");
+		student.setGrade(Grades.OTHER.getValue());
 		Student newStudent = studentRepository.save(student);
 		entityManager.flush();
 		List<Student> allStudents = studentRepository.getAllStudents();
@@ -144,7 +152,7 @@ public class StudentRepositoryTests implements InitializingBean {
 		Student student = new Student();
 		student.setFirstName("first name - testSaveNewStudentWithOneNote");
 		student.setLastName("last name - testSaveNewStudentWithOneNote");
-		student.setGrade("3");
+		student.setGrade(Grades.THREE.getValue());
 		Note note = new Note();
 		note.setTimestamp(new Timestamp(System.currentTimeMillis()));
 		note.setText("note - testSaveNewStudentWithOneNote");
@@ -171,7 +179,7 @@ public class StudentRepositoryTests implements InitializingBean {
 		Student student = new Student();
 		student.setFirstName("first name - testGetStudentById");
 		student.setLastName("last name - testGetStudentById");
-		student.setGrade("2");
+		student.setGrade(Grades.TWO.getValue());
 		Note note1 = new Note();
 		note1.setTimestamp(new Timestamp(System.currentTimeMillis()));
 		note1.setText("note 1 - testGetStudentById");
@@ -206,24 +214,102 @@ public class StudentRepositoryTests implements InitializingBean {
 		Assert.assertTrue(students.size() == 1);
 	}
 
-	// TODO test should check that each student returned has a note with a timestamp in the range
+	// TODO (test should check that each student returned has a note with a timestamp in the range, DONE)
 	// also should check the remaining students ie not selected, none have a timestamp in the range
 	// Add to the above, need to add more notes with timestamps that are apart so as to run the test
 	// right now the database has all timestamps almost the same 
 	@Test
 	public void testGetStudentsByTimestampRange() {
-		Calendar c1 = Calendar.getInstance();
-		c1.set(2016, 0, 01, 0, 0); // jan 1, 2016
-		Calendar c2 = Calendar.getInstance();
-		c2.set(2017, 11, 31, 0, 0); // dec 31, 2017
-		System.out.println(c1.getTime());
-		System.out.println(c2.getTime());
-		Timestamp fromTimestamp = new Timestamp(c1.getTimeInMillis());
-		Timestamp toTimestamp = new Timestamp(c2.getTimeInMillis());
+		
+		Student s1 = new Student();
+		s1.setFirstName("testGetStudentsByTimestampRange s1 first name");
+		s1.setLastName("testGetStudentsByTimestampRange s1 last name");
+		s1.setGrade(Grades.SEVEN.getValue());
+		Note s1n1 = new Note();
+		s1n1.setText("s1n1 note 1 text");
+		s1n1.setTimestamp(Timestamp.valueOf(LocalDate.of(2018,1,1).atStartOfDay()));
+		Note s1n2 = new Note();
+		s1n2.setText("s1n2 note 2 text");
+		s1n2.setTimestamp(Timestamp.valueOf(LocalDate.of(2018,1,2).atStartOfDay()));
+		LOGGER.debug("s1n2.getTimestamp(): {}", s1n2.getTimestamp());
+		s1.getNoteList().addAll(Arrays.asList(s1n1, s1n2));
+		studentRepository.save(s1);
+		entityManager.flush();
+
+		Timestamp fromTimestamp = Timestamp.valueOf(LocalDate.of(2018, 1, 1).atStartOfDay());
+		Timestamp toTimestamp = Timestamp.valueOf(LocalDate.of(2018, 1, 1).atStartOfDay());
 		Set<Student> students = studentRepository.getStudentsByTimestampRange(fromTimestamp, toTimestamp);
-		System.out.println(students.size());
-		System.out.println(students);
-		//System.out.println(new ArrayList<Student>(students).get(0).getNoteList().size());
-		//Assert.assertTrue(students.size() == 1);
+		Assert.assertEquals(1, students.size());
+		students.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp, toTimestamp));
+		
+		Timestamp fromTimestamp2 = Timestamp.valueOf(LocalDate.of(2018, 1, 2).atStartOfDay());
+		Timestamp toTimestamp2 = Timestamp.valueOf(LocalDate.of(2018, 1, 2).atStartOfDay());
+		Set<Student> students2 = studentRepository.getStudentsByTimestampRange(fromTimestamp2, toTimestamp2);
+		Assert.assertEquals(1, students2.size());
+		students2.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp2, toTimestamp2));
+
+		Timestamp fromTimestamp3 = Timestamp.valueOf(LocalDate.of(2018, 1, 2).atStartOfDay());
+		Timestamp toTimestamp3 = Timestamp.valueOf(LocalDate.of(2018, 1, 3).atStartOfDay());
+		Set<Student> students3 = studentRepository.getStudentsByTimestampRange(fromTimestamp3, toTimestamp3);
+		Assert.assertEquals(1, students3.size());
+		students3.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp3, toTimestamp3));
+
+		Timestamp fromTimestamp4 = Timestamp.valueOf(LocalDate.of(2018, 1, 3).atStartOfDay());
+		Timestamp toTimestamp4 = Timestamp.valueOf(LocalDate.of(2018, 1, 3).atStartOfDay());
+		Set<Student> students4 = studentRepository.getStudentsByTimestampRange(fromTimestamp4, toTimestamp4);
+		Assert.assertEquals(0, students4.size());
+		students4.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp4, toTimestamp4));
+
+		Student s2 = new Student();
+		s2.setFirstName("testGetStudentsByTimestampRange s2 first name");
+		s2.setLastName("testGetStudentsByTimestampRange s2 last name");
+		s2.setGrade(Grades.EIGHT.getValue());
+		Note s2n1 = new Note();
+		s2n1.setText("s2n1 note 1 text");
+		s2n1.setTimestamp(Timestamp.valueOf(LocalDate.of(2018,1,1).atStartOfDay()));
+		s2n1.setTimestamp(Timestamp.valueOf(LocalDateTime.of(2018, 2, 1, 10, 7)));
+		s2.getNoteList().add(s2n1);
+		studentRepository.save(s2);
+
+		Student s3 = new Student();
+		s3.setFirstName("testGetStudentsByTimestampRange s3 first name");
+		s3.setLastName("testGetStudentsByTimestampRange s3 last name");
+		s3.setGrade(Grades.OTHER.getValue());
+		Note s3n1 = new Note();
+		s3n1.setText("s3n1 note 1 text");
+		s3n1.setTimestamp(Timestamp.valueOf(LocalDate.of(2018,1,1).atStartOfDay()));
+		s3n1.setTimestamp(Timestamp.valueOf(LocalDateTime.of(2018, 2, 2, 10, 7)));
+		s3.getNoteList().add(s3n1);
+		studentRepository.save(s3);
+		
+		entityManager.flush();
+
+		Timestamp fromTimestamp5 = Timestamp.valueOf(LocalDate.of(2018, 2, 1).atStartOfDay());
+		Timestamp toTimestamp5 = Timestamp.valueOf(LocalDate.of(2018, 2, 10).atStartOfDay());
+		Set<Student> students5 = studentRepository.getStudentsByTimestampRange(fromTimestamp5, toTimestamp5);
+		Assert.assertEquals(2, students5.size());
+		students5.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp5, toTimestamp5));
+
+		Timestamp fromTimestamp6 = Timestamp.valueOf(LocalDate.of(2018, 2, 1).atStartOfDay());
+		Timestamp toTimestamp6 = Timestamp.valueOf(LocalDate.of(2018, 2, 2).atTime(LocalTime.MAX));
+		Set<Student> students6 = studentRepository.getStudentsByTimestampRange(fromTimestamp6, toTimestamp6);
+		Assert.assertEquals(2, students6.size());
+		students6.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp6, toTimestamp6));
+
+		Timestamp fromTimestamp7 = Timestamp.valueOf(LocalDate.of(2018, 2, 1).atStartOfDay());
+		Timestamp toTimestamp7 = Timestamp.valueOf(LocalDate.of(2018, 2, 1).atTime(LocalTime.MAX));
+		Set<Student> students7 = studentRepository.getStudentsByTimestampRange(fromTimestamp7, toTimestamp7);
+		Assert.assertEquals(1, students7.size());
+		students7.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp7, toTimestamp7));
+	}
+	
+	private void checkStudentHasAtLeastOneTimestampBetween (Student student, Timestamp fromTimestamp, Timestamp toTimestamp) {
+		Assert.assertTrue(student.getNoteList().stream().anyMatch(
+				note -> checkNotesTimestampIsBetween(note, fromTimestamp, toTimestamp)
+		));
+	}
+	private boolean checkNotesTimestampIsBetween (Note note, Timestamp fromTimestamp, Timestamp toTimestamp) {
+		return (note.getTimestamp().equals(fromTimestamp) || note.getTimestamp().after(fromTimestamp)) &&
+				(note.getTimestamp().equals(toTimestamp) || note.getTimestamp().before(toTimestamp));
 	}
 }

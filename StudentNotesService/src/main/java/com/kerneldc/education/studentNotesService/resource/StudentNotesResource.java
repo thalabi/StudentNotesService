@@ -160,7 +160,7 @@ public class StudentNotesResource {
 
 		    	BufferedInputStream pdfFile = new BufferedInputStream(new FileInputStream("C://Downloads/CGQGD_KS002015041220280700-122352.pdf"));
 		    	byte[] contents = new byte[1024];
-		    	int bytesRead=0;
+		    	int bytesRead;
                 String stringContents;
                 
                 while( (bytesRead = pdfFile.read(contents)) != -1){
@@ -239,6 +239,24 @@ public class StudentNotesResource {
 		LocalDate toDate = LocalDate.of(timestampRange.getToYear(), timestampRange.getToMonth(), timestampRange.getToDay());
 		Students students = new Students();
 		students.setStudentList(studentRepository.getStudentsByTimestampRange(Timestamp.valueOf(fromDate.atStartOfDay()), Timestamp.valueOf(toDate.atStartOfDay())));
+		byte[] pdfByteArray = null;
+		if (students.getStudentList().size() != 0) {
+			pdfByteArray = studentNotesReportService.generateReport(students);
+		}
+		// TODO print an empty pdf when there are no students returned
+		LOGGER.debug("end ...");
+		return Response.ok(pdfByteArray).build();
+	}
+
+	@POST
+	@Path("/pdfStudentsByTimestampRange2")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Produces("application/pdf")
+	public Response pdfStudentsByTimestampRange2(TimestampRange2 timestampRange2) throws JAXBException, ParserConfigurationException, SAXException, IOException, TransformerException {
+
+		LOGGER.debug("begin ...");
+		Students students = new Students();
+		students.setStudentList(studentRepository.getStudentsByTimestampRange(timestampRange2.getFromTimestamp(), timestampRange2.getToTimestamp()));
 		byte[] pdfByteArray = null;
 		if (students.getStudentList().size() != 0) {
 			pdfByteArray = studentNotesReportService.generateReport(students);
