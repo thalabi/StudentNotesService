@@ -1,6 +1,8 @@
 package com.kerneldc.education.studentNotesService;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -11,7 +13,6 @@ import java.util.Arrays;
 import javax.annotation.PostConstruct;
 
 import org.glassfish.jersey.internal.util.ExceptionUtils;
-import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +36,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kerneldc.education.studentNotesService.bean.Grades;
 import com.kerneldc.education.studentNotesService.bean.TimestampRange;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
@@ -75,7 +77,7 @@ public class StudentNotesResourceTests {
 
 		//JsonNode newJsonUser = testRestTemplate.postForObject(BASE_URI+"/Security/authenticate", httpEntity, JsonNode.class);
 		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/Security/authenticate", HttpMethod.POST, httpEntity, JsonNode.class);
-		Assert.assertTrue(response.getStatusCode() == HttpStatus.OK);
+		assertTrue(response.getStatusCode() == HttpStatus.OK);
 		
 		JsonNode newJsonUser = response.getBody();
 		System.out.println(newJsonUser);
@@ -97,7 +99,7 @@ public class StudentNotesResourceTests {
     }
 
 	@Test
-    public void t02testGetAllStudents() {
+    public void t01testGetAllStudents() {
 		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
         //String allStudents = testRestTemplate.getForObject(BASE_URI+"/getAllStudents", String.class);
 		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/getAllStudents", HttpMethod.GET, httpEntity, String.class);
@@ -108,7 +110,7 @@ public class StudentNotesResourceTests {
     }
 
 	@Test
-    public void t03testGetAllNotes() {
+    public void t01testGetAllNotes() {
 		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
 		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/getAllNotes", HttpMethod.GET, httpEntity, String.class);
         String expected = "[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":0,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3\"},{\"version\":0,\"id\":4,\"timestamp\":1481403630842,\"text\":\"note 4\"},{\"version\":0,\"id\":5,\"timestamp\":1481403630843,\"text\":\"note 5\"}]";
@@ -117,16 +119,68 @@ public class StudentNotesResourceTests {
     }
 	
 	@Test
-    public void t04testGetStudentById() {
+    public void t01testGetStudentById() {
 		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
 		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/getStudentById/1", HttpMethod.GET, httpEntity, String.class);
         String expected = "{\"version\":0,\"id\":1,\"firstName\":\"kareem\",\"lastName\":\"halabi\",\"grade\":\"SK\",\"noteList\":[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":0,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3\"}]}";
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expected, response.getBody());
     }
+	
+	@Test
+    public void t01testGetStudentsByTimestampRange() throws JsonProcessingException {
+		TimestampRange timestampRange = new TimestampRange();
+		LocalDate fromLocalDate = LocalDate.of(2016, 1, 1);
+		LocalDate toLocalDate = LocalDate.of(2017, 12, 31);
+		timestampRange.setFromTimestamp(Timestamp.valueOf(fromLocalDate.atStartOfDay()));
+		timestampRange.setToTimestamp(Timestamp.valueOf(toLocalDate.atStartOfDay()));
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode jsonTimestampRange = objectMapper.valueToTree(timestampRange);
+
+		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonTimestampRange,httpHeaders);
+		
+		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/getStudentsByTimestampRange", HttpMethod.POST, httpEntity, JsonNode.class);
+		
+		Student[] students = objectMapper.treeToValue(response.getBody(), Student[].class);
+		
+		for (Student student: students) LOGGER.debug("student: {}", student); 
+		assertEquals(2, students.length);
+		
+//		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/getAllNotes", HttpMethod.GET, httpEntity, String.class);
+//        String expected = "[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":0,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3\"},{\"version\":0,\"id\":4,\"timestamp\":1481403630842,\"text\":\"note 4\"},{\"version\":0,\"id\":5,\"timestamp\":1481403630843,\"text\":\"note 5\"}]";
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        assertEquals(expected, response.getBody());
+	}
 
 	@Test
-    public void t06testSaveStudentChangeFirstLastNameAndGrade() {
+	public void t01testGetAllStudentsWithoutNotesList() throws JsonProcessingException {
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/getAllStudentsWithoutNotesList", HttpMethod.GET, httpEntity, JsonNode.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+		ObjectMapper objectMapper = new ObjectMapper();
+        Student[] students = objectMapper.treeToValue(response.getBody(), Student[].class);
+        LOGGER.debug("students.length: "+students.length);
+        for (Student s: students) {
+        	if (s.getId().equals(1l)) {
+        		assertEquals("kareem", s.getFirstName());
+        		assertEquals("halabi", s.getLastName());
+        		assertEquals(Grades.SK.getValue(), s.getGrade());
+        	} else if (s.getId().equals(2l)) {
+            		assertEquals("", s.getFirstName());
+            		assertEquals("halabi", s.getLastName());
+            		assertEquals(Grades.FOUR.getValue(), s.getGrade());
+            	} else if (s.getId().equals(3l)) {
+                		assertEquals("Mr Parent", s.getFirstName());
+                		assertEquals("", s.getLastName());
+                		assertEquals("", s.getGrade());
+                	}
+        		
+        }
+	}
+
+	@Test
+    public void t02testSaveStudentChangeFirstLastNameAndGrade() {
 		
 		String data = "{\"id\":2,\"firstName\":\"first name v1\",\"lastName\":\"last name v2\",\"grade\":\"4 v2\",\"noteList\":[], \"version\":0}";
 		HttpEntity<String> httpEntity = new HttpEntity<String>(data,httpHeaders);
@@ -138,7 +192,7 @@ public class StudentNotesResourceTests {
     }
 
 	@Test
-	public void t07testSaveStudentAddNote() {
+	public void t03testSaveStudentAddNote() {
 		
 		String data = "{\"version\":0,\"id\":3,\"firstName\":\"Mr Parent\",\"lastName\":\"\",\"grade\":\"\",\"noteList\":[{\"version\":0,\"id\":4,\"timestamp\":1481403630842,\"text\":\"note 4\"},{\"version\":0,\"id\":5,\"timestamp\":1481403630843,\"text\":\"note 5\"},{\"timestamp\":1481403630843,\"text\":\"note new note\"}]}";
 		HttpEntity<String> httpEntity = new HttpEntity<String>(data,httpHeaders);
@@ -150,7 +204,7 @@ public class StudentNotesResourceTests {
     }
 	
 	@Test
-	public void t08testSaveStudentDeleteNote() throws JsonProcessingException {
+	public void t04testSaveStudentDeleteNote() throws JsonProcessingException {
 		
 		Student student = new Student();
 		student.setFirstName("new first name with notes t07testSaveStudentDeleteNote");
@@ -175,12 +229,12 @@ public class StudentNotesResourceTests {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
 		Student newStudent = objectMapper.treeToValue(response.getBody(), Student.class);
-		Assert.assertTrue(
+		assertTrue(
 			newStudent.getNoteList().size() == 0);
     }
 	
 	@Test
-	public void t09testSaveStudentModifyNote() {
+	public void t05testSaveStudentModifyNote() {
 		
 		String data = "{\"version\":0,\"id\":1,\"firstName\":\"kareem\",\"lastName\":\"halabi\",\"grade\":\"SK\",\"noteList\":[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":0,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3 modified\"}]}";
 		HttpEntity<String> httpEntity = new HttpEntity<String>(data,httpHeaders);
@@ -192,7 +246,7 @@ public class StudentNotesResourceTests {
     }
 
 	@Test
-	public void t10testDeleteStudentById() {
+	public void t06testDeleteStudentById() {
 		
 		testRestTemplate.delete(BASE_URI+"/deleteStudentById/1");
 		//TODO check the repository that the row is deleted
@@ -200,7 +254,7 @@ public class StudentNotesResourceTests {
 	}
 
 	@Test
-	public void t11testSaveNote() throws JsonProcessingException {
+	public void t07testSaveNote() throws JsonProcessingException {
 		
 		Student student = new Student();
 		student.setFirstName("new first name with notes t10testSaveNote");
@@ -222,7 +276,7 @@ public class StudentNotesResourceTests {
 
 		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/saveNote", HttpMethod.POST, httpEntity, JsonNode.class);
 		Note newNote = objectMapper.treeToValue(response.getBody(), Note.class);
-		Assert.assertTrue(
+		assertTrue(
 			newNote.getId().equals(note1.getId()) &&
 			newNote.getTimestamp().equals(note1.getTimestamp()) &&
 			newNote.getText().equals(note1.getText()) &&
@@ -230,7 +284,7 @@ public class StudentNotesResourceTests {
     }
 
 	@Test
-	public void t12testSaveStudentAddStudent() {
+	public void t08testSaveStudentAddStudent() {
 		
 		Student student = new Student();
 		student.setFirstName("new first name");
@@ -243,7 +297,7 @@ public class StudentNotesResourceTests {
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			Assert.fail(ExceptionUtils.exceptionStackTraceAsString(e));
+			fail(ExceptionUtils.exceptionStackTraceAsString(e));
 			;
 		}
 		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, JsonNode.class);
@@ -255,7 +309,7 @@ public class StudentNotesResourceTests {
 		String newGrade = newStudent.get("grade").asText();
 		Long newVersion = newStudent.get("version").asLong();
 
-		Assert.assertTrue(student.getFirstName().equals(newFirstName) &&
+		assertTrue(student.getFirstName().equals(newFirstName) &&
 				student.getLastName().equals(newLastName) &&
 				student.getGrade().equals(newGrade) &&
 				newId.compareTo(0l) > 0 &&
@@ -263,7 +317,7 @@ public class StudentNotesResourceTests {
 	}
 
 	@Test
-	public void t13testSaveStudentAddStudentWithNotes() {
+	public void t09testSaveStudentAddStudentWithNotes() {
 		
 		Student student = new Student();
 		student.setFirstName("new first name with notes");
@@ -295,7 +349,7 @@ public class StudentNotesResourceTests {
 		String newGrade = newStudent.get("grade").asText();
 		Long newVersion = newStudent.get("version").asLong();
 
-		Assert.assertTrue(student.getFirstName().equals(newFirstName) &&
+		assertTrue(student.getFirstName().equals(newFirstName) &&
 				student.getLastName().equals(newLastName) &&
 				student.getGrade().equals(newGrade) &&
 				newId.compareTo(0l) > 0 &&
@@ -303,45 +357,18 @@ public class StudentNotesResourceTests {
 	}
 
 	@Test
-    public void t14testGetLatestActiveStudents() {
-		//TODO
-	}
-	
-	@Test
-    public void t05testGetStudentsByTimestampRange() throws JsonProcessingException {
-		TimestampRange timestampRange = new TimestampRange();
-		LocalDate fromLocalDate = LocalDate.of(2016, 1, 1);
-		LocalDate toLocalDate = LocalDate.of(2017, 12, 31);
-		timestampRange.setFromTimestamp(Timestamp.valueOf(fromLocalDate.atStartOfDay()));
-		timestampRange.setToTimestamp(Timestamp.valueOf(toLocalDate.atStartOfDay()));
-		
-		ObjectMapper objectMapper = new ObjectMapper();
-		JsonNode jsonTimestampRange = objectMapper.valueToTree(timestampRange);
-
-		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonTimestampRange,httpHeaders);
-		
-		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/getStudentsByTimestampRange", HttpMethod.POST, httpEntity, JsonNode.class);
-		
-		Student[] students = objectMapper.treeToValue(response.getBody(), Student[].class);
-		
-		for (Student student: students) LOGGER.debug("student: {}", student); 
-		assertEquals(2, students.length);
-		
-//		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/getAllNotes", HttpMethod.GET, httpEntity, String.class);
-//        String expected = "[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":0,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3\"},{\"version\":0,\"id\":4,\"timestamp\":1481403630842,\"text\":\"note 4\"},{\"version\":0,\"id\":5,\"timestamp\":1481403630843,\"text\":\"note 5\"}]";
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        assertEquals(expected, response.getBody());
-	}
-
-	@Test
-    public void t15testPdfAll() {
-		//TODO
-	}
-	@Test
-    public void t16testPdfStudentsByTimestampRange() {
+    public void t10testGetLatestActiveStudents() {
 		//TODO
 	}
 
+	@Test
+    public void t11testPdfAll() {
+		//TODO
+	}
+	@Test
+    public void t12testPdfStudentsByTimestampRange() {
+		//TODO
+	}
 	
 	/**
 	 * Run as last test as it causes some aop error

@@ -227,4 +227,15 @@ public class StudentNotesResource {
 		LOGGER.debug("end ...");
 		return Response.ok(pdfByteArray).build();
 	}
+	
+	@GET
+	@Path("/getAllStudentsWithoutNotesList")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Iterable<Student> getAllStudentsWithoutNotesList() {
+		
+		LOGGER.debug("begin ...");
+		LOGGER.debug("end ...");
+		return studentRepository.findAll();
+	}
+	
 }
