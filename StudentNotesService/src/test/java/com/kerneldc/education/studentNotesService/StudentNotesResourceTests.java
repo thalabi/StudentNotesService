@@ -36,7 +36,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.education.studentNotesService.bean.TimestampRange;
-import com.kerneldc.education.studentNotesService.bean.TimestampRange2;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
@@ -311,12 +310,10 @@ public class StudentNotesResourceTests {
 	@Test
     public void t04testGetStudentsByTimestampRange() throws JsonProcessingException {
 		TimestampRange timestampRange = new TimestampRange();
-		timestampRange.setFromYear(2016);
-		timestampRange.setFromMonth(1);
-		timestampRange.setFromDay(1);
-		timestampRange.setToYear(2017);
-		timestampRange.setToMonth(12);
-		timestampRange.setToDay(31);
+		LocalDate fromLocalDate = LocalDate.of(2016, 1, 1);
+		LocalDate toLocalDate = LocalDate.of(2017, 12, 31);
+		timestampRange.setFromTimestamp(Timestamp.valueOf(fromLocalDate.atStartOfDay()));
+		timestampRange.setToTimestamp(Timestamp.valueOf(toLocalDate.atStartOfDay()));
 		
 		ObjectMapper objectMapper = new ObjectMapper();
 		JsonNode jsonTimestampRange = objectMapper.valueToTree(timestampRange);
@@ -324,32 +321,6 @@ public class StudentNotesResourceTests {
 		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonTimestampRange,httpHeaders);
 		
 		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/getStudentsByTimestampRange", HttpMethod.POST, httpEntity, JsonNode.class);
-		
-		Student[] students = objectMapper.treeToValue(response.getBody(), Student[].class);
-		
-		for (Student student: students) LOGGER.debug("student: {}", student); 
-		assertEquals(2, students.length);
-		
-//		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/getAllNotes", HttpMethod.GET, httpEntity, String.class);
-//        String expected = "[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":0,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3\"},{\"version\":0,\"id\":4,\"timestamp\":1481403630842,\"text\":\"note 4\"},{\"version\":0,\"id\":5,\"timestamp\":1481403630843,\"text\":\"note 5\"}]";
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        assertEquals(expected, response.getBody());
-	}
-
-	@Test
-    public void t04testGetStudentsByTimestampRange2() throws JsonProcessingException {
-		TimestampRange2 timestampRange2 = new TimestampRange2();
-		LocalDate fromLocalDate = LocalDate.of(2016, 1, 1);
-		LocalDate toLocalDate = LocalDate.of(2017, 12, 31);
-		timestampRange2.setFromTimestamp(Timestamp.valueOf(fromLocalDate.atStartOfDay()));
-		timestampRange2.setToTimestamp(Timestamp.valueOf(toLocalDate.atStartOfDay()));
-		
-		ObjectMapper objectMapper = new ObjectMapper();
-		JsonNode jsonTimestampRange2 = objectMapper.valueToTree(timestampRange2);
-
-		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonTimestampRange2,httpHeaders);
-		
-		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/getStudentsByTimestampRange2", HttpMethod.POST, httpEntity, JsonNode.class);
 		
 		Student[] students = objectMapper.treeToValue(response.getBody(), Student[].class);
 		
