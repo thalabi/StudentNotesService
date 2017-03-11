@@ -55,24 +55,27 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 		return entityManager.find(Student.class, id, hints);
 	}
 	
-	@Override
-	public List<Student> getAllStudents() {
-		
+	private List<Student> getStudents(List<Long> studentIds) {
     	CriteriaBuilder builder = entityManager.getCriteriaBuilder();
     	CriteriaQuery<Student> criteriaQuery = builder.createQuery(Student.class);
     	Root<Student> student = criteriaQuery.from(Student.class);
     	Order firstNameOrder = builder.asc(student.get(Student_.firstName));
     	Order lastNameOrder = builder.asc(student.get(Student_.lastName));
-    	//Order timestampOrder =  builder.asc(student.join(Student_.noteList, JoinType.LEFT).get(Note_.timestamp));
-    	//Order idOrder =  builder.asc(student.join(Student_.noteSet).get(Note_.Id));
-    	criteriaQuery.select(student).distinct(true).orderBy(firstNameOrder, lastNameOrder/*, timestampOrder*/);
+    	criteriaQuery.select(student).distinct(true).orderBy(firstNameOrder, lastNameOrder);
+
+    	if (studentIds != null) criteriaQuery.where(student.get(Student_.id).in(studentIds));
     	
     	TypedQuery<Student> typedQuery = entityManager.createQuery(criteriaQuery);
 //    	typedQuery.setHint("javax.persistence.fetchgraph", entityManager.getEntityGraph("Student.noteList"));
     	typedQuery.setHint("javax.persistence.loadgraph", entityManager.getEntityGraph("Student.noteList"));
     	List<Student> students = typedQuery.getResultList();
 		
-		return students;
+		return students;		
+	}
+	
+	@Override
+	public List<Student> getAllStudents() {
+		return getStudents(null);
 	}
 
 	@Override
@@ -221,4 +224,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
  		return students;
 	}
 
+	public List<Student> getStudentsByListOfIds(List<Long> studentIds) {
+		return getStudents(studentIds);
+	}
 }

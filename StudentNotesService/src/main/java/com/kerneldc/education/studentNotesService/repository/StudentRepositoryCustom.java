@@ -25,4 +25,6 @@ public interface StudentRepositoryCustom {
 	
 	Set<Student> getLatestActiveStudents(int limit);
 	Set<Student> getStudentsByTimestampRange(Timestamp fromTimestamp, Timestamp toTimestamp);
+	
+	List<Student> getStudentsByListOfIds(List<Long> studentIds);
 }

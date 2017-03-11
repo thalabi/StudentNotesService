@@ -312,4 +312,9 @@ public class StudentRepositoryTests implements InitializingBean {
 		return (note.getTimestamp().equals(fromTimestamp) || note.getTimestamp().after(fromTimestamp)) &&
 				(note.getTimestamp().equals(toTimestamp) || note.getTimestamp().before(toTimestamp));
 	}
+
+	@Test
+	public void testGetStudentsByListOfIds() {
+		Assert.assertEquals(2,studentRepository.getStudentsByListOfIds(Arrays.asList(1l,3l)).size());
+	}
 }
