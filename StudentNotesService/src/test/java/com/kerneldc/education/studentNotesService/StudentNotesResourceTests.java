@@ -126,7 +126,7 @@ public class StudentNotesResourceTests {
     }
 
 	@Test
-    public void t05testSaveStudentChangeFirstLastNameAndGrade() {
+    public void t06testSaveStudentChangeFirstLastNameAndGrade() {
 		
 		String data = "{\"id\":2,\"firstName\":\"first name v1\",\"lastName\":\"last name v2\",\"grade\":\"4 v2\",\"noteList\":[], \"version\":0}";
 		HttpEntity<String> httpEntity = new HttpEntity<String>(data,httpHeaders);
@@ -138,7 +138,7 @@ public class StudentNotesResourceTests {
     }
 
 	@Test
-	public void t06testSaveStudentAddNote() {
+	public void t07testSaveStudentAddNote() {
 		
 		String data = "{\"version\":0,\"id\":3,\"firstName\":\"Mr Parent\",\"lastName\":\"\",\"grade\":\"\",\"noteList\":[{\"version\":0,\"id\":4,\"timestamp\":1481403630842,\"text\":\"note 4\"},{\"version\":0,\"id\":5,\"timestamp\":1481403630843,\"text\":\"note 5\"},{\"timestamp\":1481403630843,\"text\":\"note new note\"}]}";
 		HttpEntity<String> httpEntity = new HttpEntity<String>(data,httpHeaders);
@@ -150,7 +150,7 @@ public class StudentNotesResourceTests {
     }
 	
 	@Test
-	public void t07testSaveStudentDeleteNote() throws JsonProcessingException {
+	public void t08testSaveStudentDeleteNote() throws JsonProcessingException {
 		
 		Student student = new Student();
 		student.setFirstName("new first name with notes t07testSaveStudentDeleteNote");
@@ -180,7 +180,7 @@ public class StudentNotesResourceTests {
     }
 	
 	@Test
-	public void t08testSaveStudentModifyNote() {
+	public void t09testSaveStudentModifyNote() {
 		
 		String data = "{\"version\":0,\"id\":1,\"firstName\":\"kareem\",\"lastName\":\"halabi\",\"grade\":\"SK\",\"noteList\":[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":0,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3 modified\"}]}";
 		HttpEntity<String> httpEntity = new HttpEntity<String>(data,httpHeaders);
@@ -192,7 +192,7 @@ public class StudentNotesResourceTests {
     }
 
 	@Test
-	public void t09testDeleteStudentById() {
+	public void t10testDeleteStudentById() {
 		
 		testRestTemplate.delete(BASE_URI+"/deleteStudentById/1");
 		//TODO check the repository that the row is deleted
@@ -200,7 +200,7 @@ public class StudentNotesResourceTests {
 	}
 
 	@Test
-	public void t10testSaveNote() throws JsonProcessingException {
+	public void t11testSaveNote() throws JsonProcessingException {
 		
 		Student student = new Student();
 		student.setFirstName("new first name with notes t10testSaveNote");
@@ -230,7 +230,7 @@ public class StudentNotesResourceTests {
     }
 
 	@Test
-	public void t11testSaveStudentAddStudent() {
+	public void t12testSaveStudentAddStudent() {
 		
 		Student student = new Student();
 		student.setFirstName("new first name");
@@ -263,7 +263,7 @@ public class StudentNotesResourceTests {
 	}
 
 	@Test
-	public void t12testSaveStudentAddStudentWithNotes() {
+	public void t13testSaveStudentAddStudentWithNotes() {
 		
 		Student student = new Student();
 		student.setFirstName("new first name with notes");
@@ -303,12 +303,12 @@ public class StudentNotesResourceTests {
 	}
 
 	@Test
-    public void t13testGetLatestActiveStudents() {
+    public void t14testGetLatestActiveStudents() {
 		//TODO
 	}
 	
 	@Test
-    public void t04testGetStudentsByTimestampRange() throws JsonProcessingException {
+    public void t05testGetStudentsByTimestampRange() throws JsonProcessingException {
 		TimestampRange timestampRange = new TimestampRange();
 		LocalDate fromLocalDate = LocalDate.of(2016, 1, 1);
 		LocalDate toLocalDate = LocalDate.of(2017, 12, 31);
