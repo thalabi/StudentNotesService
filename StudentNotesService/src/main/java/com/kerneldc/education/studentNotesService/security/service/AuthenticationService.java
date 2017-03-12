@@ -1,7 +1,6 @@
 package com.kerneldc.education.studentNotesService.security.service;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,17 +53,20 @@ public class AuthenticationService {
 	 */
     public Authentication getAuthenticationFromToken(final HttpServletRequest request) throws IOException {
 		LOGGER.debug("begin ...");
-        String jwtToken = request.getHeader(Constants.AUTH_HEADER_NAME);
-        LOGGER.debug("jwtToken: {}", jwtToken);
-        if (jwtToken != null) {
-            try {
-                User user = jwtTokenUtil.parseToken(jwtToken);
-                LOGGER.debug("user == null: {}", user == null);
-                return new UserAuthentication(user);
-            } catch (UsernameNotFoundException | JwtException | JsonProcessingException e) {
-            	LOGGER.info("Invalid token");
-                return null;
-            }
+		String authenticationHeader = request.getHeader(Constants.AUTH_HEADER_NAME);
+        LOGGER.debug("authenticationHeader: {}", authenticationHeader);
+        if (authenticationHeader != null) {
+        	String jwtToken = authenticationHeader.split(Constants.AUTH_HEADER_SCHEMA, 2)[1];
+        	if (jwtToken != null) {
+	            try {
+	                User user = jwtTokenUtil.parseToken(jwtToken);
+	                LOGGER.debug("user == null: {}", user == null);
+	                return new UserAuthentication(user);
+	            } catch (UsernameNotFoundException | JwtException | JsonProcessingException e) {
+	            	LOGGER.info("Invalid token");
+	                return null;
+	            }
+	        }
         }
 		LOGGER.debug("end ...");
         return null;

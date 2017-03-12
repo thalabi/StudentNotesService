@@ -77,7 +77,7 @@ public class SecurityResourceTests {
 		LOGGER.debug("user.getToken(): {}", user.getToken());
 		
 		//String hello = testRestTemplate.getForObject(BASE_URI, String.class);
-		httpHeaders.set(Constants.AUTH_HEADER_NAME, user.getToken());
+		httpHeaders.set(Constants.AUTH_HEADER_NAME, Constants.AUTH_HEADER_SCHEMA + " " + user.getToken());
 		httpHeaders.forEach((k,v)->{LOGGER.debug("header: {}, content: {}", k, v);});
 		httpEntity = new HttpEntity<String>(httpHeaders);
         ResponseEntity<String> helloResponse = testRestTemplate.exchange(BASE_URI, HttpMethod.GET, httpEntity, String.class);

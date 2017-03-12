@@ -92,7 +92,7 @@ public class StudentNotesResourceTests {
 		objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixIn.class);
 		user = objectMapper.treeToValue(newJsonUser, User.class);
 		LOGGER.debug("user.getToken(): {}", user.getToken());
-		httpHeaders.set(Constants.AUTH_HEADER_NAME, user.getToken());
+		httpHeaders.set(Constants.AUTH_HEADER_NAME, Constants.AUTH_HEADER_SCHEMA + " " + user.getToken());
 	}
 	
 	@Test
