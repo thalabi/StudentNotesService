@@ -195,11 +195,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 			"	n.version note_version \n" + 
 			"from student s join student_note sn on s.id = sn.student_id \n" + 
 			"   join note n on sn.note_id = n.id \n" + 
-			"where s.id in      ( \n" + 
-			"					select sn.student_id\n" + 
-			"                     from student_note sn join note n on sn.note_id = n.id  \n" + 
-			"                    where n.timestamp between :fromTimestamp and :toTimestamp\n" +
-			"					) \n" + 		
+			"where n.timestamp between :fromTimestamp and :toTimestamp \n" +
 			"order by first_name, last_name, timestamp\n" 
 		);
 		query.addRoot("s", Student.class)

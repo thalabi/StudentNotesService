@@ -235,7 +235,26 @@ public class StudentNotesResource {
 		
 		LOGGER.debug("begin ...");
 		LOGGER.debug("end ...");
-		return studentRepository.findAll();
+		//return studentRepository.findAll();
+		return studentRepository.findAllByOrderByFirstNameAscLastNameAsc();
 	}
-	
+
+	// TODO not covered by a test case
+	@POST
+	@Path("/pdfStudentsByStudentIds")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Produces("application/pdf")
+	public Response pdfStudentsByStudentIds(List<Long> studentIds) throws JAXBException, ParserConfigurationException, SAXException, IOException, TransformerException {
+
+		LOGGER.debug("begin ...");
+		Students students = new Students();
+		students.setStudentList(studentRepository.getStudentsByListOfIds(studentIds));
+		byte[] pdfByteArray = null;
+		if (students.getStudentList().size() != 0) {
+			pdfByteArray = studentNotesReportService.generateReport(students);
+		}
+		// TODO print an empty pdf when there are no students returned
+		LOGGER.debug("end ...");
+		return Response.ok(pdfByteArray).build();
+	}
 }
