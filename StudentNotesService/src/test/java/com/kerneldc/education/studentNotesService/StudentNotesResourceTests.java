@@ -65,8 +65,15 @@ public class StudentNotesResourceTests {
 	private String password;
 
 	private HttpHeaders httpHeaders;
+	private ObjectMapper objectMapper = new ObjectMapper();
+	
 	private User user;
 	
+	/**
+	 * Login and retrieve JWT token and add it to httpHeaders
+	 * 
+	 * @throws JsonProcessingException
+	 */
 	@PostConstruct
 	public void setUp() throws JsonProcessingException {
 		String usernameAndPassword = "{\"username\":\""+username+"\",\"password\":\""+password+"\"}";
@@ -81,7 +88,7 @@ public class StudentNotesResourceTests {
 		
 		JsonNode newJsonUser = response.getBody();
 		System.out.println(newJsonUser);
-		ObjectMapper objectMapper = new ObjectMapper();
+
 		objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixIn.class);
 		user = objectMapper.treeToValue(newJsonUser, User.class);
 		LOGGER.debug("user.getToken(): {}", user.getToken());
@@ -135,7 +142,6 @@ public class StudentNotesResourceTests {
 		timestampRange.setFromTimestamp(Timestamp.valueOf(fromLocalDate.atStartOfDay()));
 		timestampRange.setToTimestamp(Timestamp.valueOf(toLocalDate.atStartOfDay()));
 		
-		ObjectMapper objectMapper = new ObjectMapper();
 		JsonNode jsonTimestampRange = objectMapper.valueToTree(timestampRange);
 
 		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonTimestampRange,httpHeaders);
@@ -158,7 +164,6 @@ public class StudentNotesResourceTests {
 		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
 		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/getAllStudentsWithoutNotesList", HttpMethod.GET, httpEntity, JsonNode.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-		ObjectMapper objectMapper = new ObjectMapper();
         Student[] students = objectMapper.treeToValue(response.getBody(), Student[].class);
         LOGGER.debug("students.length: "+students.length);
         for (Student s: students) {
@@ -220,7 +225,6 @@ public class StudentNotesResourceTests {
 		studentRepository.save(student);
 		
 		student.getNoteList().remove(0);
-		ObjectMapper objectMapper = new ObjectMapper();
 		JsonNode jsonStudent = objectMapper.valueToTree(student);
 
 		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonStudent,httpHeaders);
@@ -269,7 +273,6 @@ public class StudentNotesResourceTests {
 
 		note1.setTimestamp(new Timestamp(note1.getTimestamp().getTime() - 60000));
 		note1.setText("new note1 text t10testSaveNote modified");
-		ObjectMapper objectMapper = new ObjectMapper();
 		JsonNode jsonNote = objectMapper.valueToTree(note1);
 		
 		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonNote,httpHeaders);
@@ -290,7 +293,6 @@ public class StudentNotesResourceTests {
 		student.setFirstName("new first name");
 		student.setLastName("new last name");
 		student.setGrade("1");
-		ObjectMapper objectMapper = new ObjectMapper();
 		JsonNode jsonStudent = objectMapper.valueToTree(student);
 
 		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonStudent,httpHeaders);
@@ -334,7 +336,6 @@ public class StudentNotesResourceTests {
 		note2.setText("new note2 text");
 
 		student.setNoteList(Arrays.asList(note1, note2));
-		ObjectMapper objectMapper = new ObjectMapper();
 		JsonNode jsonStudent = objectMapper.valueToTree(student);
 
 		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonStudent,httpHeaders);
