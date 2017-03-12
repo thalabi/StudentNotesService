@@ -6,5 +6,5 @@ import com.kerneldc.education.studentNotesService.domain.Student;
 
 public interface StudentRepository extends CrudRepository<Student, Long>, StudentRepositoryCustom  {
 
-	//Iterable<Student> findAllById();
+	Iterable<Student> findAllByOrderByFirstNameAscLastNameAsc();
 }
