@@ -1,7 +1,7 @@
 package com.kerneldc.education.studentNotesService.bean;
 
 public enum Grades {
-	JK("JK"), SK("SK"), ONE("1"), TWO("2"), THREE("3"), FOUR("4"), FIVE("5"), SIX("6"), SEVEN("7"), EIGHT("8"), OTHER("OTHER");
+	JK("JK"), SK("SK"), ONE("1"), TWO("2"), THREE("3"), FOUR("4"), FIVE("5"), SIX("6"), SEVEN("7"), EIGHT("8"), OTHER("OTHER"), EMPTY("");
 	
 	private final String grade;
 	

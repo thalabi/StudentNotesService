@@ -1,5 +1,7 @@
 package com.kerneldc.education.studentNotesService;
 
+import static org.junit.Assert.assertEquals;
+
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -316,5 +318,26 @@ public class StudentRepositoryTests implements InitializingBean {
 	@Test
 	public void testGetStudentsByListOfIds() {
 		Assert.assertEquals(2,studentRepository.getStudentsByListOfIds(Arrays.asList(1l,3l)).size());
+	}
+	
+	@Test
+	public void testGetAllStudents() {
+		
+		List<Student> students = studentRepository.getAllStudents();
+        for (Student s: students) {
+        	if (s.getId().equals(SeedDBData.s1.getId())) {
+        		assertEquals(SeedDBData.s1.getFirstName(), s.getFirstName());
+        		assertEquals(SeedDBData.s1.getLastName(), s.getLastName());
+        		assertEquals(SeedDBData.s1.getGrade(), s.getGrade());
+        	} else if (s.getId().equals(SeedDBData.s2.getId())) {
+	        		assertEquals(SeedDBData.s2.getFirstName(), s.getFirstName());
+	        		assertEquals(SeedDBData.s2.getLastName(), s.getLastName());
+	        		assertEquals(SeedDBData.s2.getGrade(), s.getGrade());
+            	} else if (s.getId().equals(SeedDBData.s3.getId())) {
+            		assertEquals(SeedDBData.s3.getFirstName(), s.getFirstName());
+            		assertEquals(SeedDBData.s3.getLastName(), s.getLastName());
+            		assertEquals(SeedDBData.s3.getGrade(), s.getGrade());
+                	}
+        }		
 	}
 }

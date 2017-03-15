@@ -19,9 +19,6 @@ import javax.transaction.Transactional;
 
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaContext;
@@ -32,7 +29,7 @@ import com.kerneldc.education.studentNotesService.domain.Student_;
 
 public class StudentRepositoryImpl implements StudentRepositoryCustom, InitializingBean {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
+	//private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 
 	@Autowired
 	private JpaContext jpaContext;
@@ -78,16 +75,6 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 		return getStudents(null);
 	}
 
-	@Override
-	//@Transactional(propagation=Propagation.NESTED)
-	public Student updateStudent(Student detachedStudent) {
-		
-		Student student = getStudentById(detachedStudent.getId());
-		BeanUtils.copyProperties(detachedStudent, student);
-		LOGGER.debug("student: {}, detachedStudent: {}", student, detachedStudent);
-		return entityManager.merge(student);
-	}
-	
 	@Override
 	@Transactional
 	public Set<Student> getLatestActiveStudents(int limit) {

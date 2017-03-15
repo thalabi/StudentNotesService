@@ -20,9 +20,6 @@ public interface StudentRepositoryCustom {
 	 */
 	List<Student> getAllStudents();
 	
-	// not used, remove
-	Student updateStudent(Student student);
-	
 	Set<Student> getLatestActiveStudents(int limit);
 	Set<Student> getStudentsByTimestampRange(Timestamp fromTimestamp, Timestamp toTimestamp);
 	

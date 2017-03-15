@@ -36,7 +36,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kerneldc.education.studentNotesService.bean.Grades;
 import com.kerneldc.education.studentNotesService.bean.TimestampRange;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
@@ -167,18 +166,18 @@ public class StudentNotesResourceTests {
         Student[] students = objectMapper.treeToValue(response.getBody(), Student[].class);
         LOGGER.debug("students.length: "+students.length);
         for (Student s: students) {
-        	if (s.getId().equals(1l)) {
-        		assertEquals("kareem", s.getFirstName());
-        		assertEquals("halabi", s.getLastName());
-        		assertEquals(Grades.SK.getValue(), s.getGrade());
-        	} else if (s.getId().equals(2l)) {
-            		assertEquals("", s.getFirstName());
-            		assertEquals("halabi", s.getLastName());
-            		assertEquals(Grades.FOUR.getValue(), s.getGrade());
-            	} else if (s.getId().equals(3l)) {
-                		assertEquals("Mr Parent", s.getFirstName());
-                		assertEquals("", s.getLastName());
-                		assertEquals("", s.getGrade());
+        	if (s.getId().equals(SeedDBData.s1.getId())) {
+        		assertEquals(SeedDBData.s1.getFirstName(), s.getFirstName());
+        		assertEquals(SeedDBData.s1.getLastName(), s.getLastName());
+        		assertEquals(SeedDBData.s1.getGrade(), s.getGrade());
+        	} else if (s.getId().equals(SeedDBData.s2.getId())) {
+	        		assertEquals(SeedDBData.s2.getFirstName(), s.getFirstName());
+	        		assertEquals(SeedDBData.s2.getLastName(), s.getLastName());
+	        		assertEquals(SeedDBData.s2.getGrade(), s.getGrade());
+            	} else if (s.getId().equals(SeedDBData.s3.getId())) {
+            		assertEquals(SeedDBData.s3.getFirstName(), s.getFirstName());
+            		assertEquals(SeedDBData.s3.getLastName(), s.getLastName());
+            		assertEquals(SeedDBData.s3.getGrade(), s.getGrade());
                 	}
         		
         }
