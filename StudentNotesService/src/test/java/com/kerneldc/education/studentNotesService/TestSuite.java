@@ -7,6 +7,7 @@ import com.kerneldc.education.studentNotesService.security.JacksonGrantedAuthori
 import com.kerneldc.education.studentNotesService.security.JwtTokenTests;
 import com.kerneldc.education.studentNotesService.security.SecurityResourceTests;
 
+/*
 @RunWith(Suite.class)
 
 @Suite.SuiteClasses({
@@ -17,6 +18,7 @@ import com.kerneldc.education.studentNotesService.security.SecurityResourceTests
 	StudentRepositoryTests.class,
 	StudentNotesReportServiceTests.class
 })
+*/
 public class TestSuite {
 	public TestSuite() {
 		System.out.println("//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////");

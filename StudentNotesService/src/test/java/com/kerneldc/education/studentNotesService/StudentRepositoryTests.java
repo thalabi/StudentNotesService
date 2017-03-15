@@ -24,6 +24,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.repository.JpaContext;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.kerneldc.education.studentNotesService.bean.Grades;
@@ -52,6 +53,7 @@ public class StudentRepositoryTests implements InitializingBean {
 	}
 
 	@Test
+	@DirtiesContext
     public void testSaveChangeFirstLastNameAndGrade() {
 
 		Student student = studentRepository.findOne(1l);
@@ -68,6 +70,7 @@ public class StudentRepositoryTests implements InitializingBean {
     }
 
 	@Test
+	@DirtiesContext
     public void testSaveChangeANoteTimestampAndText() {
 		
 		Student student = studentRepository.getStudentById(1l);
@@ -90,6 +93,7 @@ public class StudentRepositoryTests implements InitializingBean {
 	}
 	
 	@Test
+	@DirtiesContext
     public void testSaveDeleteANote() {
 		
 		Student student = studentRepository.getStudentById(1l);
@@ -105,6 +109,7 @@ public class StudentRepositoryTests implements InitializingBean {
 	}
 	
 	@Test
+	@DirtiesContext
     public void testSaveAddANote() {
 		
 		Student student = studentRepository.getStudentById(1l);
@@ -121,6 +126,7 @@ public class StudentRepositoryTests implements InitializingBean {
 	}
 
 	@Test
+	@DirtiesContext
     public void testDelete() {
 		
 		Student student = studentRepository.getStudentById(1l);
@@ -131,6 +137,7 @@ public class StudentRepositoryTests implements InitializingBean {
 	}
 
 	@Test
+	@DirtiesContext
     public void testSaveNewStudentWithNoNotes() {
 		
 		Student student = new Student();
@@ -149,6 +156,7 @@ public class StudentRepositoryTests implements InitializingBean {
 	}
 
 	@Test
+	@DirtiesContext
     public void testSaveNewStudentWithOneNote() {
 		
 		Student student = new Student();
