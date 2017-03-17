@@ -70,7 +70,7 @@ public class SecurityResource {
 	    	user = authenticationService.authenticate(user);
 		} catch (IOException | UsernameNotFoundException | BadCredentialsException e) {
 			LOGGER.warn("Authentication failed for credentials found in request: {}", usernameAndPassword);
-			return Response.status(Response.Status.UNAUTHORIZED).build();
+			return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":  {\"status\": \"get lost\", \"statusText\": \"get lost text\"}}").build();
 		}
     	LOGGER.debug("end ...");
 
