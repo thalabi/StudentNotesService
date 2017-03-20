@@ -71,6 +71,7 @@ public class SecurityResource {
 			user = objectMapper.readValue(usernameAndPassword, User.class);
 	    	user = authenticationService.authenticate(user);
 		} catch (IOException | UsernameNotFoundException | BadCredentialsException e) {
+			LOGGER.debug("Exception encountered: {}", e);
 			LOGGER.debug("Authentication failed for credentials found in request: {}", usernameAndPassword);
 			ObjectNode errorMessageJson = JsonNodeFactory.instance.objectNode();
 			errorMessageJson.put("errorMessage", e.getClass().getSimpleName());

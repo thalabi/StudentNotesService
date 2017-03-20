@@ -2,6 +2,8 @@ package com.kerneldc.education.studentNotesService.security.service;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -52,21 +54,17 @@ public class AuthenticationService {
 	 * @throws IOException 
 	 */
     public Authentication getAuthenticationFromToken(final HttpServletRequest request) throws IOException {
-		LOGGER.debug("begin ...");
-		String authenticationHeader = request.getHeader(Constants.AUTH_HEADER_NAME);
-        LOGGER.debug("authenticationHeader: {}", authenticationHeader);
-        if (authenticationHeader != null) {
-        	String jwtToken = authenticationHeader.split(Constants.AUTH_HEADER_SCHEMA, 2)[1];
-        	if (jwtToken != null) {
-	            try {
-	                User user = jwtTokenUtil.parseToken(jwtToken);
-	                LOGGER.debug("user == null: {}", user == null);
-	                return new UserAuthentication(user);
-	            } catch (UsernameNotFoundException | JwtException | JsonProcessingException e) {
-	            	LOGGER.info("Invalid token");
-	                return null;
-	            }
-	        }
+    	String jwtToken = getJwtToken(request);
+    	if (jwtToken != null) {
+    		LOGGER.debug("|{}|", jwtToken);
+            try {
+                User user = jwtTokenUtil.parseToken(jwtToken);
+                LOGGER.debug("user == null: {}", user == null);
+                return new UserAuthentication(user);
+            } catch (UsernameNotFoundException | JwtException | JsonProcessingException e) {
+            	LOGGER.info("Invalid token");
+                return null;
+            }
         }
 		LOGGER.debug("end ...");
         return null;
@@ -94,5 +92,19 @@ public class AuthenticationService {
     	newUser.setToken(jwtTokenUtil.generate(newUser.getUsername(), newUser.getAuthorities()));
     	LOGGER.debug("end ...");
     	return newUser;
+    }
+    
+    private static String getJwtToken(HttpServletRequest request) {
+		String authenticationHeader = request.getHeader(Constants.AUTH_HEADER_NAME);
+        LOGGER.debug("authenticationHeader: {}", authenticationHeader);
+        if (authenticationHeader != null) {
+        	Pattern p = Pattern.compile("^\\s*Bearer\\s+(.*)$", Pattern.CASE_INSENSITIVE);
+        	Matcher m = p.matcher(authenticationHeader);
+        	LOGGER.debug("matches: {}, group count: {}", m.matches(), m.groupCount());
+        	if (m.matches() && m.groupCount() == 1) {
+        		return m.group(1);
+        	}
+        }
+        return null;
     }
 }

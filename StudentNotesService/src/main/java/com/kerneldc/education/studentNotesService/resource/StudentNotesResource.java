@@ -30,10 +30,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.education.studentNotesService.bean.Students;
 import com.kerneldc.education.studentNotesService.bean.TimestampRange;
+import com.kerneldc.education.studentNotesService.constants.Constants;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
+import com.kerneldc.education.studentNotesService.exception.ApplicationRuntimeException;
+import com.kerneldc.education.studentNotesService.exception.RowNotFoundException;
 import com.kerneldc.education.studentNotesService.repository.NoteRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 import com.kerneldc.education.studentNotesService.service.StudentNotesReportService;
@@ -93,8 +98,25 @@ public class StudentNotesResource {
 		@PathParam("id") Long id) {
 		
 		LOGGER.debug("begin ...");
+		Student student = null;
+		try {
+			student = studentRepository.getStudentById(id);
+		} catch (RuntimeException e) {
+			String errorMessage = String.format("Encountered exception while looking up student id %s. Exception is: %s", id, e.getClass().getSimpleName());
+			LOGGER.error(errorMessage);
+			ObjectNode errorMessageJson = JsonNodeFactory.instance.objectNode();
+			errorMessageJson.put("errorMessage", errorMessage);
+			throw new ApplicationRuntimeException(Response.status(Constants.APPLICATION_EXCEPTION_RESPONSE_STATUS).entity(errorMessageJson).build());
+		}
+		if (student == null) {
+			String errorMessage = String.format("Student id %s not found", id);
+			LOGGER.debug(errorMessage);
+			ObjectNode errorMessageJson = JsonNodeFactory.instance.objectNode();
+			errorMessageJson.put("errorMessage", errorMessage);
+			throw new RowNotFoundException(Response.status(Constants.APPLICATION_EXCEPTION_RESPONSE_STATUS).entity(errorMessageJson).build());
+		}
 		LOGGER.debug("end ...");
-		return studentRepository.getStudentById(id);
+		return student;
 	}
 
     // curl -i -H "Content-Type: application/json" -X POST -d '{"id":2,"firstName":"xxxxxxxxxxxxxxxx","lastName":"halabi","grade":"GR-4","noteList":[]}' http://localhost:8080/StudentNotesService
