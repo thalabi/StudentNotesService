@@ -20,6 +20,8 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.education.studentNotesService.security.bean.User;
 import com.kerneldc.education.studentNotesService.security.service.AuthenticationService;
 
@@ -69,8 +71,10 @@ public class SecurityResource {
 			user = objectMapper.readValue(usernameAndPassword, User.class);
 	    	user = authenticationService.authenticate(user);
 		} catch (IOException | UsernameNotFoundException | BadCredentialsException e) {
-			LOGGER.warn("Authentication failed for credentials found in request: {}", usernameAndPassword);
-			return Response.status(Response.Status.UNAUTHORIZED).entity("{\"error\":  {\"status\": \"get lost\", \"statusText\": \"get lost text\"}}").build();
+			LOGGER.debug("Authentication failed for credentials found in request: {}", usernameAndPassword);
+			ObjectNode errorMessageJson = JsonNodeFactory.instance.objectNode();
+			errorMessageJson.put("errorMessage", e.getClass().getSimpleName());
+			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMessageJson).build();
 		}
     	LOGGER.debug("end ...");
 
