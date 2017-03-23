@@ -101,6 +101,7 @@ public class StudentNotesResource {
 		Student student = null;
 		try {
 			student = studentRepository.getStudentById(id);
+			int i = 1/0;
 		} catch (RuntimeException e) {
 			String errorMessage = String.format("Encountered exception while looking up student id %s. Exception is: %s", id, e.getClass().getSimpleName());
 			LOGGER.error(errorMessage);
