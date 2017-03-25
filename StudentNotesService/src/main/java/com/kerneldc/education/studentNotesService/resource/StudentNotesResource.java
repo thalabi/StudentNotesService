@@ -30,15 +30,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.education.studentNotesService.bean.Students;
 import com.kerneldc.education.studentNotesService.bean.TimestampRange;
-import com.kerneldc.education.studentNotesService.constants.Constants;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
-import com.kerneldc.education.studentNotesService.exception.ApplicationRuntimeException;
 import com.kerneldc.education.studentNotesService.exception.RowNotFoundException;
+import com.kerneldc.education.studentNotesService.exception.SnRuntimeException;
 import com.kerneldc.education.studentNotesService.repository.NoteRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 import com.kerneldc.education.studentNotesService.service.StudentNotesReportService;
@@ -95,7 +92,7 @@ public class StudentNotesResource {
 	@Path("/getStudentById/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Student getStudentById(
-		@PathParam("id") Long id) {
+		@PathParam("id") Long id) throws RowNotFoundException {
 		
 		LOGGER.debug("begin ...");
 		Student student = null;
@@ -105,16 +102,15 @@ public class StudentNotesResource {
 		} catch (RuntimeException e) {
 			String errorMessage = String.format("Encountered exception while looking up student id %s. Exception is: %s", id, e.getClass().getSimpleName());
 			LOGGER.error(errorMessage);
-			ObjectNode errorMessageJson = JsonNodeFactory.instance.objectNode();
-			errorMessageJson.put("errorMessage", errorMessage);
-			throw new ApplicationRuntimeException(Response.status(Constants.APPLICATION_EXCEPTION_RESPONSE_STATUS).entity(errorMessageJson).build());
+			throw new SnRuntimeException(errorMessage);
 		}
 		if (student == null) {
 			String errorMessage = String.format("Student id %s not found", id);
 			LOGGER.debug(errorMessage);
-			ObjectNode errorMessageJson = JsonNodeFactory.instance.objectNode();
-			errorMessageJson.put("errorMessage", errorMessage);
-			throw new RowNotFoundException(Response.status(Constants.APPLICATION_EXCEPTION_RESPONSE_STATUS).entity(errorMessageJson).build());
+//			ObjectNode errorMessageJson = JsonNodeFactory.instance.objectNode();
+//			errorMessageJson.put("errorMessage", errorMessage);
+//			throw new RowNotFoundException(Response.status(Constants.SN_EXCEPTION_RESPONSE_STATUS_CODE).entity(errorMessageJson).build());
+			throw new RowNotFoundException(errorMessage);
 		}
 		LOGGER.debug("end ...");
 		return student;

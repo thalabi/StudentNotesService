@@ -1,13 +1,27 @@
 package com.kerneldc.education.studentNotesService.exception;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-
-public class RowNotFoundException extends WebApplicationException {
+public class RowNotFoundException extends SnException {
 
 	private static final long serialVersionUID = 1L;
 
-	public RowNotFoundException(Response response) {
-		super(response);
+	public RowNotFoundException() {
 	}
+
+	public RowNotFoundException(String message) {
+		super(message);
+	}
+
+	public RowNotFoundException(Throwable cause) {
+		super(cause);
+	}
+
+	public RowNotFoundException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public RowNotFoundException(String message, Throwable cause, boolean enableSuppression,
+			boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
+	}
+
 }
