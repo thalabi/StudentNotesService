@@ -20,9 +20,8 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.education.studentNotesService.security.bean.User;
+import com.kerneldc.education.studentNotesService.security.exception.AuthenticationException;
 import com.kerneldc.education.studentNotesService.security.service.AuthenticationService;
 
 @Component
@@ -53,6 +52,7 @@ public class SecurityResource {
 	 * generated jwt token
 	 * @param usernameAndPassword in json format
 	 * @return User object including the generated jwt token
+	 * @throws AuthenticationException 
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
 	 * @throws IOException
@@ -62,7 +62,7 @@ public class SecurityResource {
     @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
     public Response authenticate(
-    	String usernameAndPassword) {
+    	String usernameAndPassword) throws AuthenticationException {
 
     	LOGGER.debug("begin ...");
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -70,12 +70,10 @@ public class SecurityResource {
 		try {
 			user = objectMapper.readValue(usernameAndPassword, User.class);
 	    	user = authenticationService.authenticate(user);
-		} catch (IOException | UsernameNotFoundException | BadCredentialsException e) {
+		} catch (UsernameNotFoundException | BadCredentialsException | IOException e) {
 			LOGGER.debug("Exception encountered: {}", e);
-			LOGGER.debug("Authentication failed for credentials found in request: {}", usernameAndPassword);
-			ObjectNode errorMessageJson = JsonNodeFactory.instance.objectNode();
-			errorMessageJson.put("errorMessage", e.getClass().getSimpleName());
-			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMessageJson).build();
+			LOGGER.warn("Authentication failed for credentials found in request: {}", usernameAndPassword);
+			throw new AuthenticationException(e.getClass().getSimpleName());
 		}
     	LOGGER.debug("end ...");
 

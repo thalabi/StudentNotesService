@@ -36,7 +36,6 @@ import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.exception.RowNotFoundException;
 import com.kerneldc.education.studentNotesService.exception.SnRuntimeException;
-import com.kerneldc.education.studentNotesService.repository.NoteRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 import com.kerneldc.education.studentNotesService.service.StudentNotesReportService;
 
@@ -48,8 +47,6 @@ public class StudentNotesResource {
 
 	@Autowired
 	private StudentRepository studentRepository;
-	@Autowired
-	private NoteRepository noteRepository;
 	@Autowired
 	private StudentNotesReportService studentNotesReportService;
 
@@ -77,16 +74,6 @@ public class StudentNotesResource {
 	}
 
 	// curl -H -i http://localhost:8080/StudentNotesService/getAllStudents
-	@GET
-	@Path("/getAllNotes")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Iterable<Note> getAllNotes() {
-		
-		LOGGER.debug("begin ...");
-		LOGGER.debug("end ...");
-		return noteRepository.findAll();
-	}
-	
 	// curl -H -i http://localhost:8080/StudentNotesService/getStudentById/1
 	@GET
 	@Path("/getStudentById/{id}")
@@ -98,7 +85,6 @@ public class StudentNotesResource {
 		Student student = null;
 		try {
 			student = studentRepository.getStudentById(id);
-			int i = 1/0;
 		} catch (RuntimeException e) {
 			String errorMessage = String.format("Encountered exception while looking up student id %s. Exception is: %s", id, e.getClass().getSimpleName());
 			LOGGER.error(errorMessage);
@@ -107,9 +93,6 @@ public class StudentNotesResource {
 		if (student == null) {
 			String errorMessage = String.format("Student id %s not found", id);
 			LOGGER.debug(errorMessage);
-//			ObjectNode errorMessageJson = JsonNodeFactory.instance.objectNode();
-//			errorMessageJson.put("errorMessage", errorMessage);
-//			throw new RowNotFoundException(Response.status(Constants.SN_EXCEPTION_RESPONSE_STATUS_CODE).entity(errorMessageJson).build());
 			throw new RowNotFoundException(errorMessage);
 		}
 		LOGGER.debug("end ...");
@@ -138,29 +121,6 @@ public class StudentNotesResource {
 		LOGGER.debug("begin ...");
 		LOGGER.debug("end ...");
 		studentRepository.delete(id);
-	}
-
-    @POST
-	@Path("/saveNote")
-    @Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-    public Note saveNote(
-    	Note note) {
-
-    	LOGGER.debug("begin ...");
-    	LOGGER.debug("end ...");
-    	return noteRepository.save(note);
-    }
-	
-	@DELETE
-	@Path("/deleteNoteById/{id}")
-    @Consumes(MediaType.APPLICATION_JSON)
-	public void deleteNoteById(
-		@PathParam("id") Long id) {
-		
-		LOGGER.debug("begin ...");
-		LOGGER.debug("end ...");
-		noteRepository.delete(id);
 	}
 	
 	@GET

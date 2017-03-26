@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.education.studentNotesService.constants.Constants;
 import com.kerneldc.education.studentNotesService.exception.ResponseStatus.SnResponseStatusType;
+import com.kerneldc.education.studentNotesService.security.exception.AuthenticationException;
 
 @Provider
 public class ResponseExceptionMapper implements ExceptionMapper<Exception> {
@@ -16,12 +17,18 @@ public class ResponseExceptionMapper implements ExceptionMapper<Exception> {
 	@Override
 	public Response toResponse(Exception exception) {
 		if (exception instanceof SnException || exception instanceof SnRuntimeException) {
-			SnResponseStatusType status = new SnResponseStatusType(
-					Family.SERVER_ERROR, Constants.SN_EXCEPTION_RESPONSE_STATUS_CODE,
-					Constants.SN_EXCEPTION_RESPONSE_REASON_PHRASE);
 			ObjectNode errorMessageJson = JsonNodeFactory.instance.objectNode();
 			errorMessageJson.put("errorMessage", exception.getMessage());
-			return Response.status(status).entity(errorMessageJson).build();
+			// if the exception is AuthenticationException, set the status code to UNAUTHORIZED
+			// otherwise to SN_EXCEPTION_RESPONSE_STATUS_CODE
+			if (exception instanceof AuthenticationException) {
+				return Response.status(Response.Status.UNAUTHORIZED).entity(errorMessageJson).build();
+			} else {
+				SnResponseStatusType status = new SnResponseStatusType(
+						Family.SERVER_ERROR, Constants.SN_EXCEPTION_RESPONSE_STATUS_CODE,
+						Constants.SN_EXCEPTION_RESPONSE_REASON_PHRASE);
+				return Response.status(status).entity(errorMessageJson).build();
+			}
 		} else {
 			return null;
 		}

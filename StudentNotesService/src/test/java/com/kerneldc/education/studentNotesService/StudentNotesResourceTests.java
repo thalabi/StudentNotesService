@@ -132,15 +132,6 @@ public class StudentNotesResourceTests {
     }
 
 	@Test
-    public void testGetAllNotes() {
-		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
-		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/getAllNotes", HttpMethod.GET, httpEntity, String.class);
-        String expected = "[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":0,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3\"},{\"version\":0,\"id\":4,\"timestamp\":1481403630842,\"text\":\"note 4\"},{\"version\":0,\"id\":5,\"timestamp\":1481403630843,\"text\":\"note 5\"}]";
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expected, response.getBody());
-    }
-	
-	@Test
     public void testGetStudentById() {
 		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
 		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/getStudentById/1", HttpMethod.GET, httpEntity, String.class);
@@ -277,36 +268,6 @@ public class StudentNotesResourceTests {
 
 	@Test
 	@DirtiesContext
-	public void testSaveNote() throws JsonProcessingException {
-		
-		Student student = new Student();
-		student.setFirstName("new first name with notes t10testSaveNote");
-		student.setLastName("new last name with notes t10testSaveNote");
-		student.setGrade("4");
-		Note note1 = new Note();
-		note1.setTimestamp(new Timestamp(System.currentTimeMillis()));
-		note1.setText("new note1 text t10testSaveNote");
-
-		student.getNoteList().add(note1);
-		studentRepository.save(student);
-
-		note1.setTimestamp(new Timestamp(note1.getTimestamp().getTime() - 60000));
-		note1.setText("new note1 text t10testSaveNote modified");
-		JsonNode jsonNote = objectMapper.valueToTree(note1);
-		
-		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonNote,httpHeaders);
-
-		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/saveNote", HttpMethod.POST, httpEntity, JsonNode.class);
-		Note newNote = objectMapper.treeToValue(response.getBody(), Note.class);
-		assertTrue(
-			newNote.getId().equals(note1.getId()) &&
-			newNote.getTimestamp().equals(note1.getTimestamp()) &&
-			newNote.getText().equals(note1.getText()) &&
-			newNote.getVersion().equals(note1.getVersion()+1));
-    }
-
-	@Test
-	@DirtiesContext
 	public void testSaveStudentAddStudent() {
 		
 		Student student = new Student();
@@ -398,6 +359,6 @@ public class StudentNotesResourceTests {
 		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
 		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/deleteNoteById/2",
 				HttpMethod.DELETE, httpEntity, String.class);
-		assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+		assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 	}
 }
