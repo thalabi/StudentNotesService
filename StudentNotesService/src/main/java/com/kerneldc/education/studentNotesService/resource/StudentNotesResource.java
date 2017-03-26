@@ -32,7 +32,6 @@ import org.xml.sax.SAXException;
 
 import com.kerneldc.education.studentNotesService.bean.Students;
 import com.kerneldc.education.studentNotesService.bean.TimestampRange;
-import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.exception.RowNotFoundException;
 import com.kerneldc.education.studentNotesService.exception.SnRuntimeException;
@@ -70,7 +69,15 @@ public class StudentNotesResource {
 		
 		LOGGER.debug("begin ...");
 		LOGGER.debug("end ...");
-		return studentRepository.getAllStudents();
+		//return studentRepository.getAllStudents();
+		List<Student> students = null;
+		try {
+			students = studentRepository.getAllStudents();
+		} catch (RuntimeException e) {
+			LOGGER.error("Exception encountered: {}", e);
+			throw new SnRuntimeException(e.getClass().getSimpleName());
+		}
+		return students;
 	}
 
 	// curl -H -i http://localhost:8080/StudentNotesService/getAllStudents
