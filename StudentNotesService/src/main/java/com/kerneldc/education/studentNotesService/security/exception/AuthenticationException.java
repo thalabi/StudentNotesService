@@ -1,8 +1,8 @@
 package com.kerneldc.education.studentNotesService.security.exception;
 
-import com.kerneldc.education.studentNotesService.exception.SnException;
+import com.kerneldc.education.studentNotesService.exception.SnsException;
 
-public class AuthenticationException extends SnException {
+public class AuthenticationException extends SnsException {
 
 	private static final long serialVersionUID = 1L;
 

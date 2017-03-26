@@ -16,7 +16,7 @@ public class ResponseExceptionMapper implements ExceptionMapper<Exception> {
 
 	@Override
 	public Response toResponse(Exception exception) {
-		if (exception instanceof SnException || exception instanceof SnRuntimeException) {
+		if (exception instanceof SnsException || exception instanceof SnsRuntimeException) {
 			ObjectNode errorMessageJson = JsonNodeFactory.instance.objectNode();
 			errorMessageJson.put("errorMessage", exception.getMessage());
 			// if the exception is AuthenticationException, set the status code to UNAUTHORIZED

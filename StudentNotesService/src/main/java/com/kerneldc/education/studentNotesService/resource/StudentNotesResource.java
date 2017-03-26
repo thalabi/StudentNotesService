@@ -35,7 +35,7 @@ import com.kerneldc.education.studentNotesService.bean.Students;
 import com.kerneldc.education.studentNotesService.bean.TimestampRange;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.exception.RowNotFoundException;
-import com.kerneldc.education.studentNotesService.exception.SnRuntimeException;
+import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 import com.kerneldc.education.studentNotesService.service.StudentNotesReportService;
 
@@ -85,7 +85,7 @@ public class StudentNotesResource {
 			students = studentRepository.getAllStudents();
 		} catch (RuntimeException e) {
 			LOGGER.error("Exception encountered: {}", e);
-			throw new SnRuntimeException(e.getClass().getSimpleName());
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
 		}
 		LOGGER.debug("end ...");
 		return students;
@@ -106,7 +106,7 @@ public class StudentNotesResource {
 		} catch (RuntimeException e) {
 			String errorMessage = String.format("Encountered exception while looking up student id %s. Exception is: %s", id, e.getClass().getSimpleName());
 			LOGGER.error(errorMessage);
-			throw new SnRuntimeException(errorMessage);
+			throw new SnsRuntimeException(errorMessage);
 		}
 		if (student == null) {
 			String errorMessage = String.format("Student id %s not found", id);

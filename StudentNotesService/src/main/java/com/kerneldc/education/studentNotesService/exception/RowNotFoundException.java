@@ -1,6 +1,6 @@
 package com.kerneldc.education.studentNotesService.exception;
 
-public class RowNotFoundException extends SnException {
+public class RowNotFoundException extends SnsException {
 
 	private static final long serialVersionUID = 1L;
 
