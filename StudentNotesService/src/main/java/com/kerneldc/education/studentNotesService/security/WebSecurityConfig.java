@@ -43,7 +43,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             // don't create session
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
             .authorizeRequests()
-                .antMatchers(/*"/", "/home",*/"/StudentNotesService/Security/authenticate").permitAll()
+                .antMatchers(/*"/", "/home",*/"/StudentNotesService/getVersion", "/StudentNotesService/Security/authenticate").permitAll()
                 .anyRequest().authenticated()
             .and()
             .addFilterBefore(crossOriginResourceSharingFilter, ChannelProcessingFilter.class)

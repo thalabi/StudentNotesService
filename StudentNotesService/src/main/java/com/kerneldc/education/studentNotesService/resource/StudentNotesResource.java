@@ -27,6 +27,7 @@ import javax.xml.transform.TransformerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
@@ -48,6 +49,8 @@ public class StudentNotesResource {
 	private StudentRepository studentRepository;
 	@Autowired
 	private StudentNotesReportService studentNotesReportService;
+	@Value("${version}")
+	private String version;
 
 	public StudentNotesResource() {
 		LOGGER.info("Initialized ...");
@@ -61,6 +64,15 @@ public class StudentNotesResource {
 		return "Hello";
 	}
 
+	@GET
+	@Path("/getVersion")
+	public String getVersion() {
+		
+		LOGGER.debug("begin ...");
+		LOGGER.debug("end ...");
+		return version;
+	}
+
 	// curl -H -i http://localhost:8080/StudentNotesService/getAllStudents
 	@GET
 	@Path("/getAllStudents")
@@ -68,8 +80,6 @@ public class StudentNotesResource {
 	public List<Student> getAllStudents() {
 		
 		LOGGER.debug("begin ...");
-		LOGGER.debug("end ...");
-		//return studentRepository.getAllStudents();
 		List<Student> students = null;
 		try {
 			students = studentRepository.getAllStudents();
@@ -77,6 +87,7 @@ public class StudentNotesResource {
 			LOGGER.error("Exception encountered: {}", e);
 			throw new SnRuntimeException(e.getClass().getSimpleName());
 		}
+		LOGGER.debug("end ...");
 		return students;
 	}
 

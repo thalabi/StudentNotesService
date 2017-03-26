@@ -108,6 +108,13 @@ public class StudentNotesResourceTests {
     }
 
 	@Test
+    public void testGetVersion() {
+        ResponseEntity<String> response = testRestTemplate.getForEntity(BASE_URI+"/getVersion", String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("mock-version", response.getBody());
+    }
+
+	@Test
     public void testGetAllStudents() throws JsonProcessingException {
 		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
 		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/getAllStudents", HttpMethod.GET, httpEntity, JsonNode.class);
