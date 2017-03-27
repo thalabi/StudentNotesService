@@ -80,7 +80,7 @@ public class StudentNotesResource {
 	public List<Student> getAllStudents() {
 		
 		LOGGER.debug("begin ...");
-		List<Student> students = null;
+		List<Student> students;
 		try {
 			students = studentRepository.getAllStudents();
 		} catch (RuntimeException e) {
@@ -100,7 +100,7 @@ public class StudentNotesResource {
 		@PathParam("id") Long id) throws RowNotFoundException {
 		
 		LOGGER.debug("begin ...");
-		Student student = null;
+		Student student;
 		try {
 			student = studentRepository.getStudentById(id);
 		} catch (RuntimeException e) {
@@ -126,8 +126,15 @@ public class StudentNotesResource {
     	Student student) {
 
     	LOGGER.debug("begin ...");
+    	Student savedSudent;
+    	try {
+    		savedSudent = studentRepository.save(student);
+		} catch (RuntimeException e) {
+			LOGGER.error("Exception encountered: {}", e);
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
     	LOGGER.debug("end ...");
-    	return studentRepository.save(student);
+    	return savedSudent;
     }
 	
 	@DELETE
