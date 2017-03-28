@@ -1,6 +1,8 @@
 package com.kerneldc.education.studentNotesService;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -23,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.repository.JpaContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -156,6 +159,55 @@ public class StudentRepositoryTests implements InitializingBean {
 	}
 
 	@Test
+	//@DirtiesContext
+    public void testSaveNewStudentWithDuplicateFirstLastName() {
+
+		// test same first and last name
+		Student student1 = new Student();
+		student1.setFirstName("first name - testSaveNewStudentWithDuplicateFirstLastName");
+		student1.setLastName("last name - testSaveNewStudentWithDuplicateFirstLastName");
+		studentRepository.save(student1);
+
+		Student student2 = new Student();
+		student2.setFirstName("first name - testSaveNewStudentWithDuplicateFirstLastName");
+		student2.setLastName("last name - testSaveNewStudentWithDuplicateFirstLastName");
+		try {
+			studentRepository.save(student2);
+			fail("Failed test when first and last name are the same for both students");
+		} catch (DataIntegrityViolationException e) {
+			assertTrue(true);
+		}
+
+		// test same first name and no last name
+		Student student3 = new Student();
+		student3.setFirstName("first name - testSaveNewStudentWithDuplicateFirstLastName 2");
+		studentRepository.save(student3);
+
+		Student student4 = new Student();
+		student4.setFirstName("first name - testSaveNewStudentWithDuplicateFirstLastName 2");
+		try {
+			studentRepository.save(student4);
+			fail("Failed test when first name is the same and last name is null for both students");
+		} catch (DataIntegrityViolationException e) {
+			assertTrue(true);
+		}
+	
+		// test same last name and no first name
+		Student student5 = new Student();
+		student5.setLastName("last name - testSaveNewStudentWithDuplicateFirstLastName 3");
+		studentRepository.save(student5);
+
+		Student student6 = new Student();
+		student6.setLastName("last name - testSaveNewStudentWithDuplicateFirstLastName 3");
+		try {
+			studentRepository.save(student6);
+			fail("Failed test when last name is the same and first name is null for both students");
+		} catch (DataIntegrityViolationException e) {
+			assertTrue(true);
+		}
+	}
+
+	@Test
 	@DirtiesContext
     public void testSaveNewStudentWithOneNote() {
 		
@@ -175,9 +227,9 @@ public class StudentRepositoryTests implements InitializingBean {
 						s.getLastName().equals(student.getLastName()) &&
 						s.getGrade().equals(student.getGrade()))
 				.findAny();
-		Assert.assertTrue(newStudent.getId() != null && optionalStudent.isPresent());
-		Assert.assertTrue(optionalStudent.get().getNoteList().size() == 1);
-		Assert.assertTrue(
+		assertTrue(newStudent.getId() != null && optionalStudent.isPresent());
+		assertTrue(optionalStudent.get().getNoteList().size() == 1);
+		assertTrue(
 			optionalStudent.get().getNoteList().get(0).getId() != null &&
 			optionalStudent.get().getNoteList().get(0).getTimestamp().equals(note.getTimestamp()) &&
 			optionalStudent.get().getNoteList().get(0).getText().equals(note.getText()));
@@ -205,7 +257,7 @@ public class StudentRepositoryTests implements InitializingBean {
 		Note newNote2 = newStudent.getNoteList().get(0);
 		Note newNote1 = newStudent.getNoteList().get(1);
 		// Test that the note with the earlier timestamp is the first note retrieved ie the order by timestamp works
-		Assert.assertTrue(
+		assertTrue(
 			newNote2.getId() != null &&
 			newNote2.getTimestamp().equals(note2.getTimestamp()) &&
 			newNote2.getText().equals(note2.getText()) &&
@@ -221,7 +273,7 @@ public class StudentRepositoryTests implements InitializingBean {
 		Set<Student> students = studentRepository.getLatestActiveStudents(1);
 		System.out.println(students.size());
 		System.out.println(new ArrayList<Student>(students).get(0).getNoteList().size());
-		Assert.assertTrue(students.size() == 1);
+		assertTrue(students.size() == 1);
 	}
 
 	// TODO (test should check that each student returned has a note with a timestamp in the range, DONE)
@@ -249,25 +301,25 @@ public class StudentRepositoryTests implements InitializingBean {
 		Timestamp fromTimestamp = Timestamp.valueOf(LocalDate.of(2018, 1, 1).atStartOfDay());
 		Timestamp toTimestamp = Timestamp.valueOf(LocalDate.of(2018, 1, 1).atStartOfDay());
 		Set<Student> students = studentRepository.getStudentsByTimestampRange(fromTimestamp, toTimestamp);
-		Assert.assertEquals(1, students.size());
+		assertEquals(1, students.size());
 		students.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp, toTimestamp));
 		
 		Timestamp fromTimestamp2 = Timestamp.valueOf(LocalDate.of(2018, 1, 2).atStartOfDay());
 		Timestamp toTimestamp2 = Timestamp.valueOf(LocalDate.of(2018, 1, 2).atStartOfDay());
 		Set<Student> students2 = studentRepository.getStudentsByTimestampRange(fromTimestamp2, toTimestamp2);
-		Assert.assertEquals(1, students2.size());
+		assertEquals(1, students2.size());
 		students2.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp2, toTimestamp2));
 
 		Timestamp fromTimestamp3 = Timestamp.valueOf(LocalDate.of(2018, 1, 2).atStartOfDay());
 		Timestamp toTimestamp3 = Timestamp.valueOf(LocalDate.of(2018, 1, 3).atStartOfDay());
 		Set<Student> students3 = studentRepository.getStudentsByTimestampRange(fromTimestamp3, toTimestamp3);
-		Assert.assertEquals(1, students3.size());
+		assertEquals(1, students3.size());
 		students3.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp3, toTimestamp3));
 
 		Timestamp fromTimestamp4 = Timestamp.valueOf(LocalDate.of(2018, 1, 3).atStartOfDay());
 		Timestamp toTimestamp4 = Timestamp.valueOf(LocalDate.of(2018, 1, 3).atStartOfDay());
 		Set<Student> students4 = studentRepository.getStudentsByTimestampRange(fromTimestamp4, toTimestamp4);
-		Assert.assertEquals(0, students4.size());
+		assertEquals(0, students4.size());
 		students4.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp4, toTimestamp4));
 
 		Student s2 = new Student();
@@ -297,24 +349,24 @@ public class StudentRepositoryTests implements InitializingBean {
 		Timestamp fromTimestamp5 = Timestamp.valueOf(LocalDate.of(2018, 2, 1).atStartOfDay());
 		Timestamp toTimestamp5 = Timestamp.valueOf(LocalDate.of(2018, 2, 10).atStartOfDay());
 		Set<Student> students5 = studentRepository.getStudentsByTimestampRange(fromTimestamp5, toTimestamp5);
-		Assert.assertEquals(2, students5.size());
+		assertEquals(2, students5.size());
 		students5.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp5, toTimestamp5));
 
 		Timestamp fromTimestamp6 = Timestamp.valueOf(LocalDate.of(2018, 2, 1).atStartOfDay());
 		Timestamp toTimestamp6 = Timestamp.valueOf(LocalDate.of(2018, 2, 2).atTime(LocalTime.MAX));
 		Set<Student> students6 = studentRepository.getStudentsByTimestampRange(fromTimestamp6, toTimestamp6);
-		Assert.assertEquals(2, students6.size());
+		assertEquals(2, students6.size());
 		students6.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp6, toTimestamp6));
 
 		Timestamp fromTimestamp7 = Timestamp.valueOf(LocalDate.of(2018, 2, 1).atStartOfDay());
 		Timestamp toTimestamp7 = Timestamp.valueOf(LocalDate.of(2018, 2, 1).atTime(LocalTime.MAX));
 		Set<Student> students7 = studentRepository.getStudentsByTimestampRange(fromTimestamp7, toTimestamp7);
-		Assert.assertEquals(1, students7.size());
+		assertEquals(1, students7.size());
 		students7.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp7, toTimestamp7));
 	}
 	
 	private void checkStudentHasAtLeastOneTimestampBetween (Student student, Timestamp fromTimestamp, Timestamp toTimestamp) {
-		Assert.assertTrue(student.getNoteList().stream().anyMatch(
+		assertTrue(student.getNoteList().stream().anyMatch(
 				note -> checkNotesTimestampIsBetween(note, fromTimestamp, toTimestamp)
 		));
 	}
@@ -325,7 +377,7 @@ public class StudentRepositoryTests implements InitializingBean {
 
 	@Test
 	public void testGetStudentsByListOfIds() {
-		Assert.assertEquals(2,studentRepository.getStudentsByListOfIds(Arrays.asList(1l,3l)).size());
+		assertEquals(2,studentRepository.getStudentsByListOfIds(Arrays.asList(1l,3l)).size());
 	}
 	
 	@Test

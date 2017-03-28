@@ -36,9 +36,9 @@ public class Student extends AbstractPersistableEntity {
 	@XmlTransient
 	private Long id;
 	@Column(name = "FIRST_NAME")
-	private String firstName;
+	private String firstName = "";
 	@Column(name = "LAST_NAME")
-	private String lastName;
+	private String lastName = "";
 	@Column(name = "GRADE")
 	private String grade;
 	
@@ -62,13 +62,13 @@ public class Student extends AbstractPersistableEntity {
 		return firstName;
 	}
 	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+		this.firstName = firstName == null ? "" : firstName;
 	}
 	public String getLastName() {
 		return lastName;
 	}
 	public void setLastName(String lastName) {
-		this.lastName = lastName;
+		this.lastName = lastName == null ? "" : lastName;
 	}
 	public String getGrade() {
 		return grade;
