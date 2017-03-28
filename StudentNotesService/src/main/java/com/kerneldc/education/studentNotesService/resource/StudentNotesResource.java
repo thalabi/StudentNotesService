@@ -140,12 +140,18 @@ public class StudentNotesResource {
 	@DELETE
 	@Path("/deleteStudentById/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public void deleteStudentById(
 		@PathParam("id") Long id) {
 		
 		LOGGER.debug("begin ...");
+    	try {
+			studentRepository.delete(id);
+		} catch (RuntimeException e) {
+			LOGGER.error("Exception encountered: {}", e);
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
 		LOGGER.debug("end ...");
-		studentRepository.delete(id);
 	}
 	
 	@GET
