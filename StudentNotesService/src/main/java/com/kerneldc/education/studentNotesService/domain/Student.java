@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,6 +24,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.kerneldc.education.studentNotesService.bean.Grades;
+import com.kerneldc.education.studentNotesService.domain.converter.GradeConverter;
+
 @Entity
 @Table(name = "STUDENT", uniqueConstraints=@UniqueConstraint(columnNames={"FIRST_NAME", "LAST_NAME"}))
 @NamedEntityGraph(name = "Student.noteList", 
@@ -40,7 +44,8 @@ public class Student extends AbstractPersistableEntity {
 	@Column(name = "LAST_NAME")
 	private String lastName = "";
 	@Column(name = "GRADE")
-	private String grade;
+	@Convert(converter=GradeConverter.class)
+	private Grades grade;
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("timestamp")
@@ -70,10 +75,10 @@ public class Student extends AbstractPersistableEntity {
 	public void setLastName(String lastName) {
 		this.lastName = lastName == null ? "" : lastName;
 	}
-	public String getGrade() {
+	public Grades getGrade() {
 		return grade;
 	}
-	public void setGrade(String grade) {
+	public void setGrade(Grades grade) {
 		this.grade = grade;
 	}
 

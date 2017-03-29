@@ -37,6 +37,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kerneldc.education.studentNotesService.bean.Grades;
 import com.kerneldc.education.studentNotesService.bean.TimestampRange;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
@@ -228,7 +229,7 @@ public class StudentNotesResourceTests {
 		Student student = new Student();
 		student.setFirstName("new first name with notes t07testSaveStudentDeleteNote");
 		student.setLastName("new last name with notes t07testSaveStudentDeleteNote");
-		student.setGrade("2");
+		student.setGrade(Grades.TWO);
 		Note note1 = new Note();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 		LocalDateTime timestamp1 = LocalDateTime.parse("2017-01-22 20:08", formatter);
@@ -280,7 +281,7 @@ public class StudentNotesResourceTests {
 		Student student = new Student();
 		student.setFirstName("new first name");
 		student.setLastName("new last name");
-		student.setGrade("1");
+		student.setGrade(Grades.ONE);
 		JsonNode jsonStudent = objectMapper.valueToTree(student);
 
 		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonStudent,httpHeaders);
@@ -312,7 +313,7 @@ public class StudentNotesResourceTests {
 		Student student = new Student();
 		student.setFirstName("new first name with notes");
 		student.setLastName("new last name with notes");
-		student.setGrade("2");
+		student.setGrade(Grades.TWO);
 		Note note1 = new Note();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 		LocalDateTime timestamp1 = LocalDateTime.parse("2017-01-22 20:08", formatter);

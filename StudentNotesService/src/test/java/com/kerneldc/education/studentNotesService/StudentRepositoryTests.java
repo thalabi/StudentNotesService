@@ -62,14 +62,14 @@ public class StudentRepositoryTests implements InitializingBean {
 		Student student = studentRepository.findOne(1l);
 		student.setFirstName(student.getFirstName()+" v1");
 		student.setLastName(student.getLastName()+" v1");
-		student.setGrade(Grades.FIVE.getValue());
+		student.setGrade(Grades.FIVE);
 		Student updatedStudent = studentRepository.save(student);
 		entityManager.flush();
 		Assert.assertTrue(
 			updatedStudent.getId().equals(1l) &&
 			updatedStudent.getFirstName().equals(student.getFirstName()) &&
 			updatedStudent.getLastName().equals(student.getLastName()) &&
-			updatedStudent.getGrade().equals("5"));
+			updatedStudent.getGrade().equals(Grades.FIVE));
     }
 
 	@Test
@@ -146,7 +146,7 @@ public class StudentRepositoryTests implements InitializingBean {
 		Student student = new Student();
 		student.setFirstName("first name - testSaveNewStudentWithNoNotes");
 		student.setLastName("last name - testSaveNewStudentWithNoNotes");
-		student.setGrade(Grades.OTHER.getValue());
+		student.setGrade(Grades.OTHER);
 		Student newStudent = studentRepository.save(student);
 		entityManager.flush();
 		List<Student> allStudents = studentRepository.getAllStudents();
@@ -214,7 +214,7 @@ public class StudentRepositoryTests implements InitializingBean {
 		Student student = new Student();
 		student.setFirstName("first name - testSaveNewStudentWithOneNote");
 		student.setLastName("last name - testSaveNewStudentWithOneNote");
-		student.setGrade(Grades.THREE.getValue());
+		student.setGrade(Grades.THREE);
 		Note note = new Note();
 		note.setTimestamp(new Timestamp(System.currentTimeMillis()));
 		note.setText("note - testSaveNewStudentWithOneNote");
@@ -241,7 +241,7 @@ public class StudentRepositoryTests implements InitializingBean {
 		Student student = new Student();
 		student.setFirstName("first name - testGetStudentById");
 		student.setLastName("last name - testGetStudentById");
-		student.setGrade(Grades.TWO.getValue());
+		student.setGrade(Grades.TWO);
 		Note note1 = new Note();
 		note1.setTimestamp(new Timestamp(System.currentTimeMillis()));
 		note1.setText("note 1 - testGetStudentById");
@@ -286,7 +286,7 @@ public class StudentRepositoryTests implements InitializingBean {
 		Student s1 = new Student();
 		s1.setFirstName("testGetStudentsByTimestampRange s1 first name");
 		s1.setLastName("testGetStudentsByTimestampRange s1 last name");
-		s1.setGrade(Grades.SEVEN.getValue());
+		s1.setGrade(Grades.SEVEN);
 		Note s1n1 = new Note();
 		s1n1.setText("s1n1 note 1 text");
 		s1n1.setTimestamp(Timestamp.valueOf(LocalDate.of(2018,1,1).atStartOfDay()));
@@ -325,7 +325,7 @@ public class StudentRepositoryTests implements InitializingBean {
 		Student s2 = new Student();
 		s2.setFirstName("testGetStudentsByTimestampRange s2 first name");
 		s2.setLastName("testGetStudentsByTimestampRange s2 last name");
-		s2.setGrade(Grades.EIGHT.getValue());
+		s2.setGrade(Grades.EIGHT);
 		Note s2n1 = new Note();
 		s2n1.setText("s2n1 note 1 text");
 		s2n1.setTimestamp(Timestamp.valueOf(LocalDate.of(2018,1,1).atStartOfDay()));
@@ -336,7 +336,7 @@ public class StudentRepositoryTests implements InitializingBean {
 		Student s3 = new Student();
 		s3.setFirstName("testGetStudentsByTimestampRange s3 first name");
 		s3.setLastName("testGetStudentsByTimestampRange s3 last name");
-		s3.setGrade(Grades.OTHER.getValue());
+		s3.setGrade(Grades.OTHER);
 		Note s3n1 = new Note();
 		s3n1.setText("s3n1 note 1 text");
 		s3n1.setTimestamp(Timestamp.valueOf(LocalDate.of(2018,1,1).atStartOfDay()));
