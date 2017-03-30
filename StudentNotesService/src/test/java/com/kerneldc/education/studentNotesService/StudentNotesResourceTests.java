@@ -2,17 +2,16 @@ package com.kerneldc.education.studentNotesService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.glassfish.jersey.internal.util.ExceptionUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -119,6 +118,7 @@ public class StudentNotesResourceTests {
     public void testGetAllStudents() throws JsonProcessingException {
 		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
 		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/getAllStudents", HttpMethod.GET, httpEntity, JsonNode.class);
+		//ResponseEntity<List<Student>> response2 = testRestTemplate.exchange(BASE_URI+"/getAllStudents", HttpMethod.GET, httpEntity, List<Student.class>);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 		Student[] students = objectMapper.treeToValue(response.getBody(), Student[].class);
 		assertEquals(3, students.length);
@@ -202,13 +202,20 @@ public class StudentNotesResourceTests {
 	@DirtiesContext
     public void testSaveStudentChangeFirstLastNameAndGrade() {
 		
-		String data = "{\"id\":2,\"firstName\":\"first name v1\",\"lastName\":\"last name v2\",\"grade\":\"4 v2\",\"noteList\":[], \"version\":0}";
-		HttpEntity<String> httpEntity = new HttpEntity<String>(data,httpHeaders);
-
-		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, String.class);
-		String expected = "{\"version\":1,\"id\":2,\"firstName\":\"first name v1\",\"lastName\":\"last name v2\",\"grade\":\"4 v2\",\"noteList\":[]}";
+        Student student = studentRepository.getStudentById(2l);
+        student.setFirstName(student.getFirstName()+" v1");
+        student.setLastName(student.getLastName()+" v1");
+        
+        HttpEntity<Student> httpEntity = new HttpEntity<Student>(student,httpHeaders);
+        ResponseEntity<Student> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, Student.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expected, response.getBody());
+        Student newStudent = response.getBody();
+        assertTrue(newStudent.getId().equals(student.getId()) &&
+        		newStudent.getFirstName().equals(student.getFirstName()) &&
+        		newStudent.getLastName().equals(student.getLastName()) &&
+        		newStudent.getGrade().equals(student.getGrade()) &&
+        		newStudent.getVersion().equals(student.getVersion()+1) &&
+        		newStudent.getNoteList().size() == student.getNoteList().size());
     }
 
 	@Test
@@ -285,19 +292,9 @@ public class StudentNotesResourceTests {
 		JsonNode jsonStudent = objectMapper.valueToTree(student);
 
 		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonStudent,httpHeaders);
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			fail(ExceptionUtils.exceptionStackTraceAsString(e));
-		}
-		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, JsonNode.class);
-		
-		Student newStudent = null;
-		try {
-			newStudent = objectMapper.treeToValue(response.getBody(), Student.class);
-		} catch (JsonProcessingException e) {
-			fail(e.getMessage());
-		}
+
+		ResponseEntity<Student> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, Student.class);
+		Student newStudent = response.getBody();
 		
 		assertTrue(student.getFirstName().equals(newStudent.getFirstName()) &&
 				student.getLastName().equals(newStudent.getLastName()) &&
@@ -329,14 +326,9 @@ public class StudentNotesResourceTests {
 
 		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonStudent,httpHeaders);
 
-		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, JsonNode.class);
+		ResponseEntity<Student> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, Student.class);
 		
-		Student newStudent = null;
-		try {
-			newStudent = objectMapper.treeToValue(response.getBody(), Student.class);
-		} catch (JsonProcessingException e) {
-			fail(e.getMessage());
-		}
+		Student newStudent = response.getBody();
 		
 		assertTrue(student.getFirstName().equals(newStudent.getFirstName()) &&
 				student.getLastName().equals(newStudent.getLastName()) &&
