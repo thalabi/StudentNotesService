@@ -23,7 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.xml.sax.SAXException;
 
-import com.kerneldc.education.studentNotesService.bean.Grades;
+import com.kerneldc.education.studentNotesService.bean.Grade;
 import com.kerneldc.education.studentNotesService.bean.Students;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
@@ -49,7 +49,7 @@ public class StudentNotesReportServiceTests {
 		// Create student # 1
 		String firstName = "first name testBeanToXml";
 		String lastName = "last name testBeanToXml";
-		Grades grade = Grades.FIVE;
+		Grade grade = Grade.FIVE;
 		Student student = new Student();
 		student.setFirstName(firstName);
 		student.setLastName(lastName);
@@ -74,7 +74,7 @@ public class StudentNotesReportServiceTests {
 		// Create student # 2
 		String firstName2 = "first name 2 testBeanToXml";
 		String lastName2 = "last name 2 testBeanToXml";
-		Grades grade2 = Grades.FOUR;
+		Grade grade2 = Grade.FOUR;
 		Student student2 = new Student();
 		student2.setFirstName(firstName2);
 		student2.setLastName(lastName2);

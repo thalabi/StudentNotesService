@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 
-import com.kerneldc.education.studentNotesService.bean.Grades;
+import com.kerneldc.education.studentNotesService.bean.Grade;
 import com.kerneldc.education.studentNotesService.domain.converter.GradeConverter;
 
 @Entity
@@ -45,7 +45,7 @@ public class Student extends AbstractPersistableEntity {
 	private String lastName = "";
 	@Column(name = "GRADE")
 	@Convert(converter=GradeConverter.class)
-	private Grades grade;
+	private Grade grade;
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("timestamp")
@@ -75,10 +75,10 @@ public class Student extends AbstractPersistableEntity {
 	public void setLastName(String lastName) {
 		this.lastName = lastName == null ? "" : lastName;
 	}
-	public Grades getGrade() {
+	public Grade getGrade() {
 		return grade;
 	}
-	public void setGrade(Grades grade) {
+	public void setGrade(Grade grade) {
 		this.grade = grade;
 	}
 

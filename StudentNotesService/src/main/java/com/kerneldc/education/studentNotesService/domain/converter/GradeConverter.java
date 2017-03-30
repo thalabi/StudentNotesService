@@ -3,13 +3,13 @@ package com.kerneldc.education.studentNotesService.domain.converter;
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
-import com.kerneldc.education.studentNotesService.bean.Grades;
+import com.kerneldc.education.studentNotesService.bean.Grade;
 
 @Converter
-public class GradeConverter implements AttributeConverter<Grades, String> {
+public class GradeConverter implements AttributeConverter<Grade, String> {
 
 	@Override
-	public String convertToDatabaseColumn(Grades grade) {
+	public String convertToDatabaseColumn(Grade grade) {
 		if (grade == null) {
 			return null;
 		}
@@ -17,11 +17,11 @@ public class GradeConverter implements AttributeConverter<Grades, String> {
 	}
 
 	@Override
-	public Grades convertToEntityAttribute(String value) {
+	public Grade convertToEntityAttribute(String value) {
 		if (value == null) {
 			return null;
 		}
-		return Grades.fromValue(value);
+		return Grade.fromValue(value);
 	}
 
 }

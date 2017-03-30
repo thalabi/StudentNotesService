@@ -37,7 +37,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kerneldc.education.studentNotesService.bean.Grades;
+import com.kerneldc.education.studentNotesService.bean.Grade;
 import com.kerneldc.education.studentNotesService.bean.TimestampRange;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
@@ -229,7 +229,7 @@ public class StudentNotesResourceTests {
 		Student student = new Student();
 		student.setFirstName("new first name with notes t07testSaveStudentDeleteNote");
 		student.setLastName("new last name with notes t07testSaveStudentDeleteNote");
-		student.setGrade(Grades.TWO);
+		student.setGrade(Grade.TWO);
 		Note note1 = new Note();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 		LocalDateTime timestamp1 = LocalDateTime.parse("2017-01-22 20:08", formatter);
@@ -281,7 +281,7 @@ public class StudentNotesResourceTests {
 		Student student = new Student();
 		student.setFirstName("new first name");
 		student.setLastName("new last name");
-		student.setGrade(Grades.ONE);
+		student.setGrade(Grade.ONE);
 		JsonNode jsonStudent = objectMapper.valueToTree(student);
 
 		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonStudent,httpHeaders);
@@ -292,18 +292,18 @@ public class StudentNotesResourceTests {
 		}
 		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, JsonNode.class);
 		
-		JsonNode newStudent = objectMapper.convertValue(response.getBody(), JsonNode.class);
-		Long newId = newStudent.get("id").asLong();
-		String newFirstName = newStudent.get("firstName").asText();
-		String newLastName = newStudent.get("lastName").asText();
-		String newGrade = newStudent.get("grade").asText();
-		Long newVersion = newStudent.get("version").asLong();
-
-		assertTrue(student.getFirstName().equals(newFirstName) &&
-				student.getLastName().equals(newLastName) &&
-				student.getGrade().equals(newGrade) &&
-				newId.compareTo(0l) > 0 &&
-				newVersion.equals(0l));
+		Student newStudent = null;
+		try {
+			newStudent = objectMapper.treeToValue(response.getBody(), Student.class);
+		} catch (JsonProcessingException e) {
+			fail(e.getMessage());
+		}
+		
+		assertTrue(student.getFirstName().equals(newStudent.getFirstName()) &&
+				student.getLastName().equals(newStudent.getLastName()) &&
+				student.getGrade().equals(newStudent.getGrade()) &&
+				newStudent.getId().compareTo(0l) > 0 &&
+				newStudent.getVersion().equals(0l));
 	}
 
 	@Test
@@ -313,7 +313,7 @@ public class StudentNotesResourceTests {
 		Student student = new Student();
 		student.setFirstName("new first name with notes");
 		student.setLastName("new last name with notes");
-		student.setGrade(Grades.TWO);
+		student.setGrade(Grade.TWO);
 		Note note1 = new Note();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 		LocalDateTime timestamp1 = LocalDateTime.parse("2017-01-22 20:08", formatter);
@@ -331,19 +331,37 @@ public class StudentNotesResourceTests {
 
 		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, JsonNode.class);
 		
-		JsonNode newStudent = null;
-		newStudent = objectMapper.convertValue(response.getBody(), JsonNode.class);
-		Long newId = newStudent.get("id").asLong();
-		String newFirstName = newStudent.get("firstName").asText();
-		String newLastName = newStudent.get("lastName").asText();
-		String newGrade = newStudent.get("grade").asText();
-		Long newVersion = newStudent.get("version").asLong();
+		Student newStudent = null;
+		try {
+			newStudent = objectMapper.treeToValue(response.getBody(), Student.class);
+		} catch (JsonProcessingException e) {
+			fail(e.getMessage());
+		}
+		
+		assertTrue(student.getFirstName().equals(newStudent.getFirstName()) &&
+				student.getLastName().equals(newStudent.getLastName()) &&
+				student.getGrade().equals(newStudent.getGrade()) &&
+				newStudent.getId().compareTo(0l) > 0 &&
+				newStudent.getVersion().equals(0l) &&
+				newStudent.getNoteList().size() == 2);
 
-		assertTrue(student.getFirstName().equals(newFirstName) &&
-				student.getLastName().equals(newLastName) &&
-				student.getGrade().equals(newGrade) &&
-				newId.compareTo(0l) > 0 &&
-				newVersion.equals(0l));
+		boolean foundNoteOne = false;
+		boolean foundNoteTwo = false;
+		for (Note note: newStudent.getNoteList()) {
+			if (!foundNoteOne) {
+				foundNoteOne = note.getId().compareTo(0l) > 0 &&
+						note.getTimestamp().equals(note1.getTimestamp()) &&
+						note.getText().equals(note1.getText()) &&
+						note.getVersion().equals(0l);
+			} else if (!foundNoteTwo) {
+				foundNoteTwo = note.getId().compareTo(0l) > 0 &&
+						note.getTimestamp().equals(note2.getTimestamp()) &&
+						note.getText().equals(note2.getText()) &&
+						note.getVersion().equals(0l);
+			}
+		}
+		
+		assertTrue(foundNoteOne && foundNoteTwo);
 	}
 
 	@Test
