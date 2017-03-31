@@ -8,10 +8,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -142,10 +142,17 @@ public class StudentNotesResourceTests {
 	@Test
     public void testGetStudentById() {
 		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
-		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/getStudentById/1", HttpMethod.GET, httpEntity, String.class);
-        String expected = "{\"version\":0,\"id\":1,\"firstName\":\"kareem\",\"lastName\":\"halabi\",\"grade\":\"SK\",\"noteList\":[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":0,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3\"}]}";
+		ResponseEntity<Student> response = testRestTemplate.exchange(BASE_URI+"/getStudentById/1", HttpMethod.GET, httpEntity, Student.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expected, response.getBody());
+		Student student = response.getBody();
+        assertTrue(student.getId().equals(SeedDBData.s1.getId()) &&
+        		student.getFirstName().equals(SeedDBData.s1.getFirstName()) &&
+        		student.getLastName().equals(SeedDBData.s1.getLastName()) &&
+        		student.getGrade().equals(SeedDBData.s1.getGrade()) &&
+        		student.getVersion().equals(SeedDBData.s1.getVersion()) &&
+        		student.getNoteList().size() == 3);
+        System.out.println(EqualsBuilder.reflectionEquals(student, SeedDBData.s1, "noteList.timestamp"));
+        assertTrue(EqualsBuilder.reflectionEquals(student, SeedDBData.s1, true));
     }
 	
 	@Test
