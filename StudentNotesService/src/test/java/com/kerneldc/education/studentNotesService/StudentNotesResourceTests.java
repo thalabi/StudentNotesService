@@ -7,15 +7,18 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -145,14 +148,11 @@ public class StudentNotesResourceTests {
 		ResponseEntity<Student> response = testRestTemplate.exchange(BASE_URI+"/getStudentById/1", HttpMethod.GET, httpEntity, Student.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 		Student student = response.getBody();
-        assertTrue(student.getId().equals(SeedDBData.s1.getId()) &&
-        		student.getFirstName().equals(SeedDBData.s1.getFirstName()) &&
-        		student.getLastName().equals(SeedDBData.s1.getLastName()) &&
-        		student.getGrade().equals(SeedDBData.s1.getGrade()) &&
-        		student.getVersion().equals(SeedDBData.s1.getVersion()) &&
-        		student.getNoteList().size() == 3);
-        System.out.println(EqualsBuilder.reflectionEquals(student, SeedDBData.s1, "noteList.timestamp"));
-        assertTrue(EqualsBuilder.reflectionEquals(student, SeedDBData.s1, true));
+        assertTrue(EqualsBuilder.reflectionEquals(student, SeedDBData.s1, "noteList"));
+        assertTrue(student.getNoteList().size() == 3);
+        assertTrue(EqualsBuilder.reflectionEquals(student.getNoteList().get(0), SeedDBData.s1.getNoteList().get(0), true));
+        assertTrue(EqualsBuilder.reflectionEquals(student.getNoteList().get(1), SeedDBData.s1.getNoteList().get(1), true));
+        assertTrue(EqualsBuilder.reflectionEquals(student.getNoteList().get(2), SeedDBData.s1.getNoteList().get(2), true));
     }
 	
 	@Test
@@ -228,13 +228,31 @@ public class StudentNotesResourceTests {
 	@Test
 	public void testSaveStudentAddNote() {
 		
-		String data = "{\"version\":0,\"id\":3,\"firstName\":\"Mr Parent\",\"lastName\":\"\",\"grade\":\"\",\"noteList\":[{\"version\":0,\"id\":4,\"timestamp\":1481403630842,\"text\":\"note 4\"},{\"version\":0,\"id\":5,\"timestamp\":1481403630843,\"text\":\"note 5\"},{\"timestamp\":1481403630843,\"text\":\"note new note\"}]}";
-		HttpEntity<String> httpEntity = new HttpEntity<String>(data,httpHeaders);
-
-		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, String.class);
-		String expected = "{\"version\":1,\"id\":3,\"firstName\":\"Mr Parent\",\"lastName\":\"\",\"grade\":\"\",\"noteList\":[{\"version\":0,\"id\":4,\"timestamp\":1481403630842,\"text\":\"note 4\"},{\"version\":0,\"id\":5,\"timestamp\":1481403630843,\"text\":\"note 5\"},{\"version\":0,\"id\":6,\"timestamp\":1481403630843,\"text\":\"note new note\"}]}";
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expected, response.getBody());
+		Student student = new Student();
+		student = SerializationUtils.clone(SeedDBData.s3);
+		Note newNote = new Note();
+		newNote.setTimestamp(new Timestamp(1481403630843l));
+		newNote.setText("note new note");
+		student.setNoteList(
+				new ArrayList<Note>(student.getNoteList())
+		);
+		student.getNoteList().add(newNote);
+		
+		
+		
+		HttpEntity<Student> httpEntity = new HttpEntity<Student>(student,httpHeaders);
+		ResponseEntity<Student> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, Student.class);
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		
+		Student savedStudent = response.getBody();
+        assertTrue(EqualsBuilder.reflectionEquals(savedStudent, student, "noteList", "version"));
+        assertTrue(savedStudent.getNoteList().size() == 3);
+        assertTrue(savedStudent.getVersion().equals(student.getVersion()+1));
+        assertTrue(EqualsBuilder.reflectionEquals(savedStudent.getNoteList().get(0), student.getNoteList().get(0), true));
+        assertTrue(EqualsBuilder.reflectionEquals(savedStudent.getNoteList().get(1), student.getNoteList().get(1), true));
+        assertTrue(EqualsBuilder.reflectionEquals(savedStudent.getNoteList().get(2), newNote, "id", "version"));
+        assertTrue(savedStudent.getNoteList().get(2).getId().compareTo(0l) > 0 &&
+        		savedStudent.getNoteList().get(2).getVersion().compareTo(0l) == 0);
     }
 	
 	@Test
@@ -270,13 +288,30 @@ public class StudentNotesResourceTests {
 	@DirtiesContext
 	public void testSaveStudentModifyNote() {
 		
-		String data = "{\"version\":0,\"id\":1,\"firstName\":\"kareem\",\"lastName\":\"halabi\",\"grade\":\"SK\",\"noteList\":[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":0,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3 modified\"}]}";
-		HttpEntity<String> httpEntity = new HttpEntity<String>(data,httpHeaders);
-
-		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, String.class);
-		String expected = "{\"version\":1,\"id\":1,\"firstName\":\"kareem\",\"lastName\":\"halabi\",\"grade\":\"SK\",\"noteList\":[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":1,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3 modified\"}]}";
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expected, response.getBody());
+//		String data = "{\"version\":0,\"id\":1,\"firstName\":\"kareem\",\"lastName\":\"halabi\",\"grade\":\"SK\",\"noteList\":[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":0,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3 modified\"}]}";
+//		HttpEntity<String> httpEntity = new HttpEntity<String>(data,httpHeaders);
+//
+//		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, String.class);
+//		String expected = "{\"version\":1,\"id\":1,\"firstName\":\"kareem\",\"lastName\":\"halabi\",\"grade\":\"SK\",\"noteList\":[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":1,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3 modified\"}]}";
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        assertEquals(expected, response.getBody());
+        
+		Student student = new Student();
+		student = SerializationUtils.clone(SeedDBData.s1);
+		Note note = student.getNoteList().get(2);
+		note.setText(note.getText()+" modified");
+		HttpEntity<Student> httpEntity = new HttpEntity<Student>(student,httpHeaders);
+		ResponseEntity<Student> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, Student.class);
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		
+		Student savedStudent = response.getBody();
+        assertTrue(EqualsBuilder.reflectionEquals(savedStudent, student, "noteList", "version"));
+        assertTrue(savedStudent.getNoteList().size() == 3);
+        assertTrue(savedStudent.getVersion().equals(student.getVersion()+1));
+        assertTrue(EqualsBuilder.reflectionEquals(savedStudent.getNoteList().get(0), student.getNoteList().get(0), true));
+        assertTrue(EqualsBuilder.reflectionEquals(savedStudent.getNoteList().get(1), student.getNoteList().get(1), true));
+        assertTrue(EqualsBuilder.reflectionEquals(savedStudent.getNoteList().get(2), student.getNoteList().get(2), "version"));
+        assertTrue(savedStudent.getNoteList().get(2).getVersion().equals(student.getNoteList().get(2).getVersion()+1));
     }
 
 	@Test

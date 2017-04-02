@@ -12,6 +12,7 @@ public class SeedDBData {
 	public static final Student s1 = new Student();
 	public static final Student s2 = new Student();
 	public static final Student s3 = new Student();
+//	public static final Student s4 = new Student();
 	static {
 		
 		s1.setId(1l);
@@ -44,11 +45,48 @@ public class SeedDBData {
 		s2.setFirstName("");
 		s2.setLastName("halabi");
 		s2.setGrade(Grade.FOUR);
+		s2.setVersion(0l);
 		
 		s3.setId(3l);
 		s3.setFirstName("Mr Parent");
 		s3.setLastName("");
 		s3.setGrade(Grade.EMPTY);
+		s3.setVersion(0l);
+
+		Note s3n1 = new Note();
+		s3n1.setId(4l);
+		s3n1.setTimestamp(new Timestamp(1481403630842l));
+		s3n1.setText("note 4");
+		s3n1.setVersion(0l);
+		Note s3n2 = new Note();
+		s3n2.setId(5l);
+		s3n2.setTimestamp(new Timestamp(1481403630843l));
+		s3n2.setText("note 5");
+		s3n2.setVersion(0l);
+		s3.setNoteList(Arrays.asList(s3n1,s3n2));
+		
+//		s4.setId(1l);
+//		s4.setFirstName("kareem");
+//		s4.setLastName("halabi");
+//		s4.setGrade(Grade.SK);
+//		s4.setVersion(0l);
+//		Note s4n1 = new Note();
+//		s4n1.setId(1l);
+//		s4n1.setTimestamp(new Timestamp(1481403630839l));
+//		s4n1.setText("note 1");
+//		s4n1.setVersion(0l);
+//		Note s4n2 = new Note();
+//		s4n2.setId(2l);
+//		s4n2.setTimestamp(new Timestamp(1481403630841l));
+//		s4n2.setText("note 2");
+//		s4n2.setVersion(0l);
+//		Note s4n3 = new Note();
+//		s4n3.setId(3l);
+//		s4n3.setTimestamp(new Timestamp(1481403630842l));
+//		s4n3.setText("note 3");
+//		s4n3.setVersion(0l);
+//		s4.setNoteList(Arrays.asList(s4n1,s4n2,s4n3));
+	
 	}
 
 }

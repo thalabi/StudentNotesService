@@ -1,5 +1,7 @@
 package com.kerneldc.education.studentNotesService.domain;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
@@ -12,8 +14,10 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 @MappedSuperclass
 @XmlAccessorType(XmlAccessType.FIELD)
-public abstract class AbstractPersistableEntity {
+public abstract class AbstractPersistableEntity implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+
 	public AbstractPersistableEntity() {
         super();
     }
