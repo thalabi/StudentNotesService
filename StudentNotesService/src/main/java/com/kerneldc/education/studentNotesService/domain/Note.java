@@ -20,6 +20,8 @@ import com.kerneldc.education.studentNotesService.util.XmlTimestampAdapter;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Note extends AbstractPersistableEntity {
 
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@Column(name = "ID")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

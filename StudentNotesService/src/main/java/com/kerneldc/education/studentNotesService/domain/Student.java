@@ -34,6 +34,8 @@ import com.kerneldc.education.studentNotesService.domain.converter.GradeConverte
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Student extends AbstractPersistableEntity {
 
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@Column(name = "ID")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

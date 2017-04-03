@@ -1,12 +1,5 @@
 package com.kerneldc.education.studentNotesService;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-
-import com.kerneldc.education.studentNotesService.security.JacksonGrantedAuthorityTests;
-import com.kerneldc.education.studentNotesService.security.JwtTokenTests;
-import com.kerneldc.education.studentNotesService.security.SecurityResourceTests;
-
 /*
 @RunWith(Suite.class)
 

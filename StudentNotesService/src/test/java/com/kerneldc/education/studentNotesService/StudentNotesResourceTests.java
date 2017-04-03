@@ -38,6 +38,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.education.studentNotesService.bean.Grade;
 import com.kerneldc.education.studentNotesService.bean.TimestampRange;
 import com.kerneldc.education.studentNotesService.domain.Note;
@@ -80,12 +82,16 @@ public class StudentNotesResourceTests {
 	@PostConstruct
 	public void setUp() throws JsonProcessingException {
 		LOGGER.debug("begin ...");
-		String usernameAndPassword = "{\"username\":\""+username+"\",\"password\":\""+password+"\"}";
 		
+		ObjectNode credentialsJsonNode = JsonNodeFactory.instance.objectNode();
+		credentialsJsonNode.put("username", username);
+		credentialsJsonNode.put("password", password);
+
 		httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		HttpEntity<String> httpEntity = new HttpEntity<String>(usernameAndPassword,httpHeaders);
+		HttpEntity<ObjectNode> httpEntity = new HttpEntity<ObjectNode>(credentialsJsonNode,httpHeaders);
 
+		
 		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/Security/authenticate", HttpMethod.POST, httpEntity, JsonNode.class);
 		assertTrue(response.getStatusCode() == HttpStatus.OK);
 		
@@ -101,8 +107,6 @@ public class StudentNotesResourceTests {
 	
 	@Test
     public void testHello() {
-		//HttpHeaders httpHeaders = new HttpHeaders();
-		//httpHeaders.set(Constants.AUTH_HEADER_NAME, user.getToken());
 		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
         ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI, HttpMethod.GET, httpEntity, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -120,23 +124,16 @@ public class StudentNotesResourceTests {
     public void testGetAllStudents() throws JsonProcessingException {
 		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
 		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/getAllStudents", HttpMethod.GET, httpEntity, JsonNode.class);
-		//ResponseEntity<List<Student>> response2 = testRestTemplate.exchange(BASE_URI+"/getAllStudents", HttpMethod.GET, httpEntity, List<Student.class>);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 		Student[] students = objectMapper.treeToValue(response.getBody(), Student[].class);
 		assertEquals(3, students.length);
         for (Student s: students) {
         	if (s.getId().equals(SeedDBData.s1.getId())) {
-        		assertEquals(SeedDBData.s1.getFirstName(), s.getFirstName());
-        		assertEquals(SeedDBData.s1.getLastName(), s.getLastName());
-        		assertEquals(SeedDBData.s1.getGrade(), s.getGrade());
+        		EqualsBuilder.reflectionEquals(SeedDBData.s1, s);
         	} else if (s.getId().equals(SeedDBData.s2.getId())) {
-	        		assertEquals(SeedDBData.s2.getFirstName(), s.getFirstName());
-	        		assertEquals(SeedDBData.s2.getLastName(), s.getLastName());
-	        		assertEquals(SeedDBData.s2.getGrade(), s.getGrade());
+        			EqualsBuilder.reflectionEquals(SeedDBData.s2, s);
             	} else if (s.getId().equals(SeedDBData.s3.getId())) {
-            		assertEquals(SeedDBData.s3.getFirstName(), s.getFirstName());
-            		assertEquals(SeedDBData.s3.getLastName(), s.getLastName());
-            		assertEquals(SeedDBData.s3.getGrade(), s.getGrade());
+        			EqualsBuilder.reflectionEquals(SeedDBData.s3, s);
                 	}
         }		
     }

@@ -7,6 +7,8 @@ package com.kerneldc.education.studentNotesService.domain;
 //@XmlAccessorType(XmlAccessType.FIELD)
 public class User extends AbstractPersistableEntity {
 
+	private static final long serialVersionUID = 1L;
+
 //	@Id
 //	@Column(name = "ID")
 //	@GeneratedValue(strategy = GenerationType.IDENTITY)
