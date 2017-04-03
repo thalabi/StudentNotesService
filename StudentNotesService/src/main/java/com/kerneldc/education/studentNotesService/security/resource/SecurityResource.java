@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.education.studentNotesService.security.bean.User;
 import com.kerneldc.education.studentNotesService.security.exception.AuthenticationException;
-import com.kerneldc.education.studentNotesService.security.service.AuthenticationService;
+import com.kerneldc.education.studentNotesService.security.service.JwtAuthenticationService;
 
 @Component
 @Path("/StudentNotesService/Security")
@@ -31,7 +32,7 @@ public class SecurityResource {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 
 	@Autowired
-	private AuthenticationService authenticationService;
+	private JwtAuthenticationService jwtAuthenticationService;
 	
 	public SecurityResource() {
 		LOGGER.info("Initialized ...");
@@ -66,10 +67,10 @@ public class SecurityResource {
 
     	LOGGER.debug("begin ...");
 		ObjectMapper objectMapper = new ObjectMapper();
-    	User user;
+    	UserDetails user;
 		try {
 			user = objectMapper.readValue(usernameAndPassword, User.class);
-	    	user = authenticationService.authenticate(user);
+	    	user = jwtAuthenticationService.authenticate(user);
 		} catch (UsernameNotFoundException | BadCredentialsException | IOException e) {
 			LOGGER.debug("Exception encountered: {}", e);
 			LOGGER.warn("Authentication failed for credentials found in request: {}", usernameAndPassword);
