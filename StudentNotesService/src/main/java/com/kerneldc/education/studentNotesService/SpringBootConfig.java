@@ -1,6 +1,5 @@
 package com.kerneldc.education.studentNotesService;
 
-import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -17,34 +16,11 @@ public class SpringBootConfig {
 	public FilterRegistrationBean jerseyFilterRegistration() {
 	    FilterRegistrationBean bean = new FilterRegistrationBean();
 	    bean.setName("jerseyFilter");
-	    ResourceConfig rc = new JerseyResourceConfig();
-	    bean.setFilter(new ServletContainer(rc));
+	    bean.setFilter(new ServletContainer(new JerseyResourceConfig()));
 	    bean.setOrder(1);
 	    //bean.setUrlPatterns(Lists.newArrayList("/api/*"));
 	    //bean.addInitParameter(ServletProperties.FILTER_STATIC_CONTENT_REGEX, "/admin/.*");
 
 	    return bean;
 	}
-	/**
-	 * Allow cross origin requests
-	 * @return
-	 */
-//	@Bean
-//	public FilterRegistrationBean corsFilter() {
-//		
-//		CorsConfiguration config = new CorsConfiguration();
-//		config.setAllowCredentials(true);
-//		config.addAllowedOrigin("*");
-//		config.addAllowedHeader("*");
-//		config.addAllowedMethod("*");
-//		
-//		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//		source.registerCorsConfiguration("/**", config);
-//		
-//		FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
-//		
-//		bean.setOrder(0);
-//		return bean;
-//	}
-		
 }
