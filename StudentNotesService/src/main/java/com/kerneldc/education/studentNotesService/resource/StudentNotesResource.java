@@ -35,9 +35,10 @@ import com.kerneldc.education.studentNotesService.bean.Students;
 import com.kerneldc.education.studentNotesService.bean.TimestampRange;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.exception.RowNotFoundException;
+import com.kerneldc.education.studentNotesService.exception.SnsException;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
-import com.kerneldc.education.studentNotesService.service.StudentNotesReportService;
+import com.kerneldc.education.studentNotesService.service.PdfStudentNotesReportService;
 
 @Component
 @Path("/StudentNotesService")
@@ -48,7 +49,7 @@ public class StudentNotesResource {
 	@Autowired
 	private StudentRepository studentRepository;
 	@Autowired
-	private StudentNotesReportService studentNotesReportService;
+	private PdfStudentNotesReportService pdfStudentNotesReportService;
 	@Value("${version}")
 	private String version;
 
@@ -187,12 +188,12 @@ public class StudentNotesResource {
 	@GET
 	@Path("/pdfAll")
 	@Produces("application/pdf")
-	public Response pdfAll() throws JAXBException, ParserConfigurationException, SAXException, IOException, TransformerException {
+	public Response pdfAll() throws SnsException {
 
 		LOGGER.debug("begin ...");
 		Students students = new Students();
 		students.setStudentList(studentRepository.getAllStudents());
-		byte[] pdfByteArray = studentNotesReportService.generateReport(students);
+		byte[] pdfByteArray = pdfStudentNotesReportService.generateReport(students);
 		LOGGER.debug("end ...");
 		return Response.ok(pdfByteArray).build();
 	}
@@ -224,14 +225,14 @@ public class StudentNotesResource {
 	@Path("/pdfStudentsByTimestampRange")
     @Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/pdf")
-	public Response pdfStudentsByTimestampRange(TimestampRange timestampRange) throws JAXBException, ParserConfigurationException, SAXException, IOException, TransformerException {
+	public Response pdfStudentsByTimestampRange(TimestampRange timestampRange) throws SnsException {
 
 		LOGGER.debug("begin ...");
 		Students students = new Students();
 		students.setStudentList(studentRepository.getStudentsByTimestampRange(timestampRange.getFromTimestamp(), timestampRange.getToTimestamp()));
 		byte[] pdfByteArray = null;
 		if (students.getStudentList().size() != 0) {
-			pdfByteArray = studentNotesReportService.generateReport(students);
+			pdfByteArray = pdfStudentNotesReportService.generateReport(students);
 		}
 		// TODO print an empty pdf when there are no students returned
 		LOGGER.debug("end ...");
@@ -254,14 +255,14 @@ public class StudentNotesResource {
 	@Path("/pdfStudentsByStudentIds")
     @Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/pdf")
-	public Response pdfStudentsByStudentIds(List<Long> studentIds) throws JAXBException, ParserConfigurationException, SAXException, IOException, TransformerException {
+	public Response pdfStudentsByStudentIds(List<Long> studentIds) throws SnsException {
 
 		LOGGER.debug("begin ...");
 		Students students = new Students();
 		students.setStudentList(studentRepository.getStudentsByListOfIds(studentIds));
 		byte[] pdfByteArray = null;
 		if (students.getStudentList().size() != 0) {
-			pdfByteArray = studentNotesReportService.generateReport(students);
+			pdfByteArray = pdfStudentNotesReportService.generateReport(students);
 		}
 		// TODO print an empty pdf when there are no students returned
 		LOGGER.debug("end ...");

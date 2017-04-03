@@ -123,9 +123,9 @@ public class StudentNotesResourceTests {
 	@Test
     public void testGetAllStudents() throws JsonProcessingException {
 		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
-		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/getAllStudents", HttpMethod.GET, httpEntity, JsonNode.class);
+		ResponseEntity<Student[]> response = testRestTemplate.exchange(BASE_URI+"/getAllStudents", HttpMethod.GET, httpEntity, Student[].class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-		Student[] students = objectMapper.treeToValue(response.getBody(), Student[].class);
+		Student[] students = response.getBody();
 		assertEquals(3, students.length);
         for (Student s: students) {
         	if (s.getId().equals(SeedDBData.s1.getId())) {
@@ -163,9 +163,9 @@ public class StudentNotesResourceTests {
 
 		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonTimestampRange,httpHeaders);
 		
-		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/getStudentsByTimestampRange", HttpMethod.POST, httpEntity, JsonNode.class);
+		ResponseEntity<Student[]> response = testRestTemplate.exchange(BASE_URI+"/getStudentsByTimestampRange", HttpMethod.POST, httpEntity, Student[].class);
 		
-		Student[] students = objectMapper.treeToValue(response.getBody(), Student[].class);
+		Student[] students = response.getBody();
 		
 		for (Student student: students) LOGGER.debug("student: {}", student); 
 		assertEquals(2, students.length);
@@ -177,11 +177,11 @@ public class StudentNotesResourceTests {
 	}
 
 	@Test
-	public void testGetAllStudentsWithoutNotesList() throws JsonProcessingException {
+	public void testGetAllStudentsWithoutNotesList() {
 		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
-		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/getAllStudentsWithoutNotesList", HttpMethod.GET, httpEntity, JsonNode.class);
+		ResponseEntity<Student[]> response = testRestTemplate.exchange(BASE_URI+"/getAllStudentsWithoutNotesList", HttpMethod.GET, httpEntity, Student[].class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        Student[] students = objectMapper.treeToValue(response.getBody(), Student[].class);
+        Student[] students = response.getBody();
         LOGGER.debug("students.length: "+students.length);
         for (Student s: students) {
         	if (s.getId().equals(SeedDBData.s1.getId())) {
@@ -252,7 +252,7 @@ public class StudentNotesResourceTests {
     }
 	
 	@Test
-	public void testSaveStudentDeleteNote() throws JsonProcessingException {
+	public void testSaveStudentDeleteNote() {
 		
 		Student student = new Student();
 		student.setFirstName("new first name with notes t07testSaveStudentDeleteNote");
@@ -272,10 +272,10 @@ public class StudentNotesResourceTests {
 
 		HttpEntity<JsonNode> httpEntity = new HttpEntity<JsonNode>(jsonStudent,httpHeaders);
 
-		ResponseEntity<JsonNode> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, JsonNode.class);
+		ResponseEntity<Student> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, Student.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
-		Student newStudent = objectMapper.treeToValue(response.getBody(), Student.class);
+		Student newStudent = response.getBody();
 		assertTrue(
 			newStudent.getNoteList().size() == 0);
     }

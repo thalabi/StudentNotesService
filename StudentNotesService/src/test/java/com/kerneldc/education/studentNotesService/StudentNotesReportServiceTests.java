@@ -27,8 +27,9 @@ import com.kerneldc.education.studentNotesService.bean.Grade;
 import com.kerneldc.education.studentNotesService.bean.Students;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
+import com.kerneldc.education.studentNotesService.exception.SnsException;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
-import com.kerneldc.education.studentNotesService.service.StudentNotesReportService;
+import com.kerneldc.education.studentNotesService.service.PdfStudentNotesReportService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = StudentNotesApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -41,7 +42,7 @@ public class StudentNotesReportServiceTests {
 	private StudentRepository studentRepository;
 	
 	@Autowired
-	private StudentNotesReportService studentNotesReportService;
+	private PdfStudentNotesReportService pdfStudentNotesReportService;
 
 	@Test
     public void testBeanToXml() throws JAXBException {
@@ -138,7 +139,7 @@ public class StudentNotesReportServiceTests {
 			//createdStudent2.getNoteList().size() == 2
 			);
 
-		byte[] xmlBytes = studentNotesReportService.beanToXml(students);
+		byte[] xmlBytes = pdfStudentNotesReportService.beanToXml(students);
 		String xmlString = new String(xmlBytes, StandardCharsets.UTF_8);
 		
 		LOGGER.info("xmlString: {}", xmlString);
@@ -177,17 +178,17 @@ public class StudentNotesReportServiceTests {
 	public void testXmlToPdf() throws IOException {
 		
 		byte[] studentsXmlByteArray = IOUtils.toByteArray(ClassLoader.getSystemResourceAsStream("students.xml"));
-		byte[] pdfByteArray = studentNotesReportService.xmlToPdf(studentsXmlByteArray);
+		byte[] pdfByteArray = pdfStudentNotesReportService.xmlToPdf(studentsXmlByteArray);
 		LOGGER.debug("pdfByteArray.length: {}", pdfByteArray.length);
 		assert (pdfByteArray.length > 0);
 	}
 	
 	@Test
-	public void testGenerateReport() throws JAXBException, ParserConfigurationException, SAXException, IOException, TransformerException {
+	public void testGenerateReport() throws SnsException {
 		
 		Students students = new Students();
 		students.setStudentList(studentRepository.getAllStudents());
-		byte[] pdfByteArray = studentNotesReportService.generateReport(students);
+		byte[] pdfByteArray = pdfStudentNotesReportService.generateReport(students);
 		LOGGER.debug("pdfByteArray.length: {}", pdfByteArray.length);
 		assert (pdfByteArray.length > 0);
 	}
