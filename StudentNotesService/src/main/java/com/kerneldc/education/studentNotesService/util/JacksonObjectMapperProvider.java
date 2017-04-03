@@ -8,6 +8,8 @@ import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 
 /**
  * Class to return Jackson object mapper so that Jersey does not use JAXB (XML annotations)
+ * and registers Hibernate5Module with Jackson so that it can handle Hibernate entities and
+ * specifically prevent lazy loading exception when serializing proxied objects.
  *
  */
 @Provider
