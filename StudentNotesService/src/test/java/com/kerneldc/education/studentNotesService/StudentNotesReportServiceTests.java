@@ -9,8 +9,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -21,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.xml.sax.SAXException;
 
 import com.kerneldc.education.studentNotesService.bean.Grade;
 import com.kerneldc.education.studentNotesService.bean.Students;

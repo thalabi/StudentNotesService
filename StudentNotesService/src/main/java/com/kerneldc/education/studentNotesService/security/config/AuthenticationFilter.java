@@ -16,7 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
-import com.kerneldc.education.studentNotesService.security.service.JwtAuthenticationService;
+import com.kerneldc.education.studentNotesService.security.util.JwtTokenUtil;
 
 /**
  * Filter that uses the token in the request header to generate an authenticated user object
@@ -29,8 +29,8 @@ public class AuthenticationFilter extends GenericFilterBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 
-    @Autowired
-    private JwtAuthenticationService jwtAuthenticationService;
+	@Autowired
+	private JwtTokenUtil jwtTokenUtil;
 
     public AuthenticationFilter() {
 		LOGGER.debug("begin ...");
@@ -43,7 +43,7 @@ public class AuthenticationFilter extends GenericFilterBean {
 
 		LOGGER.debug("begin ...");
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
-        Authentication authentication =	jwtAuthenticationService.getAuthenticationFromToken(httpRequest);
+        Authentication authentication =	jwtTokenUtil.getAuthenticationFromToken(httpRequest);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         chain.doFilter(request, response);

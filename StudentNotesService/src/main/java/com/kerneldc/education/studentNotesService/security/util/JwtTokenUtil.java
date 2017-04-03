@@ -5,22 +5,31 @@ import java.security.Key;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.education.studentNotesService.security.bean.User;
+import com.kerneldc.education.studentNotesService.security.bean.UserAuthentication;
+import com.kerneldc.education.studentNotesService.security.constants.Constants;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -103,5 +112,43 @@ public class JwtTokenUtil {
         }
         return authorities;
     }
+
+    public static String jwtTokenFromRequest(HttpServletRequest request) {
+		String authenticationHeader = request.getHeader(Constants.AUTH_HEADER_NAME);
+        LOGGER.debug("authenticationHeader: {}", authenticationHeader);
+        if (authenticationHeader != null) {
+        	Pattern p = Pattern.compile("^\\s*Bearer\\s+(.*)$", Pattern.CASE_INSENSITIVE);
+        	Matcher m = p.matcher(authenticationHeader);
+        	LOGGER.debug("matches: {}, group count: {}", m.matches(), m.groupCount());
+        	if (m.matches() && m.groupCount() == 1) {
+        		return m.group(1);
+        	}
+        }
+        return null;
+    }
+
+	/**
+	 * Extracts the 
+	 * @param request
+	 * @return
+	 * @throws IOException 
+	 */
+    public Authentication getAuthenticationFromToken(final HttpServletRequest request) throws IOException {
+    	String jwtToken = JwtTokenUtil.jwtTokenFromRequest(request);
+    	if (jwtToken != null) {
+    		LOGGER.debug("|{}|", jwtToken);
+            try {
+                User user = parseToken(jwtToken);
+                LOGGER.debug("user == null: {}", user == null);
+                return new UserAuthentication(user);
+            } catch (UsernameNotFoundException | JwtException | JsonProcessingException e) {
+            	LOGGER.info("Invalid token");
+                return null;
+            }
+        }
+		LOGGER.debug("end ...");
+        return null;
+    }
+
 
 }
