@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -129,16 +128,11 @@ public class StudentNotesResourceTests {
 		ResponseEntity<Student[]> response = testRestTemplate.exchange(BASE_URI+"/getAllStudents", HttpMethod.GET, httpEntity, Student[].class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 		Student[] students = response.getBody();
-		assertEquals(3, students.length);
-        for (Student s: students) {
-        	if (s.getId().equals(SeedDBData.s1.getId())) {
-        		EqualsBuilder.reflectionEquals(SeedDBData.s1, s);
-        	} else if (s.getId().equals(SeedDBData.s2.getId())) {
-        			EqualsBuilder.reflectionEquals(SeedDBData.s2, s);
-            	} else if (s.getId().equals(SeedDBData.s3.getId())) {
-        			EqualsBuilder.reflectionEquals(SeedDBData.s3, s);
-                	}
-        }		
+        List<Student> allSeedDBStudents = new ArrayList<Student>(Arrays.asList(SeedDBData.s1,SeedDBData.s2,SeedDBData.s3));
+        List<Student> studentsList = new ArrayList<Student>(Arrays.asList(students));
+        assertEquals(allSeedDBStudents.size(), studentsList.size());
+        assertTrue(allSeedDBStudents.removeAll(studentsList));
+        assertEquals(0, allSeedDBStudents.size());
     }
 
 	@Test
@@ -147,11 +141,7 @@ public class StudentNotesResourceTests {
 		ResponseEntity<Student> response = testRestTemplate.exchange(BASE_URI+"/getStudentById/1", HttpMethod.GET, httpEntity, Student.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 		Student student = response.getBody();
-        assertTrue(EqualsBuilder.reflectionEquals(student, SeedDBData.s1, "noteList"));
-        assertTrue(student.getNoteList().size() == 3);
-        assertTrue(EqualsBuilder.reflectionEquals(student.getNoteList().get(0), SeedDBData.s1.getNoteList().get(0), true));
-        assertTrue(EqualsBuilder.reflectionEquals(student.getNoteList().get(1), SeedDBData.s1.getNoteList().get(1), true));
-        assertTrue(EqualsBuilder.reflectionEquals(student.getNoteList().get(2), SeedDBData.s1.getNoteList().get(2), true));
+        assertEquals(SeedDBData.s1, student);
     }
 	
 	@Test
@@ -203,23 +193,14 @@ public class StudentNotesResourceTests {
 		ResponseEntity<Student[]> response = testRestTemplate.exchange(BASE_URI+"/getAllStudentsWithoutNotesList", HttpMethod.GET, httpEntity, Student[].class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         Student[] students = response.getBody();
-        LOGGER.debug("students.length: "+students.length);
-        for (Student s: students) {
-        	if (s.getId().equals(SeedDBData.s1.getId())) {
-        		assertEquals(SeedDBData.s1.getFirstName(), s.getFirstName());
-        		assertEquals(SeedDBData.s1.getLastName(), s.getLastName());
-        		assertEquals(SeedDBData.s1.getGrade(), s.getGrade());
-        	} else if (s.getId().equals(SeedDBData.s2.getId())) {
-	        		assertEquals(SeedDBData.s2.getFirstName(), s.getFirstName());
-	        		assertEquals(SeedDBData.s2.getLastName(), s.getLastName());
-	        		assertEquals(SeedDBData.s2.getGrade(), s.getGrade());
-            	} else if (s.getId().equals(SeedDBData.s3.getId())) {
-            		assertEquals(SeedDBData.s3.getFirstName(), s.getFirstName());
-            		assertEquals(SeedDBData.s3.getLastName(), s.getLastName());
-            		assertEquals(SeedDBData.s3.getGrade(), s.getGrade());
-                	}
-        		
+        List<Student> allSeedDBStudents = new ArrayList<Student>(Arrays.asList(SeedDBData.s1,SeedDBData.s2,SeedDBData.s3));
+        for (Student s: allSeedDBStudents) {
+        	s.setNoteList(null);
         }
+        List<Student> studentsList = new ArrayList<Student>(Arrays.asList(students));
+        assertEquals(allSeedDBStudents.size(), studentsList.size());
+        assertTrue(allSeedDBStudents.removeAll(studentsList));
+        assertEquals(0, allSeedDBStudents.size());
 	}
 
 	@Test
@@ -243,6 +224,7 @@ public class StudentNotesResourceTests {
     }
 
 	@Test
+	@DirtiesContext
 	public void testSaveStudentAddNote() {
 		
 		Student student = new Student();

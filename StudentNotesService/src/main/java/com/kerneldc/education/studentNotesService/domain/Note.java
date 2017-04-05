@@ -13,9 +13,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.kerneldc.education.studentNotesService.util.XmlTimestampAdapter;
 
 @Entity
@@ -67,14 +64,4 @@ public class Note extends AbstractPersistableEntity {
 //	public void setStudent(Student student) {
 //		this.student = student;
 //	}
-	
-    public boolean equals(final Object object) {
-
-        return EqualsBuilder.reflectionEquals(this, object);
-    }
-    public int hashCode() {
-
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
 }
