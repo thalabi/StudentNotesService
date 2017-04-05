@@ -185,13 +185,8 @@ public class StudentNotesResourceTests {
 		List<Note> notesNotInTimestampRange = allStudents.stream()
 				.map(student->student.getNoteList())
 				.flatMap(note->note.stream()).collect(Collectors.toList());
-		//boolean someRemoved = notesNotInTimestampRange.removeAll(notesInTimestampRange);
-		//System.out.println("someRemoved: "+someRemoved);
-		Iterator iterator = notesNotInTimestampRange.iterator();
-		while (iterator.hasNext()) {
-			if ()
-		}
-
+		boolean someRemoved = notesNotInTimestampRange.removeAll(notesInTimestampRange);
+		System.out.println("someRemoved: "+someRemoved);
 		System.out.println("notesInTimestampRange: "+notesInTimestampRange);
 		System.out.println("notesNotInTimestampRange: "+notesNotInTimestampRange);
 		System.out.println("==========================>"+notesNotInTimestampRange.size());
@@ -200,11 +195,6 @@ public class StudentNotesResourceTests {
 						note->note.getTimestamp().compareTo(timestampRange.getFromTimestamp()) == -1 &&
 								note.getTimestamp().compareTo(timestampRange.getToTimestamp()) == 1)
 				);
-
-//		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/getAllNotes", HttpMethod.GET, httpEntity, String.class);
-//        String expected = "[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},{\"version\":0,\"id\":2,\"timestamp\":1481403630841,\"text\":\"note 2\"},{\"version\":0,\"id\":3,\"timestamp\":1481403630842,\"text\":\"note 3\"},{\"version\":0,\"id\":4,\"timestamp\":1481403630842,\"text\":\"note 4\"},{\"version\":0,\"id\":5,\"timestamp\":1481403630843,\"text\":\"note 5\"}]";
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        assertEquals(expected, response.getBody());
 	}
 
 	@Test
@@ -446,5 +436,25 @@ public class StudentNotesResourceTests {
 		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/ResourceDoesNotExist",
 				HttpMethod.GET, httpEntity, String.class);
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+	}
+	
+	@Test
+	public void testNoteEquality() {
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+
+		ResponseEntity<Student> response1a = testRestTemplate.exchange(BASE_URI+"/getStudentById/1", HttpMethod.GET, httpEntity, Student.class);
+        assertEquals(HttpStatus.OK, response1a.getStatusCode());
+		Note note1a = response1a.getBody().getNoteList().get(0);
+		
+		ResponseEntity<Student> response1b = testRestTemplate.exchange(BASE_URI+"/getStudentById/1", HttpMethod.GET, httpEntity, Student.class);
+        assertEquals(HttpStatus.OK, response1b.getStatusCode());
+		Note note1b = response1b.getBody().getNoteList().get(0);
+
+		assertEquals(note1a.getId(), note1b.getId());
+		assertEquals(note1a.getTimestamp(), note1b.getTimestamp());
+		assertEquals(note1a.getText(), note1b.getText());
+		assertEquals(note1a.getVersion(), note1b.getVersion());
+
+		assertEquals(note1a, note1b);
 	}
 }

@@ -400,4 +400,15 @@ public class StudentRepositoryTests implements InitializingBean {
                 	}
         }		
 	}
+	
+	@Test
+	public void testNoteEquality() {
+		Note note1a = studentRepository.getStudentById(1l).getNoteList().get(0);
+		Note note1b = studentRepository.getStudentById(1l).getNoteList().get(0);
+		System.out.println(note1a);
+		System.out.println(note1b);
+		entityManager.detach(note1a);
+		entityManager.detach(note1b);
+		assertEquals(note1a, note1b);
+	}
 }
