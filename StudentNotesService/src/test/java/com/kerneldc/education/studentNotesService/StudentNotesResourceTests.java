@@ -44,12 +44,13 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.education.studentNotesService.bean.Grade;
 import com.kerneldc.education.studentNotesService.bean.TimestampRange;
+import com.kerneldc.education.studentNotesService.constants.Constants;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.junit.MyTestExecutionListener;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 import com.kerneldc.education.studentNotesService.security.bean.User;
-import com.kerneldc.education.studentNotesService.security.constants.Constants;
+import com.kerneldc.education.studentNotesService.security.constants.SecurityConstants;
 import com.kerneldc.education.studentNotesService.security.util.SimpleGrantedAuthorityMixIn;
 
 @RunWith(SpringRunner.class)
@@ -103,7 +104,7 @@ public class StudentNotesResourceTests {
 		objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixIn.class);
 		user = objectMapper.treeToValue(newJsonUser, User.class);
 		LOGGER.debug("user.getToken(): {}", user.getToken());
-		httpHeaders.set(Constants.AUTH_HEADER_NAME, Constants.AUTH_HEADER_SCHEMA + " " + user.getToken());
+		httpHeaders.set(SecurityConstants.AUTH_HEADER_NAME, SecurityConstants.AUTH_HEADER_SCHEMA + " " + user.getToken());
 		LOGGER.debug("end ...");
 	}
 	
@@ -142,6 +143,13 @@ public class StudentNotesResourceTests {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 		Student student = response.getBody();
         assertEquals(SeedDBData.s1, student);
+    }
+	
+	@Test
+    public void testGetStudentByIdNotFound() {
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+		ResponseEntity<Student> response = testRestTemplate.exchange(BASE_URI+"/getStudentById/777777", HttpMethod.GET, httpEntity, Student.class);
+        assertEquals(Constants.SN_EXCEPTION_RESPONSE_STATUS_CODE, response.getStatusCode().value());
     }
 	
 	@Test
@@ -317,9 +325,19 @@ public class StudentNotesResourceTests {
 	@DirtiesContext
 	public void testDeleteStudentById() {
 		
-		testRestTemplate.delete(BASE_URI+"/deleteStudentById/1");
-		//TODO check the repository that the row is deleted
-		assertEquals(true, true);
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+		ResponseEntity<Student> response = testRestTemplate.exchange(BASE_URI+"/deleteStudentById/1", HttpMethod.DELETE, httpEntity, Student.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+		Student student = studentRepository.getStudentById(1l);
+		assertEquals("student should not exist", null, student);
+	}
+
+	@Test
+	public void testDeleteStudentByIdNotFound() {
+		
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+		ResponseEntity<Student> response = testRestTemplate.exchange(BASE_URI+"/deleteStudentById/777777", HttpMethod.DELETE, httpEntity, Student.class);
+        assertEquals(Constants.SN_EXCEPTION_RESPONSE_STATUS_CODE, response.getStatusCode().value());
 	}
 
 	@Test

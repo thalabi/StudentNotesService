@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.education.studentNotesService.StudentNotesApplication;
 import com.kerneldc.education.studentNotesService.security.bean.User;
-import com.kerneldc.education.studentNotesService.security.constants.Constants;
+import com.kerneldc.education.studentNotesService.security.constants.SecurityConstants;
 import com.kerneldc.education.studentNotesService.security.util.JwtTokenUtil;
 import com.kerneldc.education.studentNotesService.security.util.SimpleGrantedAuthorityMixIn;
 
@@ -77,7 +77,7 @@ public class SecurityResourceTests {
 		LOGGER.debug("user.getToken(): {}", user.getToken());
 		
 		//String hello = testRestTemplate.getForObject(BASE_URI, String.class);
-		httpHeaders.set(Constants.AUTH_HEADER_NAME, Constants.AUTH_HEADER_SCHEMA + " " + user.getToken());
+		httpHeaders.set(SecurityConstants.AUTH_HEADER_NAME, SecurityConstants.AUTH_HEADER_SCHEMA + " " + user.getToken());
 		httpHeaders.forEach((k,v)->{LOGGER.debug("header: {}, content: {}", k, v);});
 		httpEntity = new HttpEntity<String>(httpHeaders);
         ResponseEntity<String> helloResponse = testRestTemplate.exchange(BASE_URI, HttpMethod.GET, httpEntity, String.class);

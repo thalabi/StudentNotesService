@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.education.studentNotesService.security.bean.User;
 import com.kerneldc.education.studentNotesService.security.bean.UserAuthentication;
-import com.kerneldc.education.studentNotesService.security.constants.Constants;
+import com.kerneldc.education.studentNotesService.security.constants.SecurityConstants;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -114,7 +114,7 @@ public class JwtTokenUtil {
     }
 
     public static String jwtTokenFromRequest(HttpServletRequest request) {
-		String authenticationHeader = request.getHeader(Constants.AUTH_HEADER_NAME);
+		String authenticationHeader = request.getHeader(SecurityConstants.AUTH_HEADER_NAME);
         LOGGER.debug("authenticationHeader: {}", authenticationHeader);
         if (authenticationHeader != null) {
         	Pattern p = Pattern.compile("^\\s*Bearer\\s+(.*)$", Pattern.CASE_INSENSITIVE);

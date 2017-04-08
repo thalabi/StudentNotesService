@@ -26,6 +26,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.jpa.repository.JpaContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -132,11 +133,17 @@ public class StudentRepositoryTests implements InitializingBean {
 	@DirtiesContext
     public void testDelete() {
 		
-		Student student = studentRepository.getStudentById(1l);
-		studentRepository.delete(student);
+		studentRepository.delete(1l);
 		entityManager.flush();
 		Student deletedStudent = studentRepository.getStudentById(1l);
 		Assert.assertTrue(deletedStudent == null);
+	}
+
+	@Test(expected=EmptyResultDataAccessException.class)
+	@DirtiesContext
+    public void testDeleteNotFound() {
+		
+		studentRepository.delete(777777l);
 	}
 
 	@Test
