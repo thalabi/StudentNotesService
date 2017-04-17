@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -33,7 +34,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.kerneldc.education.studentNotesService.bean.Grade;
 import com.kerneldc.education.studentNotesService.domain.Note;
+import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
+import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 
 @RunWith(SpringRunner.class)
@@ -45,6 +48,8 @@ public class StudentRepositoryTests implements InitializingBean {
 	
 	@Autowired
 	private StudentRepository studentRepository;
+	@Autowired
+	private SchoolYearRepository schoolYearRepository;
 	
 	@Autowired
 	private JpaContext jpaContext;
@@ -418,4 +423,51 @@ public class StudentRepositoryTests implements InitializingBean {
 		entityManager.detach(note1b);
 		assertEquals(note1a, note1b);
 	}
+	
+	@Test
+	public void testFindOne() {
+		Student student = studentRepository.findOne(1l);
+		student.getSchoolYearSet().size();
+	}
+	
+	@Test
+	@DirtiesContext
+	public void testAddSchoolYearToStudent() {
+		Student student = studentRepository.findOne(1l);
+		SchoolYear schoolYear = schoolYearRepository.findOne(1l);
+		Long schoolYearVersion = new Long(schoolYear.getVersion());
+		student.addSchoolYear(schoolYear);
+		LOGGER.debug("student: {}", student);
+		studentRepository.save(student);
+		entityManager.flush();
+		assertEquals(1, student.getSchoolYearSet().size());
+		assertEquals(1, schoolYear.getStudentSet().size());
+		assertEquals(new Long(schoolYearVersion+1l), schoolYear.getVersion());
+	}
+
+	@Test
+	@DirtiesContext
+	public void testRemoveSchoolYearFromStudent() {
+		Student student = studentRepository.findOne(1l);
+		SchoolYear schoolYear = schoolYearRepository.findOne(1l);
+		student.addSchoolYear(schoolYear);
+		studentRepository.save(student);
+		entityManager.flush();
+		//entityManager.detach(student);
+		//entityManager.detach(schoolYear);
+		
+		student = studentRepository.findOne(1l);
+		assertEquals(1, student.getSchoolYearSet().size());
+		assertEquals("2016-2017", student.getSchoolYearSet().iterator().next().getSchoolYear());
+		
+		student.removeSchoolYear(student.getSchoolYearSet().iterator().next());
+		
+		studentRepository.save(student);
+		entityManager.flush();
+		assertEquals(0, student.getSchoolYearSet().size());
+//		assertEquals(1, student.getSchoolYearSet().size());
+//		assertEquals(1, schoolYear.getStudentSet().size());
+//		assertEquals(new Long(schoolYearVersion+1l), schoolYear.getVersion());
+	}
+
 }

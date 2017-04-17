@@ -99,8 +99,8 @@ public class SchoolYearRepositoryTests implements InitializingBean {
 		Long oldVersion = new Long(schoolYear.getVersion());
 		SchoolYear savedSchoolYear = schoolYearRepository.save(schoolYear);
 		entityManager.flush(); // will cause version to be bumped up
-		System.out.println(schoolYear);
-		System.out.println(savedSchoolYear);
+		LOGGER.debug("schoolYear: {}", schoolYear);
+		LOGGER.debug("savedSchoolYear: {}", savedSchoolYear);
 		assertEquals(schoolYear.getId(), savedSchoolYear.getId());
 		assertEquals(schoolYear.getSchoolYear(), savedSchoolYear.getSchoolYear());
 		assertEquals(new Long(oldVersion+1l), savedSchoolYear.getVersion());

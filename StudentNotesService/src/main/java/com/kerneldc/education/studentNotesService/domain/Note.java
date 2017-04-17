@@ -13,24 +13,27 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.kerneldc.education.studentNotesService.util.XmlTimestampAdapter;
 
 @Entity
-@Table(name = "NOTE")
+@Table(name = "note")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Note extends AbstractPersistableEntity {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name = "ID")
+	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@XmlTransient
 	private Long id;
-	@Column(name = "TIMESTAMP")
+	@Column(name = "timestamp")
 	@XmlJavaTypeAdapter(XmlTimestampAdapter.class)
 	private Timestamp timestamp;
-	@Column(name = "TEXT")
+	@Column(name = "text")
 	private String text;
 	
 //	@ManyToOne
@@ -64,4 +67,16 @@ public class Note extends AbstractPersistableEntity {
 //	public void setStudent(Student student) {
 //		this.student = student;
 //	}
+	@Override
+    public boolean equals(final Object object) {
+
+        return EqualsBuilder.reflectionEquals(this, object, "id", "version");
+    }
+	@Override
+    public int hashCode() {
+
+        return HashCodeBuilder.reflectionHashCode(this, "id", "version");
+    }
+
+
 }

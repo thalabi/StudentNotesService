@@ -45,13 +45,13 @@ public abstract class AbstractPersistableEntity implements Serializable {
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
-    public boolean equals(final Object object) {
-
-        return EqualsBuilder.reflectionEquals(this, object);
-    }
-    public int hashCode() {
-
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
+//    public boolean equals(final Object object) {
+//
+//        return EqualsBuilder.reflectionEquals(this, object);
+//    }
+//    public int hashCode() {
+//
+//        return HashCodeBuilder.reflectionHashCode(this);
+//    }
 
 }

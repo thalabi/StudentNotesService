@@ -1,0 +1,31 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<!-- Tables -->
+    <changeSet author="thalabi" id="student-school-year">
+        <createTable tableName="student_school_year">
+            <column name="student_id" type="long">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="school_year_id" type="long">
+                <constraints primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+	<!-- Foreign keys -->
+    <changeSet author="thalabi" id="student-school-year-fk-1">
+        <addForeignKeyConstraint
+        	baseColumnNames="student_id" baseTableName="student_school_year"
+			referencedColumnNames="id" referencedTableName="student"
+			constraintName="student_school_year_fk_1" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"/>
+    </changeSet>
+    <changeSet author="thalabi" id="student-school-year-fk-2">
+        <addForeignKeyConstraint
+        	baseColumnNames="school_year_id" baseTableName="student_school_year"
+        	referencedColumnNames="id" referencedTableName="school_year"
+        	constraintName="student_school_year_fk_2" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"/>
+    </changeSet>
+
+
+</databaseChangeLog>

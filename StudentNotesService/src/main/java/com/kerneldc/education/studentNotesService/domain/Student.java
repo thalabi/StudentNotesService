@@ -1,7 +1,9 @@
 package com.kerneldc.education.studentNotesService.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -12,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
@@ -24,11 +27,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.kerneldc.education.studentNotesService.bean.Grade;
 import com.kerneldc.education.studentNotesService.domain.converter.GradeConverter;
 
 @Entity
-@Table(name = "STUDENT", uniqueConstraints=@UniqueConstraint(columnNames={"FIRST_NAME", "LAST_NAME"}))
+@Table(name = "student", uniqueConstraints=@UniqueConstraint(columnNames={"first_name", "last_name"}))
 @NamedEntityGraph(name = "Student.noteList", 
 					attributeNodes = @NamedAttributeNode(value = "noteList"))
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -37,13 +43,13 @@ public class Student extends AbstractPersistableEntity {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name = "ID")
+	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@XmlTransient
 	private Long id;
-	@Column(name = "FIRST_NAME")
+	@Column(name = "first_name")
 	private String firstName = "";
-	@Column(name = "LAST_NAME")
+	@Column(name = "last_name")
 	private String lastName = "";
 	@Column(name = "GRADE")
 	@Convert(converter=GradeConverter.class)
@@ -52,13 +58,16 @@ public class Student extends AbstractPersistableEntity {
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("timestamp")
 	@JoinTable(
-		name = "STUDENT_NOTE",
-		joinColumns = @JoinColumn(name = "STUDENT_ID"),
-		inverseJoinColumns = @JoinColumn(name="NOTE_ID"))
+		name = "student_note",
+		joinColumns = @JoinColumn(name = "student_id"),
+		inverseJoinColumns = @JoinColumn(name="note_id"))
 	@XmlElementWrapper(name="notes")
 	@XmlElement(name="note")
 	private List<Note> noteList = new ArrayList<>();
 
+	@ManyToMany(cascade=CascadeType.ALL, mappedBy="studentSet")
+	private Set<SchoolYear> schoolYearSet = new HashSet<>();
+    
 	public Long getId() {
 		return id;
 	}
@@ -89,5 +98,35 @@ public class Student extends AbstractPersistableEntity {
 	}
 	public void setNoteList(List<Note> noteList) {
 		this.noteList = noteList;
+	}
+	
+	public Set<SchoolYear> getSchoolYearSet() {
+		return schoolYearSet;
+	}
+	public void setSchoolYearSet(Set<SchoolYear> schoolYearSet) {
+		this.schoolYearSet = schoolYearSet;
+	}
+	
+	@Override
+    public boolean equals(final Object object) {
+
+        return EqualsBuilder.reflectionEquals(this, object, "id", "version", "noteList", "schoolYearSet");
+    }
+	@Override
+    public int hashCode() {
+
+        return HashCodeBuilder.reflectionHashCode(this, "id", "version", "noteList", "schoolYearSet");
+    }
+
+	// utility methods
+	
+	public void addSchoolYear(SchoolYear schoolYear) {
+		schoolYearSet.add(schoolYear);
+		schoolYear.getStudentSet().add(this);
+	}
+
+	public void removeSchoolYear(SchoolYear schoolYear) {
+		schoolYearSet.remove(schoolYear);
+		schoolYear.getStudentSet().remove(this);
 	}
 }

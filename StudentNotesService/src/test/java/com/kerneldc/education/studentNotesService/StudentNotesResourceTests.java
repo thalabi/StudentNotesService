@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -20,11 +22,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.data.jpa.repository.JpaContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -213,11 +217,13 @@ public class StudentNotesResourceTests {
 
 	@Test
 	@DirtiesContext
+	@Transactional
     public void testSaveStudentChangeFirstLastNameAndGrade() {
 		
         Student student = studentRepository.getStudentById(2l);
         student.setFirstName(student.getFirstName()+" v1");
         student.setLastName(student.getLastName()+" v1");
+        LOGGER.debug("student: {}", student);
         
         HttpEntity<Student> httpEntity = new HttpEntity<Student>(student,httpHeaders);
         ResponseEntity<Student> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, Student.class);
@@ -252,7 +258,7 @@ public class StudentNotesResourceTests {
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		
 		Student savedStudent = response.getBody();
-        assertTrue(EqualsBuilder.reflectionEquals(savedStudent, student, "noteList", "version"));
+        assertTrue(savedStudent.equals(student));
         assertTrue(savedStudent.getNoteList().size() == 3);
         assertTrue(savedStudent.getVersion().equals(student.getVersion()+1));
         assertTrue(EqualsBuilder.reflectionEquals(savedStudent.getNoteList().get(0), student.getNoteList().get(0), true));
@@ -312,7 +318,7 @@ public class StudentNotesResourceTests {
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		
 		Student savedStudent = response.getBody();
-        assertTrue(EqualsBuilder.reflectionEquals(savedStudent, student, "noteList", "version"));
+        assertTrue(savedStudent.equals(student));
         assertTrue(savedStudent.getNoteList().size() == 3);
         assertTrue(savedStudent.getVersion().equals(student.getVersion()+1));
         assertTrue(EqualsBuilder.reflectionEquals(savedStudent.getNoteList().get(0), student.getNoteList().get(0), true));
