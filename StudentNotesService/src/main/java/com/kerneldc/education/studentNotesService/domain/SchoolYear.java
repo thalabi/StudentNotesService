@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -23,6 +25,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 @Entity
 @Table(name = "school_year", uniqueConstraints=@UniqueConstraint(columnNames={"school_year"}))
+@NamedEntityGraph(name = "SchoolYear.studentSet", 
+					attributeNodes = @NamedAttributeNode(value = "studentSet"))
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SchoolYear extends AbstractPersistableEntity {
 

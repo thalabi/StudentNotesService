@@ -11,6 +11,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -55,10 +56,12 @@ public class StudentRepositoryTests implements InitializingBean {
 	private JpaContext jpaContext;
 	
 	private EntityManager entityManager;
+	private EntityManager schoolYearEntityManager;
 
 	@Override
 	public void afterPropertiesSet() {
 		entityManager = jpaContext.getEntityManagerByManagedType(Student.class);
+		schoolYearEntityManager = jpaContext.getEntityManagerByManagedType(SchoolYear.class);
 	}
 
 	@Test
@@ -470,4 +473,91 @@ public class StudentRepositoryTests implements InitializingBean {
 //		assertEquals(new Long(schoolYearVersion+1l), schoolYear.getVersion());
 	}
 
+	@Test
+	@DirtiesContext
+	public void testAddTwoSchoolYearsToStudent() {
+		Student student = studentRepository.findOne(1l);
+		SchoolYear schoolYear1 = schoolYearRepository.findOne(1l);
+		
+		SchoolYear schoolYear2 = new SchoolYear();
+		schoolYear2.setSchoolYear("2017-2018");
+		schoolYearRepository.save(schoolYear2);
+		entityManager.flush();
+		Long schoolYear1Version = new Long(schoolYear1.getVersion());
+		Long schoolYear2Version = new Long(schoolYear2.getVersion());
+		student.addSchoolYear(schoolYear1);
+		student.addSchoolYear(schoolYear2);
+		LOGGER.debug("student: {}", student);
+		studentRepository.save(student);
+		entityManager.flush();
+		assertEquals(2, student.getSchoolYearSet().size());
+		assertEquals(1, schoolYear1.getStudentSet().size());
+		assertEquals(1, schoolYear2.getStudentSet().size());
+		assertEquals(new Long(schoolYear1Version+1l), schoolYear1.getVersion());
+		assertEquals(new Long(schoolYear2Version+1l), schoolYear2.getVersion());
+	}
+
+
+	@Test
+	@DirtiesContext
+	public void testRemoveOneSchoolYearFromStudentWithTwoSchoolYears() {
+		Student student = studentRepository.findOne(1l);
+		SchoolYear schoolYear1 = schoolYearRepository.findOne(1l);
+		
+		SchoolYear schoolYear2 = new SchoolYear();
+		schoolYear2.setSchoolYear("2017-2018");
+		schoolYearRepository.save(schoolYear2);
+		entityManager.flush();
+		Long schoolYear1Version = new Long(schoolYear1.getVersion());
+		Long schoolYear2Version = new Long(schoolYear2.getVersion());
+		student.addSchoolYear(schoolYear1);
+		student.addSchoolYear(schoolYear2);
+		LOGGER.debug("student: {}", student);
+		studentRepository.save(student);
+		entityManager.flush();
+		
+		student.removeSchoolYear(schoolYear1);
+		studentRepository.save(student);
+		entityManager.flush();
+		assertEquals(1, student.getSchoolYearSet().size());
+		assertEquals(0, schoolYear1.getStudentSet().size());
+		assertEquals(new Long(schoolYear1Version+2l), schoolYear1.getVersion());
+		assertEquals(new Long(schoolYear2Version+1l), schoolYear2.getVersion());
+	}
+
+	@Test
+	@DirtiesContext
+	public void testGetStudentsForSchoolYear() {
+		Student student1 = studentRepository.findOne(1l);
+		Student student2 = studentRepository.findOne(2l);
+		SchoolYear schoolYear = schoolYearRepository.findOne(1l);
+		Long schoolYearVersion = new Long(schoolYear.getVersion());
+		student1.addSchoolYear(schoolYear);
+		studentRepository.save(student1);
+		entityManager.flush();
+		student2.addSchoolYear(schoolYear);
+		studentRepository.save(student2);
+		entityManager.flush();
+
+		assertEquals(2, schoolYear.getStudentSet().size());
+		assertEquals(new Long(schoolYearVersion+2l), schoolYear.getVersion());
+//		entityManager.detach(student1);
+//		entityManager.detach(student2);
+//		schoolYearEntityManager.detach(schoolYear);
+		entityManager.clear();
+		schoolYearEntityManager.clear();
+		LOGGER.debug("================================================");
+		//SchoolYear schoolYearWithGraph = schoolYearRepository.getSchoolYearById(1l);
+		SchoolYear schoolYearWithGraph = schoolYearRepository.findOne(1l);
+		//schoolYearWithGraph.setStudentSet(new HashSet<Student>());
+		LOGGER.debug("schoolYearWithGraph: {}",schoolYearWithGraph);
+		entityManager.flush();
+		Iterator<Student> iterator = schoolYearWithGraph.getStudentSet().iterator();
+		Student firstStudent = iterator.next();
+		LOGGER.debug("firstStudent.getFirstName(): {}", firstStudent.getFirstName());
+		Student secondStudent = iterator.next();
+		LOGGER.debug("secondStudent.getFirstName(): {}", secondStudent.getFirstName());
+		assertEquals(3, secondStudent.getNoteList().size());
+		//student1.getNoteList().size();
+	}
 }
