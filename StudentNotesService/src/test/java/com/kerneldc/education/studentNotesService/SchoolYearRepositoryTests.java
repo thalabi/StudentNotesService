@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.Set;
 
 //import static org.junit.Assert.assertEquals;
 
@@ -133,4 +134,9 @@ public class SchoolYearRepositoryTests implements InitializingBean {
 		}
 	}
 
-}
+	@Test
+    public void testGetStudentsBySchoolYearId() {
+		Set<SchoolYear> schoolYears = schoolYearRepository.getStudentsBySchoolYearId(1l);
+		LOGGER.debug("schoolYears: {}", schoolYears);
+	}
+}	

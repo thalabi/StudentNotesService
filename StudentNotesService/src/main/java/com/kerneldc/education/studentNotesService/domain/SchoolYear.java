@@ -14,20 +14,23 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import com.fasterxml.jackson.annotation.JsonView;
+import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 
 @Entity
 @Table(name = "school_year", uniqueConstraints=@UniqueConstraint(columnNames={"school_year"}))
 @NamedEntityGraph(name = "SchoolYear.studentSet", 
 					attributeNodes = @NamedAttributeNode(value = "studentSet"))
-@XmlAccessorType(XmlAccessType.FIELD)
+//@JsonIdentityInfo(
+//		  generator = ObjectIdGenerators.PropertyGenerator.class, 
+//		  property = "id")
 public class SchoolYear extends AbstractPersistableEntity {
 
 	private static final long serialVersionUID = 1L;
@@ -35,9 +38,10 @@ public class SchoolYear extends AbstractPersistableEntity {
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@XmlTransient
+	@JsonView(View.Default.class)
 	private Long id;
 	@Column(name = "school_year")
+	@JsonView(View.Default.class)
 	private String schoolYear;
 
 	@ManyToMany(cascade=CascadeType.ALL)  
@@ -45,6 +49,9 @@ public class SchoolYear extends AbstractPersistableEntity {
     	name="student_school_year",
     	joinColumns=@JoinColumn(name="school_year_id"),
     	inverseJoinColumns=@JoinColumn(name="student_id"))
+	@OrderBy(value="firstName") //TODO add last name
+	//@JsonManagedReference // will get serialized normally
+	@JsonView(View.SchoolYearExtended.class)
 	private Set<Student> studentSet = new HashSet<>();
 	
 	public Long getId() {

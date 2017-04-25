@@ -16,5 +16,5 @@
 <!--   <include file="liquibase/data/changelog-student-note-data.xml"/> -->
 
   <include file="liquibase/changelog-school-year.xml"/>
-
+  <include file="liquibase/changelog-student-school-year.xml"/>
 </databaseChangeLog>

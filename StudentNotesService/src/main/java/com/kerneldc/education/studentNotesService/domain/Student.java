@@ -30,14 +30,19 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.kerneldc.education.studentNotesService.bean.Grade;
 import com.kerneldc.education.studentNotesService.domain.converter.GradeConverter;
+import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 
 @Entity
 @Table(name = "student", uniqueConstraints=@UniqueConstraint(columnNames={"first_name", "last_name"}))
 @NamedEntityGraph(name = "Student.noteList", 
 					attributeNodes = @NamedAttributeNode(value = "noteList"))
 @XmlAccessorType(XmlAccessType.FIELD)
+//@JsonIdentityInfo(
+//		  generator = ObjectIdGenerators.PropertyGenerator.class, 
+//		  property = "id")
 public class Student extends AbstractPersistableEntity {
 
 	private static final long serialVersionUID = 1L;
@@ -46,13 +51,17 @@ public class Student extends AbstractPersistableEntity {
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@XmlTransient
+	@JsonView(View.Default.class)
 	private Long id;
 	@Column(name = "first_name")
+	@JsonView(View.Default.class)
 	private String firstName = "";
 	@Column(name = "last_name")
+	@JsonView(View.Default.class)
 	private String lastName = "";
 	@Column(name = "GRADE")
 	@Convert(converter=GradeConverter.class)
+	@JsonView(View.Default.class)
 	private Grade grade;
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -63,9 +72,14 @@ public class Student extends AbstractPersistableEntity {
 		inverseJoinColumns = @JoinColumn(name="note_id"))
 	@XmlElementWrapper(name="notes")
 	@XmlElement(name="note")
+	@JsonView(View.Default.class)
 	private List<Note> noteList = new ArrayList<>();
 
+	@XmlTransient
 	@ManyToMany(cascade=CascadeType.ALL, mappedBy="studentSet")
+	//@JsonBackReference
+	//@JsonIgnore
+	@JsonView(View.StudentExtended.class)
 	private Set<SchoolYear> schoolYearSet = new HashSet<>();
     
 	public Long getId() {

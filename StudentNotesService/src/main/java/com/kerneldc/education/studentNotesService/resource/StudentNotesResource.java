@@ -27,9 +27,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.kerneldc.education.studentNotesService.bean.Students;
 import com.kerneldc.education.studentNotesService.bean.TimestampRange;
 import com.kerneldc.education.studentNotesService.domain.Student;
+import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 import com.kerneldc.education.studentNotesService.exception.RowNotFoundException;
 import com.kerneldc.education.studentNotesService.exception.SnsException;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
@@ -93,6 +95,7 @@ public class StudentNotesResource {
 	@GET
 	@Path("/getStudentById/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
+	@JsonView(View.Default.class)
 	public Student getStudentById(
 		@PathParam("id") Long id) throws RowNotFoundException {
 		
@@ -119,6 +122,7 @@ public class StudentNotesResource {
 	@Path("/saveStudent")
     @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@JsonView(View.Default.class)
     public Student saveStudent(
     	Student student) {
 

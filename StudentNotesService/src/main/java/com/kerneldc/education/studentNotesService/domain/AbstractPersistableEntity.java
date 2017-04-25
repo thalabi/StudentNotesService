@@ -12,6 +12,9 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.kerneldc.education.studentNotesService.domain.jsonView.View;
+
 @MappedSuperclass
 @XmlAccessorType(XmlAccessType.FIELD)
 public abstract class AbstractPersistableEntity implements Serializable {
@@ -25,6 +28,7 @@ public abstract class AbstractPersistableEntity implements Serializable {
 	@Version
 	@Column(name = "VERSION")
 	@XmlTransient
+	@JsonView(View.Default.class)
 	private Long version;
 
 	public Long getVersion() {

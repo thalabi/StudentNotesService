@@ -79,44 +79,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 	@Transactional
 	public Set<Student> getLatestActiveStudents(int limit) {
 
-		/*		
-		Query q = entityManager.createNativeQuery(
-			"select s.*, sn.*, n.* from student s join student_note sn on s.id = sn.student_id join note n on sn.note_id = n.id where s.id in (\r\n" + 
-			"select student_id from (\r\n" + 
-			"select sn.student_id, max(n.timestamp)\r\n" + 
-			"from student_note sn join note n on sn.note_id = n.id\r\n" + 
-			"group by sn.student_id\r\n" + 
-			"order by max(n.timestamp) desc\r\n" + 
-			"limit :limit\r\n" + 
-			")\r\n" + ")", Student.class);
-		q.setParameter("limit", limit);
-		@SuppressWarnings("unchecked")
-		List<Student> students = (List<Student>)q.getResultList();
-		LOGGER.debug("students.size(): {}", students.size());
-	    for (Student s: students) {
-	    	LOGGER.debug("s.getNoteList().size(): {}", s.getNoteList().size());
-	    	for (Note n: s.getNoteList())
-	    		;
-	    }
-	    return students;
-*/	    
-		
 		Session session = entityManager.unwrap(Session.class);
-//		SQLQuery query = session.createSQLQuery(
-//				"select s.*, n.*, sn.* from student s join student_note sn on s.id = sn.student_id join note n on sn.note_id = n.id where s.id in (\r\n" + 
-//				"select student_id from (\r\n" + 
-//				"select sn.student_id, max(n.timestamp)\r\n" + 
-//				"from student_note sn join note n on sn.note_id = n.id\r\n" + 
-//				"group by sn.student_id\r\n" + 
-//				"order by max(n.timestamp) desc\r\n" + 
-//				"limit 5\r\n" + 
-//				")\r\n" + ")"				);
-//		query.addEntity("s", Student.class);
-//		query.addFetch("n", "s", "noteList");
-//		List<Student> lo = (List<Student>)query.list();
-//		LOGGER.debug("lo.size(): {}", lo.size());
-//		return lo;
-
 		SQLQuery query = session.createSQLQuery(
 			"select\r\n" + 
 			"	s.id student_id,\r\n" + 
