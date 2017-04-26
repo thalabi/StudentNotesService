@@ -2,6 +2,7 @@ package com.kerneldc.education.studentNotesService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -48,6 +49,7 @@ import com.kerneldc.education.studentNotesService.bean.TimestampRange;
 import com.kerneldc.education.studentNotesService.constants.Constants;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
+import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 import com.kerneldc.education.studentNotesService.junit.MyTestExecutionListener;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 import com.kerneldc.education.studentNotesService.security.bean.User;
@@ -221,8 +223,16 @@ public class StudentNotesResourceTests {
         student.setFirstName(student.getFirstName()+" v1");
         student.setLastName(student.getLastName()+" v1");
         LOGGER.debug("student: {}", student);
-        
-        HttpEntity<Student> httpEntity = new HttpEntity<Student>(student,httpHeaders);
+
+		String studentJson = "";
+		try {
+			studentJson = objectMapper.writerWithView(View.Default.class).writeValueAsString(student);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			fail("Unable to serialize student object to JSON");
+		}
+
+		HttpEntity<String> httpEntity = new HttpEntity<>(studentJson,httpHeaders);
         ResponseEntity<Student> response = testRestTemplate.exchange(BASE_URI+"/saveStudent", HttpMethod.POST, httpEntity, Student.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         Student newStudent = response.getBody();
