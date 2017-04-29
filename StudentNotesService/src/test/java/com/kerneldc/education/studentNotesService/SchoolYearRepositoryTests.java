@@ -25,6 +25,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
+import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 
 @RunWith(SpringRunner.class)
@@ -138,5 +139,17 @@ public class SchoolYearRepositoryTests implements InitializingBean {
     public void testGetStudentsBySchoolYearId() {
 		Set<SchoolYear> schoolYears = schoolYearRepository.getStudentsBySchoolYearId(1l);
 		LOGGER.debug("schoolYears: {}", schoolYears);
+		assertEquals(1, schoolYears.size());
+		SchoolYear schoolYear = schoolYears.iterator().next(); 
+		assertEquals(2, schoolYear.getStudentSet().size());
+		for (Student student: schoolYear.getStudentSet()) {
+			if (student.getId().equals(1l)) {
+				assertEquals(3, student.getNoteList().size());
+			}
+			if (student.getId().equals(2l)) {
+				assertEquals(0, student.getNoteList().size());
+			}
+		}
+		
 	}
 }	
