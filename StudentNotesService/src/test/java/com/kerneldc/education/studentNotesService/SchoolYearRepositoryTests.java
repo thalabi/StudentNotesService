@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -55,6 +57,8 @@ public class SchoolYearRepositoryTests implements InitializingBean {
 		SchoolYear schoolYearExpected = new SchoolYear();
 		schoolYearExpected.setId(1l);
 		schoolYearExpected.setSchoolYear("2016-2017");
+		schoolYearExpected.setStartDate(Date.valueOf(LocalDate.of(2016, 9, 1)));
+		schoolYearExpected.setEndDate(Date.valueOf(LocalDate.of(2017, 6, 30)));
 		schoolYearExpected.setVersion(0l);
 		assertEquals(schoolYearExpected, schoolYear);
 	}
@@ -65,6 +69,8 @@ public class SchoolYearRepositoryTests implements InitializingBean {
 
 		SchoolYear newSchoolYear = new SchoolYear();
 		newSchoolYear.setSchoolYear("2017-2018");
+		newSchoolYear.setStartDate(Date.valueOf(LocalDate.of(2017, 9, 1)));
+		newSchoolYear.setEndDate(Date.valueOf(LocalDate.of(2018, 6, 30)));
 		SchoolYear savedSchoolYear = schoolYearRepository.save(newSchoolYear);
 		assertTrue(savedSchoolYear.getId().compareTo(0l) > 0 &&
 				savedSchoolYear.getSchoolYear().equals(newSchoolYear.getSchoolYear()) &&
@@ -122,9 +128,13 @@ public class SchoolYearRepositoryTests implements InitializingBean {
 
 		SchoolYear newSchoolYear1 = new SchoolYear();
 		newSchoolYear1.setSchoolYear("9998-9999");
+		newSchoolYear1.setStartDate(Date.valueOf(LocalDate.of(9998, 9, 1)));
+		newSchoolYear1.setEndDate(Date.valueOf(LocalDate.of(9999, 6, 30)));
 		schoolYearRepository.save(newSchoolYear1);
 		SchoolYear newSchoolYear2 = new SchoolYear();
 		newSchoolYear2.setSchoolYear("2017-2018");
+		newSchoolYear2.setStartDate(Date.valueOf(LocalDate.of(2017, 9, 1)));
+		newSchoolYear2.setEndDate(Date.valueOf(LocalDate.of(2018, 6, 30)));
 		schoolYearRepository.save(newSchoolYear2);
 		List<SchoolYear> schoolYearList = schoolYearRepository.findAllByOrderBySchoolYearAsc();
 		assertTrue(schoolYearList.size() == 3);

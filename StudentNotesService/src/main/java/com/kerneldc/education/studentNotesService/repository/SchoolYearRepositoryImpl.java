@@ -52,6 +52,8 @@ public class SchoolYearRepositoryImpl implements SchoolYearRepositoryCustom, Ini
 			"select\r\n" + 
 					"	sy.id school_year_id,\r\n" + 
 					"	sy.school_year,\r\n" + 
+					"	sy.start_date,\r\n" + 
+					"	sy.end_date,\r\n" + 
 					"	sy.version school_year_version,\r\n" + 
 					"	s.id student_id,\r\n" + 
 					"	s.first_name,\r\n" + 
@@ -77,6 +79,8 @@ public class SchoolYearRepositoryImpl implements SchoolYearRepositoryCustom, Ini
 		query.addRoot("sy", SchoolYear.class)
 			.addProperty("id", "school_year_id")
 			.addProperty("schoolYear", "school_year")
+			.addProperty("startDate", "start_date")
+			.addProperty("endDate", "end_date")
 			.addProperty("version", "school_year_version");
 		query.addFetch("s", "sy", "studentSet")
 			.addProperty("key", "school_year_id")

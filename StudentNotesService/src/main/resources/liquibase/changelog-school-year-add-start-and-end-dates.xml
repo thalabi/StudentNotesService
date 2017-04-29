@@ -1,0 +1,24 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<!-- Add columns start_date and end_date and move version column to the end -->
+    <changeSet author="Tarif Halabi" id="changelog-school-year-add-start-and-end-dates">
+        <addColumn tableName="school_year">
+            <column name="start_date" type="date"/>
+            <column name="end_date" type="date"/>
+            <column name="new_version" type="long"/>
+        </addColumn>
+   		<sql>
+update school_year
+	set start_date = '0001-01-01',
+	    end_date = '9999-12-31',
+	    new_version = version;
+		</sql>
+		<addNotNullConstraint tableName="school_year" columnName="start_date" columnDataType="date"/>
+		<addNotNullConstraint tableName="school_year" columnName="end_date" columnDataType="date"/>
+		<addNotNullConstraint tableName="school_year" columnName="new_version" columnDataType="long"/>
+		<dropColumn tableName="school_year" columnName="version"/>
+		<renameColumn tableName="school_year" oldColumnName="new_version" newColumnName="version"/>
+    </changeSet>
+
+</databaseChangeLog>

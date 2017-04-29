@@ -4,14 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -482,6 +481,8 @@ public class StudentRepositoryTests implements InitializingBean {
 		
 		SchoolYear schoolYear2 = new SchoolYear();
 		schoolYear2.setSchoolYear("2017-2018");
+		schoolYear2.setStartDate(Date.valueOf(LocalDate.of(2017, 9, 1)));
+		schoolYear2.setEndDate(Date.valueOf(LocalDate.of(2018, 6, 30)));
 		schoolYearRepository.save(schoolYear2);
 		entityManager.flush();
 		Long schoolYear1Version = new Long(schoolYear1.getVersion());
@@ -507,6 +508,8 @@ public class StudentRepositoryTests implements InitializingBean {
 		
 		SchoolYear schoolYear2 = new SchoolYear();
 		schoolYear2.setSchoolYear("2017-2018");
+		schoolYear2.setStartDate(Date.valueOf(LocalDate.of(2017, 9, 1)));
+		schoolYear2.setEndDate(Date.valueOf(LocalDate.of(2018, 6, 30)));
 		schoolYearRepository.save(schoolYear2);
 		entityManager.flush();
 		Long schoolYear1Version = new Long(schoolYear1.getVersion());

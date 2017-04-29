@@ -17,4 +17,6 @@
 
   <include file="liquibase/changelog-school-year.xml"/>
   <include file="liquibase/changelog-student-school-year.xml"/>
+  <include file="liquibase/changelog-school-year-add-start-and-end-dates.xml"/>
+  
 </databaseChangeLog>

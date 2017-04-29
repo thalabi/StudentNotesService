@@ -1,5 +1,6 @@
 package com.kerneldc.education.studentNotesService.domain;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,6 +44,12 @@ public class SchoolYear extends AbstractPersistableEntity {
 	@Column(name = "school_year")
 	@JsonView(View.Default.class)
 	private String schoolYear;
+	@Column(name = "start_date")
+	@JsonView(View.Default.class)
+	private Date startDate;
+	@Column(name = "end_date")
+	@JsonView(View.Default.class)
+	private Date endDate;
 
 	@ManyToMany(cascade=CascadeType.ALL)  
     @JoinTable(
@@ -67,6 +74,19 @@ public class SchoolYear extends AbstractPersistableEntity {
 		this.schoolYear = schoolYear;
 	}
 	
+	public Date getStartDate() {
+		return startDate;
+	}
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+	
+	public Date getEndDate() {
+		return endDate;
+	}
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
 	public Set<Student> getStudentSet() {
 		return studentSet;
 	}
