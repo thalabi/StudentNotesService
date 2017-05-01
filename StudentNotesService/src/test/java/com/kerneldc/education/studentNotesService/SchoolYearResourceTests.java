@@ -4,10 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 
 import org.junit.Test;
@@ -35,10 +31,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.kerneldc.education.studentNotesService.bean.SchoolYearIdAndLimit;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
-import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.junit.MyTestExecutionListener;
-import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 import com.kerneldc.education.studentNotesService.security.bean.User;
 import com.kerneldc.education.studentNotesService.security.constants.SecurityConstants;
 import com.kerneldc.education.studentNotesService.security.util.SimpleGrantedAuthorityMixIn;
@@ -54,9 +49,6 @@ public class SchoolYearResourceTests {
 	@Autowired
 	private TestRestTemplate testRestTemplate;
 	
-	@Autowired
-	private StudentRepository studentRepository;
-
 	@Value("${webapp.username}")
 	private String username;
 	@Value("${webapp.password}")
@@ -124,6 +116,19 @@ public class SchoolYearResourceTests {
         assertNotNull(schoolYear);
         assertEquals(2, schoolYear.getStudentSet().size());
     }
+
+	@Test
+	public void testGetLatestActiveStudentsBySchoolYearId() {
+		SchoolYearIdAndLimit schoolYearIdAndLimit = new SchoolYearIdAndLimit();
+		schoolYearIdAndLimit.setSchoolYearId(1l);
+		schoolYearIdAndLimit.setLimit(5);
+		HttpEntity<SchoolYearIdAndLimit> httpEntity = new HttpEntity<SchoolYearIdAndLimit>(schoolYearIdAndLimit,httpHeaders);
+		ResponseEntity<SchoolYear> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/getLatestActiveStudentsBySchoolYearId", HttpMethod.POST, httpEntity, SchoolYear.class);
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		SchoolYear schoolYear = response.getBody();
+		assertEquals(1, schoolYear.getStudentSet().size());
+		assertEquals(3, schoolYear.getStudentSet().iterator().next().getNoteList().size());
+	}
 	/*
 
 	@Test

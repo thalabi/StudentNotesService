@@ -55,8 +55,7 @@
 	
 	<logger name="org.hibernate" level="info" />
 	<logger name="org.hibernate.SQL" level="trace" /> <!-- shows the sql statements -->
- 	<!-- <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="trace" /> --> <!-- shows the values in sql statements -->
- 	<!-- <logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="trace" /> --> <!-- shows the values in sql statements -->
+<!-- 	<logger name="org.hibernate.type" level="trace" /> --> <!-- shows the values in sql statements -->
 	
 <!-- 	<logger name="org.springframework.security" level="debug" /> -->
 

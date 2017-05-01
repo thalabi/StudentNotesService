@@ -55,12 +55,10 @@ public class StudentRepositoryTests implements InitializingBean {
 	private JpaContext jpaContext;
 	
 	private EntityManager entityManager;
-	private EntityManager schoolYearEntityManager;
 
 	@Override
 	public void afterPropertiesSet() {
 		entityManager = jpaContext.getEntityManagerByManagedType(Student.class);
-		schoolYearEntityManager = jpaContext.getEntityManagerByManagedType(SchoolYear.class);
 	}
 
 	@Test
