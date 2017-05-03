@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -49,13 +51,14 @@ public class SchoolYearResource {
 	@GET
 	@Path("/getAllSchoolYears")
 	@Produces(MediaType.APPLICATION_JSON)
-	@JsonView(View.SchoolYearExtended.class)
+	@JsonView(View.Default.class)
 	public List<SchoolYear> getAllSchoolYears() {
 		
 		LOGGER.debug("begin ...");
 		List<SchoolYear> schoolYears;
 		try {
-			schoolYears = schoolYearRepository.findAllByOrderBySchoolYearAsc();
+			//schoolYears = schoolYearRepository.findAllByOrderBySchoolYearAsc();
+			schoolYears = schoolYearRepository.findAllByOrderByEndDateDesc();
 		} catch (RuntimeException e) {
 			LOGGER.error("Exception encountered: {}", e);
 			throw new SnsRuntimeException(e.getClass().getSimpleName());
@@ -103,4 +106,40 @@ public class SchoolYearResource {
 		return schoolYears.iterator().next();
 	}
 
+    @POST
+	@Path("/saveSchoolYear")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@JsonView(View.Default.class)
+    public SchoolYear saveSchoolYear(SchoolYear schoolYear) {
+
+    	LOGGER.debug("begin ...");
+    	SchoolYear savedSchoolYear;
+    	try {
+    		savedSchoolYear = schoolYearRepository.save(schoolYear);
+		} catch (RuntimeException e) {
+			LOGGER.error("Exception encountered: {}", e);
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+    	LOGGER.debug("end ...");
+    	return savedSchoolYear;
+    }
+	
+	@DELETE
+	@Path("/deleteSchoolYearById/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public String deleteSchoolYearById(@PathParam("id") Long id) {
+		
+		LOGGER.debug("begin ...");
+    	try {
+    		schoolYearRepository.delete(id);
+		} catch (RuntimeException e) {
+			LOGGER.error("Exception encountered: {}", e);
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+		LOGGER.debug("end ...");
+		return "";
+	}
+	
 }

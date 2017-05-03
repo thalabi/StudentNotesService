@@ -8,4 +8,5 @@ import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 
 public interface SchoolYearRepository extends CrudRepository<SchoolYear, Long>, SchoolYearRepositoryCustom {
 	List<SchoolYear> findAllByOrderBySchoolYearAsc();
+	List<SchoolYear> findAllByOrderByEndDateDesc();
 }
