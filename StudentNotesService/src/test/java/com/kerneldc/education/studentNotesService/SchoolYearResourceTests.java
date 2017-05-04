@@ -3,23 +3,25 @@ package com.kerneldc.education.studentNotesService;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.data.jpa.repository.JpaContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -27,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestExecutionListeners.MergeMode;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -38,7 +41,9 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.education.studentNotesService.bean.SchoolYearIdAndLimit;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
+import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 import com.kerneldc.education.studentNotesService.junit.MyTestExecutionListener;
+import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.security.bean.User;
 import com.kerneldc.education.studentNotesService.security.constants.SecurityConstants;
 import com.kerneldc.education.studentNotesService.security.util.SimpleGrantedAuthorityMixIn;
@@ -54,6 +59,9 @@ public class SchoolYearResourceTests {
 	
 	@Autowired
 	private TestRestTemplate testRestTemplate;
+	
+	@Autowired
+	private SchoolYearRepository schoolYearRepository;
 	
 	@Value("${webapp.username}")
 	private String username;
@@ -137,7 +145,8 @@ public class SchoolYearResourceTests {
 	}
 
 	@Test
-	public void testSaveSchoolYear() throws ParseException {
+	@DirtiesContext
+	public void testSaveSchoolYearForInsert() throws ParseException {
 		SchoolYear newSchoolYear = new SchoolYear();
 		newSchoolYear.setSchoolYear("new school year 1");
 		newSchoolYear.setStartDate(dateFormat.parse("2027-09-01"));
@@ -152,6 +161,32 @@ public class SchoolYearResourceTests {
 		assertEquals(newSchoolYear.getStartDate(), savedSchoolYear.getStartDate());
 		assertEquals(newSchoolYear.getEndDate(), savedSchoolYear.getEndDate());
 		assertEquals(new Long(0), savedSchoolYear.getVersion());
+	}
+
+	@Test
+	@DirtiesContext
+	public void testSaveSchoolYearForUpdate() throws ParseException {
+		SchoolYear schoolYear = schoolYearRepository.findOne(1l);
+		schoolYear.setSchoolYear(schoolYear.getSchoolYear()+" v1");
+
+		String schoolYearJson = "";
+		try {
+			schoolYearJson = objectMapper.writerWithView(View.Default.class).writeValueAsString(schoolYear);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			fail("Unable to serialize student object to JSON");
+		}
+
+		HttpEntity<String> httpEntity = new HttpEntity<>(schoolYearJson,httpHeaders);
+
+		ResponseEntity<SchoolYear> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/saveSchoolYear", HttpMethod.POST, httpEntity, SchoolYear.class);
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		SchoolYear savedSchoolYear = response.getBody();
+		assertNotNull(savedSchoolYear.getId());
+		assertEquals(schoolYear.getSchoolYear(), savedSchoolYear.getSchoolYear());
+		assertTrue(schoolYear.getStartDate().compareTo(savedSchoolYear.getStartDate()) == 0);
+		assertTrue(schoolYear.getEndDate().compareTo(savedSchoolYear.getEndDate()) == 0);
+		assertEquals(new Long(1l), savedSchoolYear.getVersion());
 	}
 
 	@Test
