@@ -147,10 +147,8 @@ public class SchoolYearRepositoryTests implements InitializingBean {
 
 	@Test
     public void testGetStudentsBySchoolYearId() {
-		Set<SchoolYear> schoolYears = schoolYearRepository.getStudentsBySchoolYearId(1l);
-		LOGGER.debug("schoolYears: {}", schoolYears);
-		assertEquals(1, schoolYears.size());
-		SchoolYear schoolYear = schoolYears.iterator().next(); 
+		SchoolYear schoolYear = schoolYearRepository.getStudentsBySchoolYearId(1l);
+		LOGGER.debug("schoolYear: {}", schoolYear);
 		assertEquals(2, schoolYear.getStudentSet().size());
 		for (Student student: schoolYear.getStudentSet()) {
 			if (student.getId().equals(1l)) {

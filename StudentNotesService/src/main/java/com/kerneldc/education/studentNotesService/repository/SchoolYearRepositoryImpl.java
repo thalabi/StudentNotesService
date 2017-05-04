@@ -45,7 +45,7 @@ public class SchoolYearRepositoryImpl implements SchoolYearRepositoryCustom, Ini
 	
 	@Override
 	@Transactional
-	public Set<SchoolYear> getStudentsBySchoolYearId(Long schoolYearId) {
+	public SchoolYear getStudentsBySchoolYearId(Long schoolYearId) {
 
 		Session session = entityManager.unwrap(Session.class);
 		SQLQuery query = session.createSQLQuery(
@@ -67,7 +67,7 @@ public class SchoolYearRepositoryImpl implements SchoolYearRepositoryCustom, Ini
 			"from school_year sy\r\n" + 
 			"left outer join student_school_year ssy\r\n" + 
 			"on sy.id = ssy.school_year_id\r\n" + 
-			"join student s\r\n" + 
+			"left outer join student s\r\n" + 
 			"on ssy.student_id = s.id\r\n" + 
 			"left outer join student_note sn\r\n" + 
 			"on s.id = sn.student_id\r\n" + 
@@ -110,7 +110,7 @@ public class SchoolYearRepositoryImpl implements SchoolYearRepositoryCustom, Ini
  				.collect(Collectors.toCollection(LinkedHashSet::new));
  		LOGGER.debug("schoolYears.size(): {}", schoolYears.size());
 		LOGGER.debug("schoolYears: {}", schoolYears);
- 		return schoolYears;
+ 		return schoolYears.iterator().next();
 	}
 
 	@Override

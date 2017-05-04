@@ -51,13 +51,12 @@ public class SchoolYear extends AbstractPersistableEntity {
 	@JsonView(View.Default.class)
 	private Date endDate;
 
-	@ManyToMany(cascade=CascadeType.ALL)  
+	@ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE})  
     @JoinTable(
     	name="student_school_year",
     	joinColumns=@JoinColumn(name="school_year_id"),
     	inverseJoinColumns=@JoinColumn(name="student_id"))
 	@OrderBy(value="firstName") //TODO add last name
-	//@JsonManagedReference // will get serialized normally
 	@JsonView(View.SchoolYearExtended.class)
 	private Set<Student> studentSet = new HashSet<>();
 	

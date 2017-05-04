@@ -9,19 +9,16 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.data.jpa.repository.JpaContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -40,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.education.studentNotesService.bean.SchoolYearIdAndLimit;
+import com.kerneldc.education.studentNotesService.constants.Constants;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 import com.kerneldc.education.studentNotesService.junit.MyTestExecutionListener;
@@ -190,7 +188,31 @@ public class SchoolYearResourceTests {
 	}
 
 	@Test
-	public void testDeleteSchoolYearById() {
-		// TODO
+	@DirtiesContext
+	public void testDeleteSchoolYearById() throws ParseException {
+		SchoolYear newSchoolYear = new SchoolYear();
+		newSchoolYear.setSchoolYear("new school year 1");
+		newSchoolYear.setStartDate(dateFormat.parse("2027-09-01"));
+		newSchoolYear.setEndDate(dateFormat.parse("2028-06-31"));
+		schoolYearRepository.save(newSchoolYear);
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/deleteSchoolYearById/"+newSchoolYear.getId(), HttpMethod.DELETE, httpEntity, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        SchoolYear shouldNotExistSchoolYear = schoolYearRepository.findOne(newSchoolYear.getId());
+		assertEquals("school year should not exist", null, shouldNotExistSchoolYear);
+	}
+	
+	@Test
+	public void testDeleteSchoolYearByIdNotFound() {
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/deleteSchoolYearById/777777", HttpMethod.DELETE, httpEntity, String.class);
+        assertEquals(Constants.SN_EXCEPTION_RESPONSE_STATUS_CODE, response.getStatusCode().value());
+	}
+
+	@Test
+	public void testDeleteSchoolYearByIdWithStudents() {
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/deleteSchoolYearById/1", HttpMethod.DELETE, httpEntity, String.class);
+        assertEquals(Constants.SN_EXCEPTION_RESPONSE_STATUS_CODE, response.getStatusCode().value());
 	}
 }

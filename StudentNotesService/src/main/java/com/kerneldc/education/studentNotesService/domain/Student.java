@@ -77,8 +77,6 @@ public class Student extends AbstractPersistableEntity {
 
 	@XmlTransient
 	@ManyToMany(cascade=CascadeType.ALL, mappedBy="studentSet")
-	//@JsonBackReference
-	//@JsonIgnore
 	@JsonView(View.StudentExtended.class)
 	private Set<SchoolYear> schoolYearSet = new HashSet<>();
     

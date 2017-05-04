@@ -4,9 +4,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -75,15 +78,14 @@ public class SchoolYearResource {
 		@PathParam("id") Long id) throws RowNotFoundException {
 		
 		LOGGER.debug("begin ...");
-		Set<SchoolYear> schoolYears = new HashSet<>();
+		SchoolYear schoolYear = null;
 		try {
-			schoolYears = schoolYearRepository.getStudentsBySchoolYearId(id);
-			Assert.isTrue(schoolYears.size() == 1);
+			schoolYear = schoolYearRepository.getStudentsBySchoolYearId(id);
 		} catch (RuntimeException e) {
 			throw new SnsRuntimeException(e.getClass().getSimpleName());
 		}
 		LOGGER.debug("end ...");
-		return schoolYears.iterator().next();
+		return schoolYear;
 	}
 
 	@POST
@@ -133,6 +135,11 @@ public class SchoolYearResource {
 		
 		LOGGER.debug("begin ...");
     	try {
+    		// Check if there are students enrolled in this year
+    		LOGGER.debug("id: {}", id);
+    		SchoolYear schoolYearToDelete = schoolYearRepository.getStudentsBySchoolYearId(id);
+    		if (schoolYearToDelete == null) throw new NotFoundException();
+    		if (! schoolYearToDelete.getStudentSet().isEmpty()) throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>());
     		schoolYearRepository.delete(id);
 		} catch (RuntimeException e) {
 			LOGGER.error("Exception encountered: {}", e);
