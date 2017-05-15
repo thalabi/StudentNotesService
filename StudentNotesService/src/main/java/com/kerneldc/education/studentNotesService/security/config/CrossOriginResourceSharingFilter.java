@@ -10,6 +10,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
@@ -19,15 +20,17 @@ import com.kerneldc.education.studentNotesService.security.constants.SecurityCon
 @Component
 public class CrossOriginResourceSharingFilter extends GenericFilterBean {
 
-    private static final String[] CLIENT_URL = new String[]{"http://127.0.0.1:4200", "http://127.0.0.1:8081"};
     private static final String ORIGIN_HEADER = "Origin";
 
+    @Value("${crossOriginResourceSharingFilter.crosUrlsToAllow}")
+    private String[] crosUrlsToAllow;
+    
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
+    	HttpServletRequest request = (HttpServletRequest) servletRequest;
 
         if (request.getHeader(ORIGIN_HEADER) != null
-                && originEqualsClientUrl(request.getHeader(ORIGIN_HEADER), CLIENT_URL)) {
+                && originEqualsClientUrl(request.getHeader(ORIGIN_HEADER), crosUrlsToAllow)) {
             setAccessControlHeader((HttpServletResponse) servletResponse, request.getHeader(ORIGIN_HEADER));
         }
 
