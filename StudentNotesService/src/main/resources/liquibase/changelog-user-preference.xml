@@ -1,0 +1,36 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<!-- Tables -->
+    <changeSet author="Tarif Halabi" id="user-preference">
+        <createTable tableName="user_preference">
+            <column autoIncrement="true" name="id" type="long">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="username" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="school_year_id" type="long">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+	<!-- Indexes -->
+    <changeSet author="Tarif Halabi" id="user-preference-unique-1">
+        <createIndex indexName="user_preference_unique_1" tableName="user_preference" unique="true">
+            <column name="username"/>
+        </createIndex>
+    </changeSet>
+	<!-- Foreign keys -->
+    <changeSet author="Tarif Halabi" id="user-preference-fk-1">
+        <addForeignKeyConstraint
+        	baseColumnNames="school_year_id" baseTableName="user_preference"
+			referencedColumnNames="id" referencedTableName="school_year"
+			constraintName="user_preference_fk_1" deferrable="false" initiallyDeferred="false" onDelete="RESTRICT" onUpdate="RESTRICT"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -7,6 +7,7 @@ import com.kerneldc.education.studentNotesService.exception.ResponseSnsException
 import com.kerneldc.education.studentNotesService.exception.ResponseSnsRuntimeExceptionMapper;
 import com.kerneldc.education.studentNotesService.resource.SchoolYearResource;
 import com.kerneldc.education.studentNotesService.resource.StudentNotesResource;
+import com.kerneldc.education.studentNotesService.resource.UserPreferenceResource;
 import com.kerneldc.education.studentNotesService.security.resource.SecurityResource;
 import com.kerneldc.education.studentNotesService.util.JacksonObjectMapperProvider;
 
@@ -32,10 +33,10 @@ public class JerseyResourceConfig extends ResourceConfig {
 		//packages(true, "com.kerneldc.HeroServiceSpringBoot.resource");
 		register(StudentNotesResource.class);
 		register(SecurityResource.class);
+		register(SchoolYearResource.class);
+		register(UserPreferenceResource.class);
 		
 		register(ResponseSnsExceptionMapper.class);
 		register(ResponseSnsRuntimeExceptionMapper.class);
-		
-		register(SchoolYearResource.class);
 	}
 }

@@ -30,12 +30,16 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.kerneldc.education.studentNotesService.bean.Students;
 import com.kerneldc.education.studentNotesService.bean.TimestampRange;
+import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
+import com.kerneldc.education.studentNotesService.domain.UserPreference;
 import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 import com.kerneldc.education.studentNotesService.exception.RowNotFoundException;
 import com.kerneldc.education.studentNotesService.exception.SnsException;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
+import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
+import com.kerneldc.education.studentNotesService.repository.UserPreferenceRepository;
 import com.kerneldc.education.studentNotesService.service.PdfStudentNotesReportService;
 
 @Component
@@ -46,6 +50,14 @@ public class StudentNotesResource {
 
 	@Autowired
 	private StudentRepository studentRepository;
+
+	// test
+	@Autowired
+	private SchoolYearRepository schoolYearRepository;
+
+	@Autowired
+	private UserPreferenceRepository userPreferenceRepository;
+
 	@Autowired
 	private PdfStudentNotesReportService pdfStudentNotesReportService;
 	@Value("${version}")
@@ -200,14 +212,15 @@ public class StudentNotesResource {
 	}
 
 	@GET
-	@Path("/getLatestActiveStudents/{limit}")
+	@Path("/getLatestActiveStudents/{username}/{limit}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Set<Student> getLatestActiveStudents(
+		@PathParam("username") String username,
 		@PathParam("limit") int limit) {
 		
 		LOGGER.debug("begin ...");
 		LOGGER.debug("end ...");
-		return studentRepository.getLatestActiveStudents(limit);
+		return studentRepository.getLatestActiveStudents(username, limit);
 	}
 
 	@POST
@@ -269,4 +282,23 @@ public class StudentNotesResource {
 		LOGGER.debug("end ...");
 		return Response.ok(pdfByteArray).build();
 	}
+
+	@GET
+	@Path("/getStudentsBySchoolYearFromUserPreference/{username}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@JsonView(View.SchoolYearExtended.class)
+	public SchoolYear getStudentsBySchoolYearFromUserPreference(
+		@PathParam("username") String username) {
+		
+		LOGGER.debug("begin ...");
+		SchoolYear schoolYear = null;
+		try {
+			schoolYear = studentRepository.getStudentsByUsernameInUserPreference(username);
+		} catch (RuntimeException e) {
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+		LOGGER.debug("end ...");
+		return schoolYear;
+	}
+
 }

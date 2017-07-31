@@ -51,7 +51,7 @@ public class SchoolYear extends AbstractPersistableEntity {
 	@JsonView(View.Default.class)
 	private Date endDate;
 
-	@ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE})  
+	@ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})  
     @JoinTable(
     	name="student_school_year",
     	joinColumns=@JoinColumn(name="school_year_id"),

@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 
+import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 
 public interface StudentRepositoryCustom {
@@ -21,7 +22,9 @@ public interface StudentRepositoryCustom {
 	List<Student> getAllStudents();
 	
 	Set<Student> getLatestActiveStudents(int limit);
+	Set<Student> getLatestActiveStudents(String username, int limit);
 	Set<Student> getStudentsByTimestampRange(Timestamp fromTimestamp, Timestamp toTimestamp);
 	
 	List<Student> getStudentsByListOfIds(List<Long> studentIds);
+	SchoolYear getStudentsByUsernameInUserPreference(String username);
 }

@@ -138,9 +138,9 @@ public class StudentRepositoryTests implements InitializingBean {
 	@DirtiesContext
     public void testDelete() {
 		
-		studentRepository.delete(1l);
+		studentRepository.delete(3l);
 		entityManager.flush();
-		Student deletedStudent = studentRepository.getStudentById(1l);
+		Student deletedStudent = studentRepository.getStudentById(3l);
 		Assert.assertTrue(deletedStudent == null);
 	}
 

@@ -339,9 +339,9 @@ public class StudentNotesResourceTests {
 	public void testDeleteStudentById() {
 		
 		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
-		ResponseEntity<Student> response = testRestTemplate.exchange(BASE_URI+"/deleteStudentById/1", HttpMethod.DELETE, httpEntity, Student.class);
+		ResponseEntity<Student> response = testRestTemplate.exchange(BASE_URI+"/deleteStudentById/3", HttpMethod.DELETE, httpEntity, Student.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-		Student student = studentRepository.getStudentById(1l);
+		Student student = studentRepository.getStudentById(3l);
 		assertEquals("student should not exist", null, student);
 	}
 
