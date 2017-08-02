@@ -1,6 +1,5 @@
 package com.kerneldc.education.studentNotesService.domain;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,6 +12,11 @@ import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import com.fasterxml.jackson.annotation.JsonView;
+import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 
 @Entity
 @Table(name = "user_preference", uniqueConstraints=@UniqueConstraint(columnNames={"username"}))
@@ -22,12 +26,17 @@ public class UserPreference extends AbstractPersistableEntity {
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@JsonView(View.Default.class)
 	private Long id;
 	@Column(name = "username")
+	@JsonView(View.Default.class)
 	private String username;
 	
-	@OneToOne(cascade=CascadeType.ALL)
+	@OneToOne//(fetch=FetchType.EAGER)
 	@JoinColumn(name = "school_year_id")
+	//@PrimaryKeyJoinColumn
+	//@Fetch(FetchMode.JOIN)
+	@JsonView(View.Default.class)
 	private SchoolYear schoolYear;
 	
 	public Long getId() {

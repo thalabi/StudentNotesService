@@ -42,7 +42,7 @@ public class UserPreferenceResource {
 	@GET
 	@Path("/getByUsername/{username}")
 	@Produces(MediaType.APPLICATION_JSON)
-	@JsonView(View.SchoolYearExtended.class)
+	@JsonView(View.Default.class)
 	public UserPreference getByUsername(
 		@PathParam("username") String username) throws RowNotFoundException {
 		
@@ -50,12 +50,10 @@ public class UserPreferenceResource {
 		UserPreference userPreference = null;
 		try {
 			userPreference = userPreferenceRepository.findByUsername(username).get(0);
-			LOGGER.debug("userPreference.getUsername(): {}", userPreference.getUsername());
 		} catch (RuntimeException e) {
 			throw new SnsRuntimeException(e.getClass().getSimpleName());
 		}
 		LOGGER.debug("end ...");
-		LOGGER.debug("userPreference: {}", userPreference);
 		return userPreference;
 	}
 
