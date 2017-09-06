@@ -1,0 +1,47 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<!-- Tables -->
+    <changeSet author="Tarif Halabi" id="user-preference-graph">
+		<sql>
+CREATE FORCE VIEW USER_PREFERENCE_GRAPH(ID, USERNAME, SCHOOL_YEAR_ID, SCHOOL_YEAR, START_DATE, END_DATE, SCHOOL_YEAR_VERSION, STUDENT_ID, FIRST_NAME, LAST_NAME, GRADE, STUDENT_VERSION, NOTE_ID, TIMESTAMP, TEXT, NOTE_VERSION) AS
+SELECT
+    UP.ID,
+    UP.USERNAME,
+    SY.ID AS SCHOOL_YEAR_ID,
+    SY.SCHOOL_YEAR,
+    SY.START_DATE,
+    SY.END_DATE,
+    SY.VERSION AS SCHOOL_YEAR_VERSION,
+    S.ID AS STUDENT_ID,
+    S.FIRST_NAME,
+    S.LAST_NAME,
+    S.GRADE,
+    S.VERSION AS STUDENT_VERSION,
+    N.ID AS NOTE_ID,
+    N.TIMESTAMP,
+    N.TEXT,
+    N.VERSION AS NOTE_VERSION
+FROM PUBLIC.USER_PREFERENCE UP
+LEFT OUTER JOIN PUBLIC.SCHOOL_YEAR SY
+    ON UP.SCHOOL_YEAR_ID = SY.ID
+LEFT OUTER JOIN PUBLIC.STUDENT_SCHOOL_YEAR SSY
+    ON SY.ID = SSY.SCHOOL_YEAR_ID
+LEFT OUTER JOIN PUBLIC.STUDENT S
+    ON SSY.STUDENT_ID = S.ID
+LEFT OUTER JOIN PUBLIC.STUDENT_NOTE SN
+    ON S.ID = SN.STUDENT_ID
+LEFT OUTER JOIN PUBLIC.NOTE N
+    ON (SN.NOTE_ID = N.ID)
+    AND ((N.TIMESTAMP IS NULL)
+    OR ((SY.START_DATE <= N.TIMESTAMP)
+    AND (SY.END_DATE >= N.TIMESTAMP)))
+		</sql>
+		<rollback>
+			<sql>
+			drop view USER_PREFERENCE_GRAPH
+			</sql>
+		</rollback>
+    </changeSet>
+
+</databaseChangeLog>

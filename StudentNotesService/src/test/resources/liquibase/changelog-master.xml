@@ -24,4 +24,7 @@
   
   <include file="liquibase/changelog-user-preference.xml"/>
   <include file="liquibase/data/changelog-user-preference-data.xml"/>
+  
+  <include file="liquibase/changelog-user-preference-graph.xml"/>
+  
 </databaseChangeLog>
