@@ -12,8 +12,6 @@ import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.kerneldc.education.studentNotesService.domain.jsonView.View;

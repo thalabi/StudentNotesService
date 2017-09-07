@@ -5,7 +5,12 @@
 		<sql>
 UPDATE SCHOOL_YEAR
     SET START_DATE='2016-09-01',
-        END_DATE='2017-06-30';
+        END_DATE='2017-06-30'
+    where school_year='2016-2017';
+UPDATE SCHOOL_YEAR
+    SET START_DATE='2017-09-01',
+        END_DATE='2018-06-30'
+    where school_year='2017-2018';
         </sql>
 	</changeSet>
 </databaseChangeLog>	

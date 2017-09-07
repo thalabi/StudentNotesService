@@ -1,6 +1,8 @@
 package com.kerneldc.education.studentNotesService;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -11,10 +13,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.UserPreference;
+import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.UserPreferenceRepository;
+
+import ch.qos.logback.classic.net.SyslogAppender;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = StudentNotesApplication.class)
@@ -25,6 +32,9 @@ public class UserPreferenceRepositoryTests {
 	
 	@Autowired
 	private UserPreferenceRepository userPreferenceRepository;
+	
+	@Autowired
+	private SchoolYearRepository schoolYearRepository;
 	
 	@Test
     public void testFindOne() {
@@ -53,6 +63,23 @@ public class UserPreferenceRepositoryTests {
 		assertEquals(userPreferenceExpected.getId(), userPreference.getId());
 		assertEquals(userPreferenceExpected.getUsername(), userPreference.getUsername());
 		assertEquals("2016-2017", userPreference.getSchoolYear().getSchoolYear());
+	}
+
+	@Test
+	@DirtiesContext
+    public void testSave() {
+
+		assertTrue(userPreferenceRepository != null);
+		List<UserPreference> userPreferenceList = userPreferenceRepository.findByUsername("TestUser");
+		assertEquals(1, userPreferenceList.size());
+		UserPreference userPreference = userPreferenceList.get(0);
+
+		SchoolYear schoolYear = schoolYearRepository.findOne(2l);
+		assertThat(schoolYear.getSchoolYear(), equalTo("2017-2018"));
+		userPreference.setSchoolYear(schoolYear);
+		userPreferenceRepository.save(userPreference);
+		System.out.println(userPreference);
+//		assertThat(updatedUserPreference.getVersion(), equalTo(Long.valueOf(1l)));
 	}
 
 }
