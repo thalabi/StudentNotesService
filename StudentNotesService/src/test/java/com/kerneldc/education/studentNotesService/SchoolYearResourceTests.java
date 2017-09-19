@@ -116,7 +116,7 @@ public class SchoolYearResourceTests {
 		ResponseEntity<SchoolYear[]> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/getAllSchoolYears", HttpMethod.GET, httpEntity, SchoolYear[].class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         SchoolYear[] schoolYears = response.getBody();
-        assertEquals(1, schoolYears.length);
+        assertEquals(2, schoolYears.length);
     }
 
 	@Test

@@ -478,9 +478,9 @@ public class StudentRepositoryTests implements InitializingBean {
 		SchoolYear schoolYear1 = schoolYearRepository.findOne(1l);
 		
 		SchoolYear schoolYear2 = new SchoolYear();
-		schoolYear2.setSchoolYear("2017-2018");
-		schoolYear2.setStartDate(Date.valueOf(LocalDate.of(2017, 9, 1)));
-		schoolYear2.setEndDate(Date.valueOf(LocalDate.of(2018, 6, 30)));
+		schoolYear2.setSchoolYear("2018-2019");
+		schoolYear2.setStartDate(Date.valueOf(LocalDate.of(2018, 9, 1)));
+		schoolYear2.setEndDate(Date.valueOf(LocalDate.of(2019, 6, 30)));
 		schoolYearRepository.save(schoolYear2);
 		entityManager.flush();
 		Long schoolYear1Version = new Long(schoolYear1.getVersion());
@@ -505,9 +505,9 @@ public class StudentRepositoryTests implements InitializingBean {
 		SchoolYear schoolYear1 = schoolYearRepository.findOne(1l);
 		
 		SchoolYear schoolYear2 = new SchoolYear();
-		schoolYear2.setSchoolYear("2017-2018");
-		schoolYear2.setStartDate(Date.valueOf(LocalDate.of(2017, 9, 1)));
-		schoolYear2.setEndDate(Date.valueOf(LocalDate.of(2018, 6, 30)));
+		schoolYear2.setSchoolYear("2018-2019");
+		schoolYear2.setStartDate(Date.valueOf(LocalDate.of(2018, 9, 1)));
+		schoolYear2.setEndDate(Date.valueOf(LocalDate.of(2019, 6, 30)));
 		schoolYearRepository.save(schoolYear2);
 		entityManager.flush();
 		Long schoolYear1Version = new Long(schoolYear1.getVersion());

@@ -68,9 +68,9 @@ public class SchoolYearRepositoryTests implements InitializingBean {
     public void testSaveToInsert() {
 
 		SchoolYear newSchoolYear = new SchoolYear();
-		newSchoolYear.setSchoolYear("2017-2018");
-		newSchoolYear.setStartDate(Date.valueOf(LocalDate.of(2017, 9, 1)));
-		newSchoolYear.setEndDate(Date.valueOf(LocalDate.of(2018, 6, 30)));
+		newSchoolYear.setSchoolYear("2018-2019");
+		newSchoolYear.setStartDate(Date.valueOf(LocalDate.of(2018, 9, 1)));
+		newSchoolYear.setEndDate(Date.valueOf(LocalDate.of(2019, 6, 30)));
 		SchoolYear savedSchoolYear = schoolYearRepository.save(newSchoolYear);
 		assertTrue(savedSchoolYear.getId().compareTo(0l) > 0 &&
 				savedSchoolYear.getSchoolYear().equals(newSchoolYear.getSchoolYear()) &&
@@ -132,12 +132,12 @@ public class SchoolYearRepositoryTests implements InitializingBean {
 		newSchoolYear1.setEndDate(Date.valueOf(LocalDate.of(9999, 6, 30)));
 		schoolYearRepository.save(newSchoolYear1);
 		SchoolYear newSchoolYear2 = new SchoolYear();
-		newSchoolYear2.setSchoolYear("2017-2018");
-		newSchoolYear2.setStartDate(Date.valueOf(LocalDate.of(2017, 9, 1)));
-		newSchoolYear2.setEndDate(Date.valueOf(LocalDate.of(2018, 6, 30)));
+		newSchoolYear2.setSchoolYear("2018-2019");
+		newSchoolYear2.setStartDate(Date.valueOf(LocalDate.of(2018, 9, 1)));
+		newSchoolYear2.setEndDate(Date.valueOf(LocalDate.of(2019, 6, 30)));
 		schoolYearRepository.save(newSchoolYear2);
 		List<SchoolYear> schoolYearList = schoolYearRepository.findAllByOrderBySchoolYearAsc();
-		assertTrue(schoolYearList.size() == 3);
+		assertTrue(schoolYearList.size() == 4);
 		String previousSchoolYear = "";
 		for (SchoolYear schoolYear : schoolYearList) {
 			assertTrue(schoolYear.getSchoolYear().compareTo(previousSchoolYear) >= 0);

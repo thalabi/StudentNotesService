@@ -12,6 +12,8 @@ import javax.transaction.Transactional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +24,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.domain.UserPreference;
+import com.kerneldc.education.studentNotesService.dto.UserPreferenceDto;
+import com.kerneldc.education.studentNotesService.dto.transformer.UserPreferenceTransformer;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.UserPreferenceRepository;
 
@@ -30,7 +34,7 @@ import com.kerneldc.education.studentNotesService.repository.UserPreferenceRepos
 @Transactional
 public class UserPreferenceRepositoryTests implements InitializingBean {
 
-	//private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 	
 	@Autowired
 	private UserPreferenceRepository userPreferenceRepository;
@@ -75,6 +79,17 @@ public class UserPreferenceRepositoryTests implements InitializingBean {
 		assertEquals(userPreferenceExpected.getId(), userPreference.getId());
 		assertEquals(userPreferenceExpected.getUsername(), userPreference.getUsername());
 		assertEquals("2016-2017", userPreference.getSchoolYear().getSchoolYear());
+	}
+
+	@Test
+    public void testFindByUsername_CopyingToDto() {
+
+		assertTrue(userPreferenceRepository != null);
+		List<UserPreference> userPreferenceList = userPreferenceRepository.findByUsername("TestUser");
+		assertEquals(1, userPreferenceList.size());
+		UserPreference userPreference = userPreferenceList.get(0);
+		UserPreferenceDto userPreferenceDto = UserPreferenceTransformer.userPreferenceDtoFromEntity(userPreference);
+		LOGGER.debug("userPreferenceDto: {}", userPreferenceDto);
 	}
 
 	@Test

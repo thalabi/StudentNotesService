@@ -1,6 +1,8 @@
 package com.kerneldc.education.studentNotesService.resource;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -14,7 +16,8 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.kerneldc.education.studentNotesService.domain.UserPreference;
 import com.kerneldc.education.studentNotesService.domain.jsonView.View;
-import com.kerneldc.education.studentNotesService.exception.RowNotFoundException;
+import com.kerneldc.education.studentNotesService.dto.UserPreferenceDto;
+import com.kerneldc.education.studentNotesService.dto.transformer.UserPreferenceTransformer;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
 import com.kerneldc.education.studentNotesService.repository.UserPreferenceRepository;
 
@@ -44,7 +47,7 @@ public class UserPreferenceResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@JsonView(View.Default.class)
 	public UserPreference getByUsername(
-		@PathParam("username") String username) throws RowNotFoundException {
+		@PathParam("username") String username) {
 		
 		LOGGER.debug("begin ...");
 		UserPreference userPreference = null;
@@ -57,64 +60,85 @@ public class UserPreferenceResource {
 		return userPreference;
 	}
 
-//	@GET
-//	@Path("/getAllSchoolYears")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	@JsonView(View.Default.class)
-//	public List<SchoolYear> getAllSchoolYears() {
-//		
-//		LOGGER.debug("begin ...");
-//		List<SchoolYear> schoolYears;
-//		try {
-//			//schoolYears = userPreferenceRepository.findAllByOrderBySchoolYearAsc();
-//			schoolYears = userPreferenceRepository.findAllByOrderByEndDateDesc();
-//		} catch (RuntimeException e) {
-//			LOGGER.error("Exception encountered: {}", e);
-//			throw new SnsRuntimeException(e.getClass().getSimpleName());
-//		}
-//		LOGGER.debug("end ...");
-//		return schoolYears;
-//	}
+	@GET
+	@Path("/getByUsernameFullGraph/{username}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@JsonView(View.SchoolYearExtended.class)
+	public UserPreference getByUsernameFullGraph(
+		@PathParam("username") String username) {
+		
+		LOGGER.debug("begin ...");
+		UserPreference userPreference = null;
+		try {
+			userPreference = userPreferenceRepository.findByUsername(username).get(0);
+		} catch (RuntimeException e) {
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+		//LOGGER.debug("userPreference.getSchoolYear(): {}", userPreference.getSchoolYear());
+		//LOGGER.debug("userPreference.getSchoolYear().getStudentSet().size(): {}", userPreference.getSchoolYear().getStudentSet().size());
+		LOGGER.debug("end ...");
+		return userPreference;
+	}
 
-//	@POST
-//	@Path("/getLatestActiveStudentsBySchoolYearId")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	@JsonView(View.SchoolYearExtended.class)
-//	public SchoolYear getLatestActiveStudentsBySchoolYearId(SchoolYearIdAndLimit schoolYearIdAndLimit) {
-//		
-//		LOGGER.debug("begin ...");
-//		LOGGER.debug("schoolYearIdAndLimitBean: {}", schoolYearIdAndLimit);
-//		Set<SchoolYear> schoolYears = new HashSet<>();
-//		try {
-//			schoolYears = userPreferenceRepository.getLatestActiveStudentsBySchoolYearId(schoolYearIdAndLimit.getSchoolYearId(), schoolYearIdAndLimit.getLimit());
-//			LOGGER.debug("schoolYears.size(): {}", schoolYears.size());
-//			Assert.isTrue(schoolYears.size() == 1);
-//		} catch (RuntimeException e) {
-//			throw new SnsRuntimeException(e.getClass().getSimpleName());
-//		}
-//		LOGGER.debug("end ...");
-//		return schoolYears.iterator().next();
-//	}
-//
-//    @POST
-//	@Path("/saveSchoolYear")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//	@Produces(MediaType.APPLICATION_JSON)
-//	@JsonView(View.Default.class)
-//    public SchoolYear saveSchoolYear(SchoolYear schoolYear) {
-//
-//    	LOGGER.debug("begin ...");
-//    	SchoolYear savedSchoolYear;
-//    	try {
-//    		savedSchoolYear = userPreferenceRepository.save(schoolYear);
-//		} catch (RuntimeException e) {
-//			LOGGER.error("Exception encountered: {}", e);
-//			throw new SnsRuntimeException(e.getClass().getSimpleName());
-//		}
-//    	LOGGER.debug("end ...");
-//    	return savedSchoolYear;
-//    }
-//	
+	@GET
+	@Path("/getDtoByUsername/{username}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public UserPreferenceDto getDtoByUsername(
+		@PathParam("username") String username) {
+		
+		LOGGER.debug("begin ...");
+		UserPreferenceDto userPreferenceDto = new UserPreferenceDto();
+		try {
+			UserPreference userPreference = userPreferenceRepository.findByUsername(username).get(0);
+			userPreferenceDto = UserPreferenceTransformer.userPreferenceDtoFromEntity(userPreference);
+			LOGGER.debug("userPreferenceDto: {}", userPreferenceDto);
+		} catch (RuntimeException e) {
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+		LOGGER.debug("end ...");
+		return userPreferenceDto;
+	}
+
+
+    @POST
+	@Path("/saveUserPreference")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@JsonView(View.SchoolYearExtended.class)
+    public UserPreference saveUserPreference(UserPreference userPreference) {
+
+    	LOGGER.debug("begin ...");
+    	UserPreference savedSchoolYear;
+    	try {
+    		savedSchoolYear = userPreferenceRepository.save(userPreference);
+		} catch (RuntimeException e) {
+			LOGGER.error("Exception encountered: {}", e);
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+    	LOGGER.debug("end ...");
+    	return savedSchoolYear;
+    }
+
+    @POST
+	@Path("/saveUserPreferenceDto")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+    public UserPreferenceDto saveUserPreferenceDto(UserPreferenceDto userPreferenceDto) {
+
+    	LOGGER.debug("begin ...");
+    	UserPreference userPreference = UserPreferenceTransformer.userPreferenceFromDto(userPreferenceDto);
+    	UserPreferenceDto savedUserPreferenceDto;
+    	try {
+    		userPreference = userPreferenceRepository.save(userPreference);
+    		savedUserPreferenceDto = UserPreferenceTransformer.userPreferenceDtoFromEntity(userPreference);
+		} catch (RuntimeException e) {
+			LOGGER.error("Exception encountered: {}", e);
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+    	LOGGER.debug("end ...");
+    	return savedUserPreferenceDto;
+    }
+
 //	@DELETE
 //	@Path("/deleteSchoolYearById/{id}")
 //    @Consumes(MediaType.APPLICATION_JSON)

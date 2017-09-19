@@ -1,12 +1,17 @@
 package com.kerneldc.education.studentNotesService;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestExecutionListeners.MergeMode;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -35,8 +41,11 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.UserPreference;
+import com.kerneldc.education.studentNotesService.dto.UserPreferenceDto;
+import com.kerneldc.education.studentNotesService.dto.transformer.UserPreferenceTransformer;
 import com.kerneldc.education.studentNotesService.junit.MyTestExecutionListener;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
+import com.kerneldc.education.studentNotesService.repository.UserPreferenceRepository;
 import com.kerneldc.education.studentNotesService.security.bean.User;
 import com.kerneldc.education.studentNotesService.security.constants.SecurityConstants;
 import com.kerneldc.education.studentNotesService.security.util.SimpleGrantedAuthorityMixIn;
@@ -44,6 +53,7 @@ import com.kerneldc.education.studentNotesService.security.util.SimpleGrantedAut
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = StudentNotesApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestExecutionListeners(listeners = MyTestExecutionListener.class, mergeMode = MergeMode.MERGE_WITH_DEFAULTS)
+@Transactional
 public class UserPreferenceResourceTests {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
@@ -52,6 +62,9 @@ public class UserPreferenceResourceTests {
 	
 	@Autowired
 	private TestRestTemplate testRestTemplate;
+	
+	@Autowired
+	private UserPreferenceRepository userPreferenceRepository;
 	
 	@Autowired
 	private SchoolYearRepository schoolYearRepository;
@@ -116,6 +129,33 @@ public class UserPreferenceResourceTests {
 		LOGGER.debug("userPreference: {}", userPreference);
 		assertEquals(username, userPreference.getUsername());
 	}
+
+	@Test
+	public void testGetByUsernameFullGraph() {
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+		String username = "TestUser";
+		ResponseEntity<UserPreference> response = testRestTemplate.exchange(BASE_URI+"/userPreference/getByUsernameFullGraph/"+username, HttpMethod.GET, httpEntity, UserPreference.class);
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		UserPreference userPreference = response.getBody();
+		assertNotNull(userPreference);
+		LOGGER.debug("userPreference: {}", userPreference);
+		assertEquals(username, userPreference.getUsername());
+	}
+
+	@Test
+	public void testGetDtoByUsername() {
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+		String username = "TestUser";
+		ResponseEntity<UserPreferenceDto> response = testRestTemplate.exchange(BASE_URI+"/userPreference/getDtoByUsername/"+username, HttpMethod.GET, httpEntity, UserPreferenceDto.class);
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		UserPreferenceDto userPreferenceDto = response.getBody();
+		assertThat(userPreferenceDto, notNullValue());
+		LOGGER.debug("userPreference: {}", userPreferenceDto);
+		assertThat(userPreferenceDto.getUsername(), equalTo(username));
+		assertThat(userPreferenceDto.getId(), equalTo(1l));
+		assertThat(userPreferenceDto.getSchoolYearDto().getId(), equalTo(1l));
+	}
+
 //	@Test
 //    public void testGetAllSchoolYears() {
 //		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
@@ -167,31 +207,42 @@ public class UserPreferenceResourceTests {
 //		assertEquals(new Long(0), savedSchoolYear.getVersion());
 //	}
 //
-//	@Test
-//	@DirtiesContext
-//	public void testSaveSchoolYearForUpdate() throws ParseException {
-//		SchoolYear schoolYear = schoolYearRepository.findOne(1l);
-//		schoolYear.setSchoolYear(schoolYear.getSchoolYear()+" v1");
-//
-//		String schoolYearJson = "";
-//		try {
-//			schoolYearJson = objectMapper.writerWithView(View.Default.class).writeValueAsString(schoolYear);
-//		} catch (JsonProcessingException e) {
-//			e.printStackTrace();
-//			fail("Unable to serialize student object to JSON");
-//		}
-//
-//		HttpEntity<String> httpEntity = new HttpEntity<>(schoolYearJson,httpHeaders);
-//
-//		ResponseEntity<SchoolYear> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/saveSchoolYear", HttpMethod.POST, httpEntity, SchoolYear.class);
-//		assertEquals(HttpStatus.OK, response.getStatusCode());
-//		SchoolYear savedSchoolYear = response.getBody();
-//		assertNotNull(savedSchoolYear.getId());
-//		assertEquals(schoolYear.getSchoolYear(), savedSchoolYear.getSchoolYear());
-//		assertTrue(schoolYear.getStartDate().compareTo(savedSchoolYear.getStartDate()) == 0);
-//		assertTrue(schoolYear.getEndDate().compareTo(savedSchoolYear.getEndDate()) == 0);
-//		assertEquals(new Long(1l), savedSchoolYear.getVersion());
-//	}
+	@Test
+	@DirtiesContext
+	public void testSaveUserPreference() throws ParseException {
+		
+		UserPreference userPreference = userPreferenceRepository.findByUsername("TestUser").get(0);
+		assertThat(userPreference.getSchoolYear().getId(), equalTo(1l));
+		SchoolYear schoolYear = schoolYearRepository.findOne(2l);
+		userPreference.setSchoolYear(schoolYear);
+		
+		HttpEntity<UserPreference> httpEntity = new HttpEntity<UserPreference>(userPreference, httpHeaders);
+		ResponseEntity<UserPreference> response = testRestTemplate.exchange(
+				BASE_URI + "/userPreference/saveUserPreference", HttpMethod.POST, httpEntity, UserPreference.class);
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		UserPreference savedUserPreference = response.getBody();
+		assertThat(savedUserPreference.getSchoolYear().getId(), equalTo(2l));
+	}
+		
+	@Test
+	@DirtiesContext
+	public void testSaveUserPreferenceDto() throws ParseException {
+		
+		UserPreference userPreference = userPreferenceRepository.findByUsername("TestUser").get(0);
+		assertThat(userPreference.getSchoolYear().getId(), equalTo(1l));
+		SchoolYear schoolYear = schoolYearRepository.findOne(2l);
+		userPreference.setSchoolYear(schoolYear);
+		
+		UserPreferenceDto userPreferenceDto = UserPreferenceTransformer.userPreferenceDtoFromEntity(userPreference);
+		
+		HttpEntity<UserPreferenceDto> httpEntity = new HttpEntity<UserPreferenceDto>(userPreferenceDto, httpHeaders);
+		ResponseEntity<UserPreferenceDto> response = testRestTemplate.exchange(
+				BASE_URI + "/userPreference/saveUserPreferenceDto", HttpMethod.POST, httpEntity, UserPreferenceDto.class);
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+
+		UserPreferenceDto savedUserPreferenceDto = response.getBody();
+		assertThat(savedUserPreferenceDto.getSchoolYearDto().getId(), equalTo(2l));
+	}
 //
 //	@Test
 //	@DirtiesContext
