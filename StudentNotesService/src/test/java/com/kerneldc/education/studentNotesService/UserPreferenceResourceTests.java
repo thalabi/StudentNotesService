@@ -233,7 +233,7 @@ public class UserPreferenceResourceTests {
 		SchoolYear schoolYear = schoolYearRepository.findOne(2l);
 		userPreference.setSchoolYear(schoolYear);
 		
-		UserPreferenceDto userPreferenceDto = UserPreferenceTransformer.userPreferenceDtoFromEntity(userPreference);
+		UserPreferenceDto userPreferenceDto = UserPreferenceTransformer.entityToDto(userPreference);
 		
 		HttpEntity<UserPreferenceDto> httpEntity = new HttpEntity<UserPreferenceDto>(userPreferenceDto, httpHeaders);
 		ResponseEntity<UserPreferenceDto> response = testRestTemplate.exchange(

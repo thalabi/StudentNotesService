@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -33,6 +34,10 @@ import com.kerneldc.education.studentNotesService.bean.TimestampRange;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.domain.jsonView.View;
+import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
+import com.kerneldc.education.studentNotesService.dto.StudentDto;
+import com.kerneldc.education.studentNotesService.dto.transformer.SchoolYearTransformer;
+import com.kerneldc.education.studentNotesService.dto.transformer.StudentTransformer;
 import com.kerneldc.education.studentNotesService.exception.RowNotFoundException;
 import com.kerneldc.education.studentNotesService.exception.SnsException;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
@@ -213,6 +218,24 @@ public class StudentNotesResource {
 		return studentRepository.getLatestActiveStudents(username, limit);
 	}
 
+	@GET
+	@Path("/getLatestActiveStudentDtos/{username}/{limit}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Set<StudentDto> getLatestActiveStudentDtos(
+		@PathParam("username") String username,
+		@PathParam("limit") int limit) {
+		
+		LOGGER.debug("begin ...");
+		LOGGER.debug("end ...");
+ 		Set<Student> students = studentRepository.getLatestActiveStudents(username, limit);
+ 		Set<StudentDto> studentDtos = new LinkedHashSet<>();
+ 		for (Student student : students) {
+ 			StudentDto studentDto = StudentTransformer.entityToDto(student);
+ 			studentDtos.add(studentDto);
+ 		}
+ 		return studentDtos;
+	}
+
 	@POST
 	@Path("/getStudentsByTimestampRange")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -291,4 +314,22 @@ public class StudentNotesResource {
 		return schoolYear;
 	}
 
+	@GET
+	@Path("/getStudentDtosBySchoolYearFromUserPreference/{username}")
+	@Produces(MediaType.APPLICATION_JSON)
+	//@JsonView(View.SchoolYearExtended.class)
+	public SchoolYearDto getStudentDtosBySchoolYearFromUserPreference(
+		@PathParam("username") String username) {
+		
+		LOGGER.debug("begin ...");
+		SchoolYear schoolYear = null;
+		try {
+			schoolYear = studentRepository.getStudentsByUsernameInUserPreference(username);
+		} catch (RuntimeException e) {
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+		SchoolYearDto schoolYearDto = SchoolYearTransformer.entityToDto(schoolYear);
+		LOGGER.debug("end ...");
+		return schoolYearDto;
+	}
 }

@@ -88,7 +88,7 @@ public class UserPreferenceRepositoryTests implements InitializingBean {
 		List<UserPreference> userPreferenceList = userPreferenceRepository.findByUsername("TestUser");
 		assertEquals(1, userPreferenceList.size());
 		UserPreference userPreference = userPreferenceList.get(0);
-		UserPreferenceDto userPreferenceDto = UserPreferenceTransformer.userPreferenceDtoFromEntity(userPreference);
+		UserPreferenceDto userPreferenceDto = UserPreferenceTransformer.entityToDto(userPreference);
 		LOGGER.debug("userPreferenceDto: {}", userPreferenceDto);
 	}
 

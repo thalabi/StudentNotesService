@@ -3,6 +3,8 @@ package com.kerneldc.education.studentNotesService.dto;
 import java.util.Date;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlElement;
+
 public class SchoolYearDto extends AbstractBaseDto {
 
 	private static final long serialVersionUID = 1L;
@@ -11,6 +13,8 @@ public class SchoolYearDto extends AbstractBaseDto {
 	private String schoolYear;
 	private Date startDate;
 	private Date endDate;
+	
+	@XmlElement(name="studentSet")
 	private Set<StudentDto> studentDtoSet;
 	
 	public Long getId() {

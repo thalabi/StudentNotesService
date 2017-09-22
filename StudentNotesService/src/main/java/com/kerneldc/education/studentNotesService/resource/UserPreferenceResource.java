@@ -90,7 +90,7 @@ public class UserPreferenceResource {
 		UserPreferenceDto userPreferenceDto = new UserPreferenceDto();
 		try {
 			UserPreference userPreference = userPreferenceRepository.findByUsername(username).get(0);
-			userPreferenceDto = UserPreferenceTransformer.userPreferenceDtoFromEntity(userPreference);
+			userPreferenceDto = UserPreferenceTransformer.entityToDto(userPreference);
 			LOGGER.debug("userPreferenceDto: {}", userPreferenceDto);
 		} catch (RuntimeException e) {
 			throw new SnsRuntimeException(e.getClass().getSimpleName());
@@ -126,11 +126,11 @@ public class UserPreferenceResource {
     public UserPreferenceDto saveUserPreferenceDto(UserPreferenceDto userPreferenceDto) {
 
     	LOGGER.debug("begin ...");
-    	UserPreference userPreference = UserPreferenceTransformer.userPreferenceFromDto(userPreferenceDto);
+    	UserPreference userPreference = UserPreferenceTransformer.dtoToEntity(userPreferenceDto);
     	UserPreferenceDto savedUserPreferenceDto;
     	try {
     		userPreference = userPreferenceRepository.save(userPreference);
-    		savedUserPreferenceDto = UserPreferenceTransformer.userPreferenceDtoFromEntity(userPreference);
+    		savedUserPreferenceDto = UserPreferenceTransformer.entityToDto(userPreference);
 		} catch (RuntimeException e) {
 			LOGGER.error("Exception encountered: {}", e);
 			throw new SnsRuntimeException(e.getClass().getSimpleName());

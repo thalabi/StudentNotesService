@@ -3,8 +3,9 @@ package com.kerneldc.education.studentNotesService.dto;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlElement;
+
 import com.kerneldc.education.studentNotesService.bean.Grade;
-import com.kerneldc.education.studentNotesService.domain.Note;
 
 public class StudentDto extends AbstractBaseDto {
 
@@ -14,7 +15,9 @@ public class StudentDto extends AbstractBaseDto {
 	private String firstName;
 	private String lastName;
 	private Grade grade;
+	@XmlElement(name="noteList")
 	private List<NoteDto> noteDtoList;
+	@XmlElement(name="schoolYearSet")
 	private Set<SchoolYearDto> schoolYearDtoSet;
 	
 	public Long getId() {

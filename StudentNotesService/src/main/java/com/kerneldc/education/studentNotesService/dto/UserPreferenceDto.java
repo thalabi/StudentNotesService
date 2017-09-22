@@ -1,11 +1,14 @@
 package com.kerneldc.education.studentNotesService.dto;
 
+import javax.xml.bind.annotation.XmlElement;
+
 public class UserPreferenceDto extends AbstractBaseDto {
 
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
 	private String username;
+	@XmlElement(name="schoolYear")
 	private SchoolYearDto schoolYearDto;
 	
 	public Long getId() {

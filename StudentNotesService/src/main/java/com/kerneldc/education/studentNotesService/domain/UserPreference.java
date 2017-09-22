@@ -24,17 +24,17 @@ public class UserPreference extends AbstractPersistableEntity {
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@JsonView(View.Default.class)
+	//@JsonView(View.Default.class)
 	private Long id;
 	@Column(name = "username")
-	@JsonView(View.Default.class)
+	//@JsonView(View.Default.class)
 	private String username;
 	
 	@ManyToOne//(fetch=FetchType.EAGER)
 	@JoinColumn(name = "school_year_id")
 	//@PrimaryKeyJoinColumn
 	//@Fetch(FetchMode.JOIN)
-	@JsonView(View.Default.class)
+	//@JsonView(View.Default.class)
 	private SchoolYear schoolYear;
 	
 	public Long getId() {

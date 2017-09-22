@@ -40,6 +40,7 @@ import com.kerneldc.education.studentNotesService.bean.SchoolYearIdAndLimit;
 import com.kerneldc.education.studentNotesService.constants.Constants;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.jsonView.View;
+import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
 import com.kerneldc.education.studentNotesService.junit.MyTestExecutionListener;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.security.bean.User;
@@ -117,6 +118,15 @@ public class SchoolYearResourceTests {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         SchoolYear[] schoolYears = response.getBody();
         assertEquals(2, schoolYears.length);
+    }
+
+	@Test
+    public void testGetAllSchoolYearDtos() {
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+		ResponseEntity<SchoolYearDto[]> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/getAllSchoolYearDtos", HttpMethod.GET, httpEntity, SchoolYearDto[].class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        SchoolYearDto[] schoolYearDtos = response.getBody();
+        assertEquals(2, schoolYearDtos.length);
     }
 
 	@Test

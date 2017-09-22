@@ -13,7 +13,7 @@ public class UserPreferenceTransformer {
 	    throw new IllegalStateException("Cannot instantiate a utility class.");
 	  }
 
-	public static UserPreferenceDto userPreferenceDtoFromEntity(UserPreference userPreference) {
+	public static UserPreferenceDto entityToDto(UserPreference userPreference) {
 		UserPreferenceDto userPreferenceDto = new UserPreferenceDto();
 		BeanUtils.copyProperties(userPreference, userPreferenceDto);
 		SchoolYearDto schoolYearDto = new SchoolYearDto();
@@ -22,7 +22,7 @@ public class UserPreferenceTransformer {
 		return userPreferenceDto;
 	}
 
-	public static UserPreference userPreferenceFromDto(UserPreferenceDto userPreferenceDto) {
+	public static UserPreference dtoToEntity(UserPreferenceDto userPreferenceDto) {
 		UserPreference userPreference = new UserPreference();
 		BeanUtils.copyProperties(userPreferenceDto, userPreference);
 		SchoolYear schoolYear = new SchoolYear();

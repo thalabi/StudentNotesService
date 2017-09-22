@@ -1,5 +1,6 @@
 package com.kerneldc.education.studentNotesService.resource;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +27,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.kerneldc.education.studentNotesService.bean.SchoolYearIdAndLimit;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.jsonView.View;
+import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
+import com.kerneldc.education.studentNotesService.dto.transformer.SchoolYearTransformer;
 import com.kerneldc.education.studentNotesService.exception.RowNotFoundException;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
@@ -68,6 +71,31 @@ public class SchoolYearResource {
 		}
 		LOGGER.debug("end ...");
 		return schoolYears;
+	}
+
+	@GET
+	@Path("/getAllSchoolYearDtos")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<SchoolYearDto> getAllSchoolYearDtos() {
+		
+		LOGGER.debug("begin ...");
+		List<SchoolYearDto> schoolYearDtos = new ArrayList<>();;
+		try {
+			//schoolYears = schoolYearRepository.findAllByOrderBySchoolYearAsc();
+			List<SchoolYear> schoolYears = schoolYearRepository.findAllByOrderByEndDateDesc();
+			for (SchoolYear schoolYear : schoolYears) {
+				SchoolYearDto schoolYearDto = SchoolYearTransformer.entityToDto(schoolYear);
+				schoolYearDtos.add(schoolYearDto);
+			}
+		} catch (RuntimeException e) {
+			LOGGER.error("Exception encountered: {}", e);
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+		LOGGER.debug("end ...");
+        for (SchoolYearDto schoolYearDto : schoolYearDtos) {
+        	LOGGER.debug("schoolYearDto: {}", schoolYearDto);
+        }
+		return schoolYearDtos;
 	}
 
 	@GET
