@@ -155,6 +155,27 @@ public class SchoolYearResource {
     	return savedSchoolYear;
     }
 	
+    @POST
+	@Path("/saveSchoolYearDto")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+    public SchoolYearDto saveSchoolYearDto(SchoolYearDto schoolYearDto) {
+
+    	LOGGER.debug("begin ...");
+		SchoolYear schoolYear = SchoolYearTransformer.dtoToEntity(schoolYearDto);
+    	SchoolYear savedSchoolYear;
+    	SchoolYearDto savedSchoolYearDto;
+    	try {
+    		savedSchoolYear = schoolYearRepository.save(schoolYear);
+		} catch (RuntimeException e) {
+			LOGGER.error("Exception encountered: {}", e);
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+    	savedSchoolYearDto = SchoolYearTransformer.entityToDto(savedSchoolYear);
+    	LOGGER.debug("end ...");    	
+    	return savedSchoolYearDto;
+    }
+	
 	@DELETE
 	@Path("/deleteSchoolYearById/{id}")
     @Consumes(MediaType.APPLICATION_JSON)

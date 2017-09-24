@@ -124,6 +124,32 @@ public class StudentNotesResource {
 		return student;
 	}
 
+	@GET
+	@Path("/getStudentDtoById/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public StudentDto getStudentDtoById(
+		@PathParam("id") Long id) throws RowNotFoundException {
+		
+		LOGGER.debug("begin ...");
+		Student student;
+		StudentDto studentDto;
+		try {
+			student = studentRepository.getStudentById(id);
+		} catch (RuntimeException e) {
+			String errorMessage = String.format("Encountered exception while looking up student id %s. Exception is: %s", id, e.getClass().getSimpleName());
+			LOGGER.error(errorMessage);
+			throw new SnsRuntimeException(errorMessage);
+		}
+		if (student == null) {
+			String errorMessage = String.format("Student id %s not found", id);
+			LOGGER.debug(errorMessage);
+			throw new RowNotFoundException(errorMessage);
+		}
+		studentDto = StudentTransformer.entityToDto(student);
+		LOGGER.debug("end ...");
+		return studentDto;
+	}
+
     // curl -i -H "Content-Type: application/json" -X POST -d '{"id":2,"firstName":"xxxxxxxxxxxxxxxx","lastName":"halabi","grade":"GR-4","noteList":[]}' http://localhost:8080/StudentNotesService
     @POST
 	@Path("/saveStudent")
@@ -143,6 +169,29 @@ public class StudentNotesResource {
 		}
     	LOGGER.debug("end ...");
     	return savedSudent;
+    }
+	
+    @POST
+	@Path("/saveStudentDto")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+    public StudentDto saveStudentDto(
+    	StudentDto studentDto) {
+
+    	LOGGER.debug("begin ...");
+    	Student student = StudentTransformer.dtoToEntity(studentDto);
+    	Student savedStudent;
+    	StudentDto savedStudentDto;
+    	try {
+    		savedStudent = studentRepository.save(student);
+		} catch (RuntimeException e) {
+			LOGGER.error("Exception encountered: {}", e);
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+    	savedStudentDto = StudentTransformer.entityToDto(savedStudent);
+    	LOGGER.debug("savedStudentDto: {}", savedStudentDto);
+    	LOGGER.debug("end ...");
+    	return savedStudentDto;
     }
 	
 	@DELETE
