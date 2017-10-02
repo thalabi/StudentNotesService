@@ -29,9 +29,6 @@ import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 @Table(name = "school_year", uniqueConstraints=@UniqueConstraint(columnNames={"school_year"}))
 @NamedEntityGraph(name = "SchoolYear.studentSet", 
 					attributeNodes = @NamedAttributeNode(value = "studentSet"))
-//@JsonIdentityInfo(
-//		  generator = ObjectIdGenerators.PropertyGenerator.class, 
-//		  property = "id")
 public class SchoolYear extends AbstractPersistableEntity {
 
 	private static final long serialVersionUID = 1L;

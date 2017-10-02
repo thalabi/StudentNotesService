@@ -3,7 +3,7 @@ package com.kerneldc.education.studentNotesService.dto;
 import java.util.Date;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlElement;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SchoolYearDto extends AbstractBaseDto {
 
@@ -14,7 +14,9 @@ public class SchoolYearDto extends AbstractBaseDto {
 	private Date startDate;
 	private Date endDate;
 	
-	@XmlElement(name="studentSet")
+	//@XmlElement(name="studentSet")
+	// The above is not recognized during unit testing
+	@JsonProperty(value="studentSet")
 	private Set<StudentDto> studentDtoSet;
 	
 	public Long getId() {

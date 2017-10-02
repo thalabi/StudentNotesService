@@ -8,7 +8,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
@@ -58,7 +57,7 @@ public class UserPreferenceResourceTests {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 	private static final String BASE_URI = "/StudentNotesService";
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
+//	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
 	
 	@Autowired
 	private TestRestTemplate testRestTemplate;

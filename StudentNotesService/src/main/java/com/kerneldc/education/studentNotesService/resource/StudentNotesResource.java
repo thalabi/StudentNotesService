@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +37,7 @@ import com.kerneldc.education.studentNotesService.bean.TimestampRange;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.domain.jsonView.View;
+import com.kerneldc.education.studentNotesService.dto.NoteDto;
 import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
 import com.kerneldc.education.studentNotesService.dto.StudentDto;
 import com.kerneldc.education.studentNotesService.dto.transformer.SchoolYearTransformer;
@@ -95,6 +99,28 @@ public class StudentNotesResource {
 		}
 		LOGGER.debug("end ...");
 		return students;
+	}
+
+	@GET
+	@Path("/getAllStudentDtos")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<StudentDto> getAllStudentDtos() {
+		
+		LOGGER.debug("begin ...");
+		List<Student> students;
+		try {
+			students = studentRepository.getAllStudents();
+		} catch (RuntimeException e) {
+			LOGGER.error("Exception encountered: {}", e);
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+		List<StudentDto> studentDtos = new ArrayList<>();
+ 		for (Student student : students) {
+ 			StudentDto studentDto = StudentTransformer.entityToDto(student);
+ 			studentDtos.add(studentDto);
+ 		}		
+		LOGGER.debug("end ...");
+		return studentDtos;
 	}
 
 	// curl -H -i http://localhost:8080/StudentNotesService/getAllStudents
@@ -189,6 +215,7 @@ public class StudentNotesResource {
 			throw new SnsRuntimeException(e.getClass().getSimpleName());
 		}
     	savedStudentDto = StudentTransformer.entityToDto(savedStudent);
+    	sortNoteList(savedStudentDto.getNoteDtoList());
     	LOGGER.debug("savedStudentDto: {}", savedStudentDto);
     	LOGGER.debug("end ...");
     	return savedStudentDto;
@@ -380,5 +407,49 @@ public class StudentNotesResource {
 		SchoolYearDto schoolYearDto = SchoolYearTransformer.entityToDto(schoolYear);
 		LOGGER.debug("end ...");
 		return schoolYearDto;
+	}
+	
+	@GET
+	@Path("/getStudentDtosInSchoolYear/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<StudentDto> getStudentDtosInSchoolYear(
+		@PathParam("id") Long id) {
+		
+		LOGGER.debug("begin ...");
+		List<StudentDto> students = null;
+		try {
+			students = studentRepository.getStudentDtosInSchoolYear(id);
+		} catch (RuntimeException e) {
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+		LOGGER.debug("end ...");
+		return students;
+	}
+	
+	@GET
+	@Path("/getStudentDtosNotInSchoolYear/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<StudentDto> getStudentDtosNotInSchoolYear(
+		@PathParam("id") Long id) {
+		
+		LOGGER.debug("begin ...");
+		List<StudentDto> students = null;
+		try {
+			students = studentRepository.getStudentDtosNotInSchoolYear(id);
+		} catch (RuntimeException e) {
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+		LOGGER.debug("end ...");
+		return students;
+	}
+	
+	private void sortNoteList(List<NoteDto> noteListDto) {
+		Comparator<NoteDto> comparator = new Comparator<NoteDto>() {
+		    @Override
+		    public int compare(NoteDto left, NoteDto right) {
+		    	return Long.valueOf(left.getTimestamp().getTime()).compareTo(right.getTimestamp().getTime());
+		    }
+		};
+		Collections.sort(noteListDto, comparator);
 	}
 }

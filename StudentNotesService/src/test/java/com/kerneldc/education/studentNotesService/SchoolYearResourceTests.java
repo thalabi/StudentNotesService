@@ -106,19 +106,19 @@ public class SchoolYearResourceTests {
 	@Test
     public void testHello() {
 		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
-        ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI, HttpMethod.GET, httpEntity, String.class);
+		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI, HttpMethod.GET, httpEntity, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Hello", response.getBody());
     }
 
-	@Test
-    public void testGetAllSchoolYears() {
-		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
-		ResponseEntity<SchoolYear[]> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/getAllSchoolYears", HttpMethod.GET, httpEntity, SchoolYear[].class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        SchoolYear[] schoolYears = response.getBody();
-        assertEquals(2, schoolYears.length);
-    }
+//	@Test
+//    public void testGetAllSchoolYears() {
+//		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+//		ResponseEntity<SchoolYear[]> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/getAllSchoolYears", HttpMethod.GET, httpEntity, SchoolYear[].class);
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        SchoolYear[] schoolYears = response.getBody();
+//        assertEquals(2, schoolYears.length);
+//    }
 
 	@Test
     public void testGetAllSchoolYearDtos() {
@@ -140,6 +140,16 @@ public class SchoolYearResourceTests {
     }
 
 	@Test
+    public void testGetStudentDtosBySchoolYearId() {
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+		ResponseEntity<SchoolYearDto> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/getStudentDtosBySchoolYearId/1", HttpMethod.GET, httpEntity, SchoolYearDto.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        SchoolYearDto schoolYearDto = response.getBody();
+        assertNotNull(schoolYearDto);
+        assertEquals(2, schoolYearDto.getStudentDtoSet().size());
+    }
+
+	@Test
 	public void testGetLatestActiveStudentsBySchoolYearId() {
 		SchoolYearIdAndLimit schoolYearIdAndLimit = new SchoolYearIdAndLimit();
 		schoolYearIdAndLimit.setSchoolYearId(1l);
@@ -154,26 +164,26 @@ public class SchoolYearResourceTests {
 
 	@Test
 	@DirtiesContext
-	public void testSaveSchoolYearForInsert() throws ParseException {
-		SchoolYear newSchoolYear = new SchoolYear();
-		newSchoolYear.setSchoolYear("new school year 1");
-		newSchoolYear.setStartDate(dateFormat.parse("2027-09-01"));
-		newSchoolYear.setEndDate(dateFormat.parse("2028-06-31"));
-		HttpEntity<SchoolYear> httpEntity = new HttpEntity<SchoolYear>(newSchoolYear,httpHeaders);
-		ResponseEntity<SchoolYear> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/saveSchoolYear", HttpMethod.POST, httpEntity, SchoolYear.class);
+	public void testSaveSchoolYearDtoForInsert() throws ParseException {
+		SchoolYearDto newSchoolYearDto = new SchoolYearDto();
+		newSchoolYearDto.setSchoolYear("new school year 1");
+		newSchoolYearDto.setStartDate(dateFormat.parse("2027-09-01"));
+		newSchoolYearDto.setEndDate(dateFormat.parse("2028-06-31"));
+		HttpEntity<SchoolYearDto> httpEntity = new HttpEntity<>(newSchoolYearDto,httpHeaders);
+		ResponseEntity<SchoolYearDto> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/saveSchoolYearDto", HttpMethod.POST, httpEntity, SchoolYearDto.class);
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-		SchoolYear savedSchoolYear = response.getBody();
-		assertNotNull(savedSchoolYear.getId());
-		assertEquals(newSchoolYear.getSchoolYear(), savedSchoolYear.getSchoolYear());
-		LOGGER.debug("newSchoolYear.getStartDate(): {}, savedSchoolYear.getStartDate(): {}", newSchoolYear.getStartDate(), savedSchoolYear.getStartDate());
-		assertEquals(newSchoolYear.getStartDate(), savedSchoolYear.getStartDate());
-		assertEquals(newSchoolYear.getEndDate(), savedSchoolYear.getEndDate());
-		assertEquals(new Long(0), savedSchoolYear.getVersion());
+		SchoolYearDto savedSchoolYearDto = response.getBody();
+		assertNotNull(savedSchoolYearDto.getId());
+		assertEquals(newSchoolYearDto.getSchoolYear(), savedSchoolYearDto.getSchoolYear());
+		LOGGER.debug("newSchoolYearDto.getStartDate(): {}, savedSchoolYearDto.getStartDate(): {}", newSchoolYearDto.getStartDate(), savedSchoolYearDto.getStartDate());
+		assertEquals(newSchoolYearDto.getStartDate(), savedSchoolYearDto.getStartDate());
+		assertEquals(newSchoolYearDto.getEndDate(), savedSchoolYearDto.getEndDate());
+		assertEquals(new Long(0), savedSchoolYearDto.getVersion());
 	}
 
 	@Test
 	@DirtiesContext
-	public void testSaveSchoolYearForUpdate() throws ParseException {
+	public void testSaveSchoolYearDtoForUpdate() throws ParseException {
 		SchoolYear schoolYear = schoolYearRepository.findOne(1l);
 		schoolYear.setSchoolYear(schoolYear.getSchoolYear()+" v1");
 
@@ -187,7 +197,7 @@ public class SchoolYearResourceTests {
 
 		HttpEntity<String> httpEntity = new HttpEntity<>(schoolYearJson,httpHeaders);
 
-		ResponseEntity<SchoolYear> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/saveSchoolYear", HttpMethod.POST, httpEntity, SchoolYear.class);
+		ResponseEntity<SchoolYear> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/saveSchoolYearDto", HttpMethod.POST, httpEntity, SchoolYear.class);
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		SchoolYear savedSchoolYear = response.getBody();
 		assertNotNull(savedSchoolYear.getId());

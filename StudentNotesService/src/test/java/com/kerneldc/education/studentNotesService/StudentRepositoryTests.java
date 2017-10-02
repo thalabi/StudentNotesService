@@ -1,5 +1,7 @@
 package com.kerneldc.education.studentNotesService;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -36,6 +38,7 @@ import com.kerneldc.education.studentNotesService.bean.Grade;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
+import com.kerneldc.education.studentNotesService.dto.StudentDto;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 
@@ -564,4 +567,16 @@ public class StudentRepositoryTests implements InitializingBean {
 //		assertEquals(3, secondStudent.getNoteList().size());
 		//student1.getNoteList().size();
 	}
+	
+	@Test
+	public void testGetStudentDtosInSchoolYear() {
+		List<StudentDto> students = studentRepository.getStudentDtosInSchoolYear(1l);
+		assertThat(students, hasSize(2));
+	}
+	@Test
+	public void testGetStudentDtosNotInSchoolYear() {
+		List<StudentDto> students = studentRepository.getStudentDtosNotInSchoolYear(1l);
+		assertThat(students, hasSize(1));
+	}
+
 }

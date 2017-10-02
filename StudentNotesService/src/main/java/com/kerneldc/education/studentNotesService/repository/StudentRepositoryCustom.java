@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
+import com.kerneldc.education.studentNotesService.dto.StudentDto;
 
 public interface StudentRepositoryCustom {
 
@@ -27,4 +28,7 @@ public interface StudentRepositoryCustom {
 	
 	List<Student> getStudentsByListOfIds(List<Long> studentIds);
 	SchoolYear getStudentsByUsernameInUserPreference(String username);
+	
+	List<StudentDto> getStudentDtosInSchoolYear(Long schoolYearId);
+	List<StudentDto> getStudentDtosNotInSchoolYear(Long schoolYearId);
 }

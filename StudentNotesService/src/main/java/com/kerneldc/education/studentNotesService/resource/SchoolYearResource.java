@@ -54,24 +54,24 @@ public class SchoolYearResource {
 		return "Hello";
 	}
 
-	@GET
-	@Path("/getAllSchoolYears")
-	@Produces(MediaType.APPLICATION_JSON)
-	@JsonView(View.Default.class)
-	public List<SchoolYear> getAllSchoolYears() {
-		
-		LOGGER.debug("begin ...");
-		List<SchoolYear> schoolYears;
-		try {
-			//schoolYears = schoolYearRepository.findAllByOrderBySchoolYearAsc();
-			schoolYears = schoolYearRepository.findAllByOrderByEndDateDesc();
-		} catch (RuntimeException e) {
-			LOGGER.error("Exception encountered: {}", e);
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
-		}
-		LOGGER.debug("end ...");
-		return schoolYears;
-	}
+//	@GET
+//	@Path("/getAllSchoolYears")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	@JsonView(View.Default.class)
+//	public List<SchoolYear> getAllSchoolYears() {
+//		
+//		LOGGER.debug("begin ...");
+//		List<SchoolYear> schoolYears;
+//		try {
+//			//schoolYears = schoolYearRepository.findAllByOrderBySchoolYearAsc();
+//			schoolYears = schoolYearRepository.findAllByOrderByEndDateDesc();
+//		} catch (RuntimeException e) {
+//			LOGGER.error("Exception encountered: {}", e);
+//			throw new SnsRuntimeException(e.getClass().getSimpleName());
+//		}
+//		LOGGER.debug("end ...");
+//		return schoolYears;
+//	}
 
 	@GET
 	@Path("/getAllSchoolYearDtos")
@@ -116,6 +116,24 @@ public class SchoolYearResource {
 		return schoolYear;
 	}
 
+	@GET
+	@Path("/getStudentDtosBySchoolYearId/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public SchoolYearDto getStudentDtosBySchoolYearId(
+		@PathParam("id") Long id) throws RowNotFoundException {
+		
+		LOGGER.debug("begin ...");
+		SchoolYear schoolYear = null;
+		try {
+			schoolYear = schoolYearRepository.getStudentsBySchoolYearId(id);
+		} catch (RuntimeException e) {
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+		SchoolYearDto schoolYearDto = SchoolYearTransformer.entityToDto(schoolYear);
+		LOGGER.debug("end ...");
+		return schoolYearDto;
+	}
+
 	@POST
 	@Path("/getLatestActiveStudentsBySchoolYearId")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -136,24 +154,24 @@ public class SchoolYearResource {
 		return schoolYears.iterator().next();
 	}
 
-    @POST
-	@Path("/saveSchoolYear")
-    @Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@JsonView(View.Default.class)
-    public SchoolYear saveSchoolYear(SchoolYear schoolYear) {
-
-    	LOGGER.debug("begin ...");
-    	SchoolYear savedSchoolYear;
-    	try {
-    		savedSchoolYear = schoolYearRepository.save(schoolYear);
-		} catch (RuntimeException e) {
-			LOGGER.error("Exception encountered: {}", e);
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
-		}
-    	LOGGER.debug("end ...");
-    	return savedSchoolYear;
-    }
+//    @POST
+//	@Path("/saveSchoolYear")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//	@Produces(MediaType.APPLICATION_JSON)
+//	@JsonView(View.Default.class)
+//    public SchoolYear saveSchoolYear(SchoolYear schoolYear) {
+//
+//    	LOGGER.debug("begin ...");
+//    	SchoolYear savedSchoolYear;
+//    	try {
+//    		savedSchoolYear = schoolYearRepository.save(schoolYear);
+//		} catch (RuntimeException e) {
+//			LOGGER.error("Exception encountered: {}", e);
+//			throw new SnsRuntimeException(e.getClass().getSimpleName());
+//		}
+//    	LOGGER.debug("end ...");
+//    	return savedSchoolYear;
+//    }
 	
     @POST
 	@Path("/saveSchoolYearDto")

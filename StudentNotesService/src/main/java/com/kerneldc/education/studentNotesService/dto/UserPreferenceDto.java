@@ -1,6 +1,6 @@
 package com.kerneldc.education.studentNotesService.dto;
 
-import javax.xml.bind.annotation.XmlElement;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class UserPreferenceDto extends AbstractBaseDto {
 
@@ -8,7 +8,8 @@ public class UserPreferenceDto extends AbstractBaseDto {
 
 	private Long id;
 	private String username;
-	@XmlElement(name="schoolYear")
+	//@XmlElement(name="schoolYear")
+	@JsonProperty(value="schoolYear")
 	private SchoolYearDto schoolYearDto;
 	
 	public Long getId() {

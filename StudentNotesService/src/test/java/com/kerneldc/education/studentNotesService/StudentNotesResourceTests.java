@@ -1,5 +1,8 @@
 package com.kerneldc.education.studentNotesService;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -50,6 +53,7 @@ import com.kerneldc.education.studentNotesService.constants.Constants;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.domain.jsonView.View;
+import com.kerneldc.education.studentNotesService.dto.StudentDto;
 import com.kerneldc.education.studentNotesService.junit.MyTestExecutionListener;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 import com.kerneldc.education.studentNotesService.security.bean.User;
@@ -135,6 +139,20 @@ public class StudentNotesResourceTests {
         List<Student> allSeedDBStudents = new ArrayList<Student>(Arrays.asList(SeedDBData.s1,SeedDBData.s2,SeedDBData.s3));
         List<Student> studentsList = new ArrayList<Student>(Arrays.asList(students));
         assertEquals(allSeedDBStudents.size(), studentsList.size());
+        assertTrue(allSeedDBStudents.removeAll(studentsList));
+        assertEquals(0, allSeedDBStudents.size());
+    }
+
+	@Test
+    public void testGetAllStudentDtos() throws JsonProcessingException {
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+		ResponseEntity<StudentDto[]> response = testRestTemplate.exchange(BASE_URI+"/getAllStudentDtos", HttpMethod.GET, httpEntity, StudentDto[].class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+		StudentDto[] students = response.getBody();
+        List<Student> allSeedDBStudents = new ArrayList<>(Arrays.asList(SeedDBData.s1,SeedDBData.s2,SeedDBData.s3));
+        List<StudentDto> studentsList = new ArrayList<>(Arrays.asList(students));
+        assertEquals(allSeedDBStudents.size(), studentsList.size());
+        // TODO fix to create DTO seed data
         assertTrue(allSeedDBStudents.removeAll(studentsList));
         assertEquals(0, allSeedDBStudents.size());
     }
@@ -469,5 +487,22 @@ public class StudentNotesResourceTests {
 		assertEquals(note1a.getVersion(), note1b.getVersion());
 
 		assertEquals(note1a, note1b);
+	}
+	
+	@Test
+	public void testGetStudentDtosInSchoolYear() {
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+		ResponseEntity<StudentDto[]> response = testRestTemplate.exchange(BASE_URI+"/getStudentDtosInSchoolYear/1", HttpMethod.GET, httpEntity, StudentDto[].class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+		StudentDto[] students = response.getBody();
+		assertThat(students.length, equalTo(2));
+	}
+	@Test
+	public void testGetStudentDtosNotInSchoolYear() {
+		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+		ResponseEntity<StudentDto[]> response = testRestTemplate.exchange(BASE_URI+"/getStudentDtosNotInSchoolYear/1", HttpMethod.GET, httpEntity, StudentDto[].class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+		StudentDto[] students = response.getBody();
+		assertThat(students.length, equalTo(1));
 	}
 }

@@ -3,8 +3,7 @@ package com.kerneldc.education.studentNotesService.dto;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlElement;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kerneldc.education.studentNotesService.bean.Grade;
 
 public class StudentDto extends AbstractBaseDto {
@@ -15,9 +14,11 @@ public class StudentDto extends AbstractBaseDto {
 	private String firstName;
 	private String lastName;
 	private Grade grade;
-	@XmlElement(name="noteList")
+	//@XmlElement(name="noteList")
+	@JsonProperty(value="noteList")
 	private List<NoteDto> noteDtoList;
-	@XmlElement(name="schoolYearSet")
+	//@XmlElement(name="schoolYearSet")
+	@JsonProperty(value="schoolYearSet")
 	private Set<SchoolYearDto> schoolYearDtoSet;
 	
 	public Long getId() {
