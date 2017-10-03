@@ -273,7 +273,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 	public List<StudentDto> getStudentDtosInSchoolYear(Long schoolYearId) {
 		Session session = entityManager.unwrap(Session.class);
 		return session
-				.createSQLQuery("select s.id, s.first_name as firstName, s.last_name as lastName, s.version\n"
+				.createSQLQuery("select s.id, s.first_name as firstName, s.last_name as lastName, s.grade, s.version\n"
 						+ "  from student s\n" + " where exists (select 1\n"
 						+ "                 from student_school_year ssy\n"
 						+ "                where ssy.student_id = s.id and ssy.school_year_id = :school_year_id)\n"
@@ -289,7 +289,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 	public List<StudentDto> getStudentDtosNotInSchoolYear(Long schoolYearId) {
 		Session session = entityManager.unwrap(Session.class);
 		return session
-				.createSQLQuery("select s.id, s.first_name as firstName, s.last_name as lastName, s.version\n"
+				.createSQLQuery("select s.id, s.first_name as firstName, s.last_name as lastName, s.grade, s.version\n"
 						+ "  from student s\n" + " where not exists (select 1\n"
 						+ "                 from student_school_year ssy\n"
 						+ "                where ssy.student_id = s.id and ssy.school_year_id = :school_year_id)\n"

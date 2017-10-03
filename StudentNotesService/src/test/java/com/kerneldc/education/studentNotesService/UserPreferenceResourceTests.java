@@ -4,7 +4,6 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.text.ParseException;
@@ -118,30 +117,6 @@ public class UserPreferenceResourceTests {
     }
 
 	@Test
-	public void testGetByUsername() {
-		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
-		String username = "TestUser";
-		ResponseEntity<UserPreference> response = testRestTemplate.exchange(BASE_URI+"/userPreference/getByUsername/"+username, HttpMethod.GET, httpEntity, UserPreference.class);
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		UserPreference userPreference = response.getBody();
-		assertNotNull(userPreference);
-		LOGGER.debug("userPreference: {}", userPreference);
-		assertEquals(username, userPreference.getUsername());
-	}
-
-	@Test
-	public void testGetByUsernameFullGraph() {
-		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
-		String username = "TestUser";
-		ResponseEntity<UserPreference> response = testRestTemplate.exchange(BASE_URI+"/userPreference/getByUsernameFullGraph/"+username, HttpMethod.GET, httpEntity, UserPreference.class);
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		UserPreference userPreference = response.getBody();
-		assertNotNull(userPreference);
-		LOGGER.debug("userPreference: {}", userPreference);
-		assertEquals(username, userPreference.getUsername());
-	}
-
-	@Test
 	public void testGetDtoByUsername() {
 		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
 		String username = "TestUser";
@@ -155,74 +130,6 @@ public class UserPreferenceResourceTests {
 		assertThat(userPreferenceDto.getSchoolYearDto().getId(), equalTo(1l));
 	}
 
-//	@Test
-//    public void testGetAllSchoolYears() {
-//		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
-//		ResponseEntity<SchoolYear[]> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/getAllSchoolYears", HttpMethod.GET, httpEntity, SchoolYear[].class);
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        SchoolYear[] schoolYears = response.getBody();
-//        assertEquals(1, schoolYears.length);
-//    }
-//
-//	@Test
-//    public void testGetStudentsBySchoolYearId() {
-//		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
-//		ResponseEntity<SchoolYear> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/getStudentsBySchoolYearId/1", HttpMethod.GET, httpEntity, SchoolYear.class);
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        SchoolYear schoolYear = response.getBody();
-//        assertNotNull(schoolYear);
-//        assertEquals(2, schoolYear.getStudentSet().size());
-//    }
-//
-//	@Test
-//	public void testGetLatestActiveStudentsBySchoolYearId() {
-//		SchoolYearIdAndLimit schoolYearIdAndLimit = new SchoolYearIdAndLimit();
-//		schoolYearIdAndLimit.setSchoolYearId(1l);
-//		schoolYearIdAndLimit.setLimit(5);
-//		HttpEntity<SchoolYearIdAndLimit> httpEntity = new HttpEntity<SchoolYearIdAndLimit>(schoolYearIdAndLimit,httpHeaders);
-//		ResponseEntity<SchoolYear> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/getLatestActiveStudentsBySchoolYearId", HttpMethod.POST, httpEntity, SchoolYear.class);
-//		assertEquals(HttpStatus.OK, response.getStatusCode());
-//		SchoolYear schoolYear = response.getBody();
-//		assertEquals(1, schoolYear.getStudentSet().size());
-//		assertEquals(3, schoolYear.getStudentSet().iterator().next().getNoteList().size());
-//	}
-//
-//	@Test
-//	@DirtiesContext
-//	public void testSaveSchoolYearForInsert() throws ParseException {
-//		SchoolYear newSchoolYear = new SchoolYear();
-//		newSchoolYear.setSchoolYear("new school year 1");
-//		newSchoolYear.setStartDate(dateFormat.parse("2027-09-01"));
-//		newSchoolYear.setEndDate(dateFormat.parse("2028-06-31"));
-//		HttpEntity<SchoolYear> httpEntity = new HttpEntity<SchoolYear>(newSchoolYear,httpHeaders);
-//		ResponseEntity<SchoolYear> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/saveSchoolYear", HttpMethod.POST, httpEntity, SchoolYear.class);
-//		assertEquals(HttpStatus.OK, response.getStatusCode());
-//		SchoolYear savedSchoolYear = response.getBody();
-//		assertNotNull(savedSchoolYear.getId());
-//		assertEquals(newSchoolYear.getSchoolYear(), savedSchoolYear.getSchoolYear());
-//		LOGGER.debug("newSchoolYear.getStartDate(): {}, savedSchoolYear.getStartDate(): {}", newSchoolYear.getStartDate(), savedSchoolYear.getStartDate());
-//		assertEquals(newSchoolYear.getStartDate(), savedSchoolYear.getStartDate());
-//		assertEquals(newSchoolYear.getEndDate(), savedSchoolYear.getEndDate());
-//		assertEquals(new Long(0), savedSchoolYear.getVersion());
-//	}
-//
-	@Test
-	@DirtiesContext
-	public void testSaveUserPreference() throws ParseException {
-		
-		UserPreference userPreference = userPreferenceRepository.findByUsername("TestUser").get(0);
-		assertThat(userPreference.getSchoolYear().getId(), equalTo(1l));
-		SchoolYear schoolYear = schoolYearRepository.findOne(2l);
-		userPreference.setSchoolYear(schoolYear);
-		
-		HttpEntity<UserPreference> httpEntity = new HttpEntity<UserPreference>(userPreference, httpHeaders);
-		ResponseEntity<UserPreference> response = testRestTemplate.exchange(
-				BASE_URI + "/userPreference/saveUserPreference", HttpMethod.POST, httpEntity, UserPreference.class);
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		UserPreference savedUserPreference = response.getBody();
-		assertThat(savedUserPreference.getSchoolYear().getId(), equalTo(2l));
-	}
-		
 	@Test
 	@DirtiesContext
 	public void testSaveUserPreferenceDto() throws ParseException {

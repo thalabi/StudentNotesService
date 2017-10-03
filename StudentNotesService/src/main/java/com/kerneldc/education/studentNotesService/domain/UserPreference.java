@@ -13,9 +13,6 @@ import javax.persistence.UniqueConstraint;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.kerneldc.education.studentNotesService.domain.jsonView.View;
-
 @Entity
 @Table(name = "user_preference", uniqueConstraints=@UniqueConstraint(columnNames={"username"}))
 public class UserPreference extends AbstractPersistableEntity {
@@ -24,17 +21,12 @@ public class UserPreference extends AbstractPersistableEntity {
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	//@JsonView(View.Default.class)
 	private Long id;
 	@Column(name = "username")
-	//@JsonView(View.Default.class)
 	private String username;
 	
 	@ManyToOne//(fetch=FetchType.EAGER)
 	@JoinColumn(name = "school_year_id")
-	//@PrimaryKeyJoinColumn
-	//@Fetch(FetchMode.JOIN)
-	//@JsonView(View.Default.class)
 	private SchoolYear schoolYear;
 	
 	public Long getId() {

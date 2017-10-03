@@ -13,9 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.kerneldc.education.studentNotesService.domain.UserPreference;
-import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 import com.kerneldc.education.studentNotesService.dto.UserPreferenceDto;
 import com.kerneldc.education.studentNotesService.dto.transformer.UserPreferenceTransformer;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
@@ -43,44 +41,6 @@ public class UserPreferenceResource {
 	}
 
 	@GET
-	@Path("/getByUsername/{username}")
-	@Produces(MediaType.APPLICATION_JSON)
-	@JsonView(View.Default.class)
-	public UserPreference getByUsername(
-		@PathParam("username") String username) {
-		
-		LOGGER.debug("begin ...");
-		UserPreference userPreference = null;
-		try {
-			userPreference = userPreferenceRepository.findByUsername(username).get(0);
-		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
-		}
-		LOGGER.debug("end ...");
-		return userPreference;
-	}
-
-	@GET
-	@Path("/getByUsernameFullGraph/{username}")
-	@Produces(MediaType.APPLICATION_JSON)
-	@JsonView(View.SchoolYearExtended.class)
-	public UserPreference getByUsernameFullGraph(
-		@PathParam("username") String username) {
-		
-		LOGGER.debug("begin ...");
-		UserPreference userPreference = null;
-		try {
-			userPreference = userPreferenceRepository.findByUsername(username).get(0);
-		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
-		}
-		//LOGGER.debug("userPreference.getSchoolYear(): {}", userPreference.getSchoolYear());
-		//LOGGER.debug("userPreference.getSchoolYear().getStudentSet().size(): {}", userPreference.getSchoolYear().getStudentSet().size());
-		LOGGER.debug("end ...");
-		return userPreference;
-	}
-
-	@GET
 	@Path("/getDtoByUsername/{username}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public UserPreferenceDto getDtoByUsername(
@@ -98,26 +58,6 @@ public class UserPreferenceResource {
 		LOGGER.debug("end ...");
 		return userPreferenceDto;
 	}
-
-
-    @POST
-	@Path("/saveUserPreference")
-    @Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@JsonView(View.SchoolYearExtended.class)
-    public UserPreference saveUserPreference(UserPreference userPreference) {
-
-    	LOGGER.debug("begin ...");
-    	UserPreference savedSchoolYear;
-    	try {
-    		savedSchoolYear = userPreferenceRepository.save(userPreference);
-		} catch (RuntimeException e) {
-			LOGGER.error("Exception encountered: {}", e);
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
-		}
-    	LOGGER.debug("end ...");
-    	return savedSchoolYear;
-    }
 
     @POST
 	@Path("/saveUserPreferenceDto")
