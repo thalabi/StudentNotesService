@@ -1,6 +1,6 @@
 package com.kerneldc.education.studentNotesService.dto.transformer;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.hibernate.Hibernate;
@@ -21,7 +21,7 @@ public class SchoolYearTransformer {
 		SchoolYearDto schoolYearDto = new SchoolYearDto();
 		BeanUtils.copyProperties(schoolYear, schoolYearDto);
 		if (Hibernate.isInitialized(schoolYear.getStudentSet())) {
-			Set<StudentDto> studentDtos = new HashSet<>(schoolYear.getStudentSet().size());
+			Set<StudentDto> studentDtos = new LinkedHashSet<>(schoolYear.getStudentSet().size());
 			for (Student student : schoolYear.getStudentSet()) {
 				studentDtos.add(StudentTransformer.entityToDto(student));
 			}
