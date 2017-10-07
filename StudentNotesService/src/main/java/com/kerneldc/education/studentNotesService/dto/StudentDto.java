@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.kerneldc.education.studentNotesService.bean.Grade;
+import com.kerneldc.education.studentNotesService.bean.GradeEnum;
 
 public class StudentDto extends AbstractBaseDto {
 
@@ -13,7 +13,7 @@ public class StudentDto extends AbstractBaseDto {
 	private Long id;
 	private String firstName;
 	private String lastName;
-	private Grade grade;
+	private GradeEnum grade;
 	//@XmlElement(name="noteList")
 	@JsonProperty(value="noteList")
 	private List<NoteDto> noteDtoList;
@@ -39,10 +39,10 @@ public class StudentDto extends AbstractBaseDto {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	public Grade getGrade() {
+	public GradeEnum getGrade() {
 		return grade;
 	}
-	public void setGrade(Grade grade) {
+	public void setGrade(GradeEnum grade) {
 		this.grade = grade;
 	}
 	public List<NoteDto> getNoteDtoList() {

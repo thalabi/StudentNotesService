@@ -3,7 +3,7 @@ package com.kerneldc.education.studentNotesService;
 import java.sql.Timestamp;
 import java.util.Arrays;
 
-import com.kerneldc.education.studentNotesService.bean.Grade;
+import com.kerneldc.education.studentNotesService.bean.GradeEnum;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
 
@@ -18,7 +18,7 @@ public class SeedDBData {
 		s1.setId(1l);
 		s1.setFirstName("kareem");
 		s1.setLastName("halabi");
-		s1.setGrade(Grade.SK);
+		s1.setGrade(GradeEnum.SK);
 		s1.setVersion(0l);
 		//String expected = "{\"version\":0,\"id\":1,\"firstName\":\"kareem\",\"lastName\":\"halabi\",\"grade\":\"SK\",\"noteList\":
 		//[{\"version\":0,\"id\":1,\"timestamp\":1481403630839,\"text\":\"note 1\"},
@@ -44,13 +44,13 @@ public class SeedDBData {
 		s2.setId(2l);
 		s2.setFirstName("");
 		s2.setLastName("halabi");
-		s2.setGrade(Grade.FOUR);
+		s2.setGrade(GradeEnum.FOUR);
 		s2.setVersion(0l);
 		
 		s3.setId(3l);
 		s3.setFirstName("Mr Parent");
 		s3.setLastName("");
-		s3.setGrade(Grade.EMPTY);
+		s3.setGrade(GradeEnum.EMPTY);
 		s3.setVersion(0l);
 
 		Note s3n1 = new Note();
@@ -68,7 +68,7 @@ public class SeedDBData {
 //		s4.setId(1l);
 //		s4.setFirstName("kareem");
 //		s4.setLastName("halabi");
-//		s4.setGrade(Grade.SK);
+//		s4.setGrade(GradeEnum.SK);
 //		s4.setVersion(0l);
 //		Note s4n1 = new Note();
 //		s4n1.setId(1l);

@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kerneldc.education.studentNotesService.StudentNotesApplication;
-import com.kerneldc.education.studentNotesService.bean.Grade;
+import com.kerneldc.education.studentNotesService.bean.GradeEnum;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
@@ -98,7 +98,7 @@ public class RepositoryViewTests {
 		s.setId(1l);
 		s.setFirstName("fn");
 		s.setLastName("ln");
-		s.setGrade(Grade.EIGHT);
+		s.setGrade(GradeEnum.EIGHT);
 		Note n1 = new Note();
 		n1.setId(2l);
 		n1.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));

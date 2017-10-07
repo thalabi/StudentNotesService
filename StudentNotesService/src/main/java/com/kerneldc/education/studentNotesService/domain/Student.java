@@ -31,7 +31,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.kerneldc.education.studentNotesService.bean.Grade;
+import com.kerneldc.education.studentNotesService.bean.GradeEnum;
 import com.kerneldc.education.studentNotesService.domain.converter.GradeConverter;
 import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 
@@ -62,7 +62,7 @@ public class Student extends AbstractPersistableEntity {
 	@Column(name = "GRADE")
 	@Convert(converter=GradeConverter.class)
 	@JsonView(View.Default.class)
-	private Grade grade;
+	private GradeEnum grade;
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("timestamp")
@@ -98,10 +98,10 @@ public class Student extends AbstractPersistableEntity {
 	public void setLastName(String lastName) {
 		this.lastName = lastName == null ? "" : lastName;
 	}
-	public Grade getGrade() {
+	public GradeEnum getGrade() {
 		return grade;
 	}
-	public void setGrade(Grade grade) {
+	public void setGrade(GradeEnum grade) {
 		this.grade = grade;
 	}
 

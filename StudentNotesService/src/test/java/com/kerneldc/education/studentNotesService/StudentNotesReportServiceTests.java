@@ -20,7 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.kerneldc.education.studentNotesService.bean.Grade;
+import com.kerneldc.education.studentNotesService.bean.GradeEnum;
 import com.kerneldc.education.studentNotesService.bean.Students;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
@@ -47,7 +47,7 @@ public class StudentNotesReportServiceTests {
 		// Create student # 1
 		String firstName = "first name testBeanToXml";
 		String lastName = "last name testBeanToXml";
-		Grade grade = Grade.FIVE;
+		GradeEnum grade = GradeEnum.FIVE;
 		Student student = new Student();
 		student.setFirstName(firstName);
 		student.setLastName(lastName);
@@ -72,7 +72,7 @@ public class StudentNotesReportServiceTests {
 		// Create student # 2
 		String firstName2 = "first name 2 testBeanToXml";
 		String lastName2 = "last name 2 testBeanToXml";
-		Grade grade2 = Grade.FOUR;
+		GradeEnum grade2 = GradeEnum.FOUR;
 		Student student2 = new Student();
 		student2.setFirstName(firstName2);
 		student2.setLastName(lastName2);

@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.XmlEnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
 
-public enum Grade {
+public enum GradeEnum {
 	
 	@XmlEnumValue("JK")
 	JK("JK"),
@@ -45,7 +45,7 @@ public enum Grade {
 	
 	private final String grade;
 	
-	Grade (String grade) {
+	GradeEnum (String grade) {
 		this.grade = grade;
 	}
 	
@@ -54,33 +54,33 @@ public enum Grade {
 		return grade;
 	}
 	
-	public static Grade fromValue(String value) {
+	public static GradeEnum fromValue(String value) {
 		if (value == null) return null;
 		switch (value) {
 		case "JK":
-			return Grade.JK;
+			return GradeEnum.JK;
 		case "SK":
-			return Grade.SK;
+			return GradeEnum.SK;
 		case "1":
-			return Grade.ONE;
+			return GradeEnum.ONE;
 		case "2":
-			return Grade.TWO;
+			return GradeEnum.TWO;
 		case "3":
-			return Grade.THREE;
+			return GradeEnum.THREE;
 		case "4":
-			return Grade.FOUR;
+			return GradeEnum.FOUR;
 		case "5":
-			return Grade.FIVE;
+			return GradeEnum.FIVE;
 		case "6":
-			return Grade.SIX;
+			return GradeEnum.SIX;
 		case "7":
-			return Grade.SEVEN;
+			return GradeEnum.SEVEN;
 		case "8":
-			return Grade.EIGHT;
+			return GradeEnum.EIGHT;
 		case "Other":
-			return Grade.OTHER;
+			return GradeEnum.OTHER;
 		case "":
-			return Grade.EMPTY;
+			return GradeEnum.EMPTY;
 		default:
 			throw new SnsRuntimeException(String.format("Invalid value %s passed to fromValue() method", value));
 		}
