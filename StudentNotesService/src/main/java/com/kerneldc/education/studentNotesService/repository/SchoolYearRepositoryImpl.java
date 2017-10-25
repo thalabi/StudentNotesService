@@ -91,7 +91,7 @@ public class SchoolYearRepositoryImpl implements SchoolYearRepositoryCustom, Ini
 			.addProperty("element.lastName", "last_name")
 			.addProperty("element.grade", "grade")
 			.addProperty("element.version", "student_version");
-        query.addFetch("n", "s", "noteList")
+        query.addFetch("n", "s", "noteSet")
 			.addProperty("key", "student_id")
 			.addProperty("element", "note_id")
 			.addProperty("element.id", "note_id")
@@ -178,7 +178,7 @@ public class SchoolYearRepositoryImpl implements SchoolYearRepositoryCustom, Ini
 			.addProperty("element.lastName", "last_name")
 			.addProperty("element.grade", "grade")
 			.addProperty("element.version", "student_version");
-        query.addFetch("n", "s", "noteList")
+        query.addFetch("n", "s", "noteSet")
 			.addProperty("key", "student_id")
 			.addProperty("element", "note_id")
 			.addProperty("element.id", "note_id")

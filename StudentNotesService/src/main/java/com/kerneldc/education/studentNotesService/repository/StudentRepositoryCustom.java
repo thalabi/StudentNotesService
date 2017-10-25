@@ -7,6 +7,7 @@ import java.util.Set;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.dto.StudentDto;
+import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
 
 public interface StudentRepositoryCustom {
 
@@ -16,6 +17,8 @@ public interface StudentRepositoryCustom {
 	 * @return
 	 */
 	Student getStudentById(Long id);
+	Student getStudentByIdWithGradeList(Long id);
+	Student getStudentByIdWithNodeListAndGradeList(Long id);
 	/**
 	 * Uses the NamedEntityGraph defined on the entity to retrieve all Students
 	 * @return a list of all students with their noteSet ordered by lastName, firstName and timestamp
@@ -31,4 +34,5 @@ public interface StudentRepositoryCustom {
 	
 	List<StudentDto> getStudentDtosInSchoolYear(Long schoolYearId);
 	List<StudentDto> getStudentDtosNotInSchoolYear(Long schoolYearId);
+	List<StudentUiDto> getStudentsByUsername(String username);
 }

@@ -51,7 +51,7 @@ public class StudentNotesReportServiceTests {
 		Student student = new Student();
 		student.setFirstName(firstName);
 		student.setLastName(lastName);
-		student.setGrade(grade);
+		student.setGradeEnum(grade);
 		
 		String note1TimestampText = "2017-01-29 16:11";
 		String note1Text = "note 1 text testBeanToXml";
@@ -76,7 +76,7 @@ public class StudentNotesReportServiceTests {
 		Student student2 = new Student();
 		student2.setFirstName(firstName2);
 		student2.setLastName(lastName2);
-		student2.setGrade(grade2);
+		student2.setGradeEnum(grade2);
 		/*
 		String note1TimestampText = "2017-01-29 16:11";
 		String note1Text = "note 1 text testBeanToXml";
@@ -109,7 +109,7 @@ public class StudentNotesReportServiceTests {
 			createdStudent.getId().compareTo(0l) > 0 &&
 			createdStudent.getFirstName().equals(firstName) &&
 			createdStudent.getLastName().equals(lastName) &&
-			createdStudent.getGrade().equals(grade) &&
+			createdStudent.getGradeEnum().equals(grade) &&
 			createdStudent.getVersion().compareTo(0l) == 0 &&
 			createdStudent.getNoteList().size() == 2
 			);
@@ -131,7 +131,7 @@ public class StudentNotesReportServiceTests {
 			createdStudent2.getId().compareTo(0l) > 0 &&
 			createdStudent2.getFirstName().equals(firstName2) &&
 			createdStudent2.getLastName().equals(lastName2) &&
-			createdStudent2.getGrade().equals(grade2) &&
+			createdStudent2.getGradeEnum().equals(grade2) &&
 			createdStudent2.getVersion().compareTo(0l) == 0 //&&
 			//createdStudent2.getNoteList().size() == 2
 			);

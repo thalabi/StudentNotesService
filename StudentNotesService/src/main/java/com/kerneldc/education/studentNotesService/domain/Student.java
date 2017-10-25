@@ -1,13 +1,11 @@
 package com.kerneldc.education.studentNotesService.domain;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,6 +15,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedAttributeNode;
 import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
@@ -31,14 +30,15 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.kerneldc.education.studentNotesService.bean.GradeEnum;
-import com.kerneldc.education.studentNotesService.domain.converter.GradeConverter;
 import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 
 @Entity
 @Table(name = "student", uniqueConstraints=@UniqueConstraint(columnNames={"first_name", "last_name"}))
-@NamedEntityGraph(name = "Student.noteList", 
-					attributeNodes = @NamedAttributeNode(value = "noteList"))
+@NamedEntityGraphs({
+	@NamedEntityGraph(name = "Student.noteSet", attributeNodes = @NamedAttributeNode(value = "noteSet")),
+	@NamedEntityGraph(name = "Student.gradeSet", attributeNodes = @NamedAttributeNode(value = "gradeSet")),
+	@NamedEntityGraph(name = "Student.noteSetAndGradeSet", attributeNodes = {@NamedAttributeNode(value = "noteSet"), @NamedAttributeNode(value = "gradeSet")})
+})
 @XmlAccessorType(XmlAccessType.FIELD)
 //@JsonIdentityInfo(
 //		  generator = ObjectIdGenerators.PropertyGenerator.class, 
@@ -59,11 +59,18 @@ public class Student extends AbstractPersistableEntity {
 	@Column(name = "last_name")
 	@JsonView(View.Default.class)
 	private String lastName = "";
-	@Column(name = "GRADE")
-	@Convert(converter=GradeConverter.class)
-	@JsonView(View.Default.class)
-	private GradeEnum grade;
 	
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	//@OrderBy("timestamp")
+	@JoinTable(
+		name = "student_grade",
+		joinColumns = @JoinColumn(name = "student_id"),
+		inverseJoinColumns = @JoinColumn(name="grade_id"))
+	//@XmlElementWrapper(name="notes")
+	//@XmlElement(name="note")
+	@JsonView(View.Default.class)
+	private Set<Grade> gradeSet = new LinkedHashSet<>();
+
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("timestamp")
 	@JoinTable(
@@ -73,10 +80,10 @@ public class Student extends AbstractPersistableEntity {
 	@XmlElementWrapper(name="notes")
 	@XmlElement(name="note")
 	@JsonView(View.Default.class)
-	private List<Note> noteList = new ArrayList<>();
+	private Set<Note> noteSet = new LinkedHashSet<>();
 
 	@XmlTransient
-	@ManyToMany(cascade=CascadeType.ALL, mappedBy="studentSet")
+	@ManyToMany(/*cascade=CascadeType.ALL, */mappedBy="studentSet")
 	@JsonView(View.StudentExtended.class)
 	private Set<SchoolYear> schoolYearSet = new HashSet<>();
     
@@ -98,20 +105,24 @@ public class Student extends AbstractPersistableEntity {
 	public void setLastName(String lastName) {
 		this.lastName = lastName == null ? "" : lastName;
 	}
-	public GradeEnum getGrade() {
-		return grade;
+//	public GradeEnum getGrade() {
+//		return grade;
+//	}
+//	public void setGrade(GradeEnum grade) {
+//		this.grade = grade;
+//	}
+	public Set<Grade> getGradeSet() {
+		return gradeSet;
 	}
-	public void setGrade(GradeEnum grade) {
-		this.grade = grade;
+	public void setGradeSet(Set<Grade> gradeSet) {
+		this.gradeSet = gradeSet;
 	}
-
-	public List<Note> getNoteList() {
-		return noteList;
+	public Set<Note> getNoteSet() {
+		return noteSet;
 	}
-	public void setNoteList(List<Note> noteList) {
-		this.noteList = noteList;
+	public void setNoteSet(Set<Note> noteSet) {
+		this.noteSet = noteSet;
 	}
-	
 	public Set<SchoolYear> getSchoolYearSet() {
 		return schoolYearSet;
 	}
@@ -122,12 +133,12 @@ public class Student extends AbstractPersistableEntity {
 	@Override
     public boolean equals(final Object object) {
 
-        return EqualsBuilder.reflectionEquals(this, object, "id", "version", "noteList", "schoolYearSet");
+        return EqualsBuilder.reflectionEquals(this, object, "id", "version", "noteSet", "schoolYearSet", "gradeSet");
     }
 	@Override
     public int hashCode() {
 
-        return HashCodeBuilder.reflectionHashCode(this, "id", "version", "noteList", "schoolYearSet");
+        return HashCodeBuilder.reflectionHashCode(this, "id", "version", "noteSet", "schoolYearSet", "gradeSet");
     }
 
 	// utility methods

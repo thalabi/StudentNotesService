@@ -159,7 +159,7 @@ public class SchoolYearResourceTests {
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 		SchoolYear schoolYear = response.getBody();
 		assertEquals(1, schoolYear.getStudentSet().size());
-		assertEquals(3, schoolYear.getStudentSet().iterator().next().getNoteList().size());
+		assertEquals(3, schoolYear.getStudentSet().iterator().next().getNoteSet().size());
 	}
 
 	@Test

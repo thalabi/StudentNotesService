@@ -3,7 +3,8 @@ package com.kerneldc.education.studentNotesService.dto.transformer;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.hibernate.Hibernate;
+import javax.persistence.Persistence;
+
 import org.springframework.beans.BeanUtils;
 
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
@@ -19,8 +20,8 @@ public class SchoolYearTransformer {
 
 	public static SchoolYearDto entityToDto(SchoolYear schoolYear) {
 		SchoolYearDto schoolYearDto = new SchoolYearDto();
-		BeanUtils.copyProperties(schoolYear, schoolYearDto);
-		if (Hibernate.isInitialized(schoolYear.getStudentSet())) {
+		BeanUtils.copyProperties(schoolYear, schoolYearDto, "studentSet");
+		if (Persistence.getPersistenceUtil().isLoaded(schoolYear.getStudentSet())) {
 			Set<StudentDto> studentDtos = new LinkedHashSet<>(schoolYear.getStudentSet().size());
 			for (Student student : schoolYear.getStudentSet()) {
 				studentDtos.add(StudentTransformer.entityToDto(student));

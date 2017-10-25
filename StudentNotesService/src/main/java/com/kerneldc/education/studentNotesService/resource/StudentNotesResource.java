@@ -10,6 +10,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +27,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.kerneldc.education.studentNotesService.bean.Students;
 import com.kerneldc.education.studentNotesService.bean.TimestampRange;
+import com.kerneldc.education.studentNotesService.domain.Grade;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.domain.jsonView.View;
@@ -43,6 +46,7 @@ import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
 import com.kerneldc.education.studentNotesService.dto.StudentDto;
 import com.kerneldc.education.studentNotesService.dto.transformer.SchoolYearTransformer;
 import com.kerneldc.education.studentNotesService.dto.transformer.StudentTransformer;
+import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
 import com.kerneldc.education.studentNotesService.exception.RowNotFoundException;
 import com.kerneldc.education.studentNotesService.exception.SnsException;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
@@ -211,7 +215,17 @@ public class StudentNotesResource {
     	StudentDto studentDto) {
 
     	LOGGER.debug("begin ...");
+    	LOGGER.debug("studentDto: {}", studentDto);
     	Student student = StudentTransformer.dtoToEntity(studentDto);
+    	// Update grade object
+    	if (CollectionUtils.isNotEmpty(student.getGradeSet())) {
+    		Grade grade = student.getGradeSet().iterator().next();
+    		grade.setStudent(student);
+    		grade.setSchoolYear(student.getSchoolYearSet().iterator().next());
+    	}
+    	//student.getGradeSet().iterator().next().setStudent(student);
+    	//student.getGradeSet().iterator().next().setSchoolYear(student.getSchoolYearSet().iterator().next());
+    	LOGGER.debug("student: {}", student);
     	Student savedStudent;
     	StudentDto savedStudentDto;
     	try {
@@ -221,10 +235,37 @@ public class StudentNotesResource {
 			throw new SnsRuntimeException(e.getClass().getSimpleName());
 		}
     	savedStudentDto = StudentTransformer.entityToDto(savedStudent);
-    	sortNoteList(savedStudentDto.getNoteDtoList());
-    	LOGGER.debug("savedStudentDto: {}", savedStudentDto);
+    	sortNoteSet(savedStudentDto.getNoteDtoSet());
+		LOGGER.debug("after sortNoteSet call");
+		for (NoteDto noteDto : savedStudentDto.getNoteDtoSet()) {
+			LOGGER.debug("noteDto.getTimestamp(): {}", noteDto.getTimestamp());
+		}
     	LOGGER.debug("end ...");
     	return savedStudentDto;
+    }
+	
+    @POST
+	@Path("/saveStudentUiDto")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+    public StudentUiDto saveStudentUiDto(
+    	StudentUiDto studentUiDto) {
+
+    	LOGGER.debug("begin ...");
+		LOGGER.debug("studentUiDto: {}", studentUiDto);
+    	Student student = StudentTransformer.uiDtoToEntity(studentUiDto);
+    	LOGGER.debug("student: {}", student);
+    	Student savedSudent;
+    	try {
+    		//schoolYearRepository.save(student.getSchoolYearSet().iterator().next());
+    		savedSudent = studentRepository.save(student);
+		} catch (RuntimeException e) {
+			LOGGER.error("Exception encountered: {}", e);
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+    	StudentUiDto savedStudentUiDto =StudentTransformer.entityToUiDto(savedSudent);
+    	LOGGER.debug("end ...");
+    	return savedStudentUiDto;
     }
 	
 	@DELETE
@@ -308,13 +349,13 @@ public class StudentNotesResource {
 		@PathParam("limit") int limit) {
 		
 		LOGGER.debug("begin ...");
-		LOGGER.debug("end ...");
- 		Set<Student> students = studentRepository.getLatestActiveStudents(username, limit);
+ 		Set<Student> students = new HashSet<>();//studentRepository.getLatestActiveStudents(username, limit);
  		Set<StudentDto> studentDtos = new LinkedHashSet<>();
  		for (Student student : students) {
  			StudentDto studentDto = StudentTransformer.entityToDto(student);
  			studentDtos.add(studentDto);
  		}
+		LOGGER.debug("end ...");
  		return studentDtos;
 	}
 
@@ -416,6 +457,23 @@ public class StudentNotesResource {
 	}
 	
 	@GET
+	@Path("/getStudentsByUsername/{username}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<StudentUiDto> getStudentsByUsername(
+		@PathParam("username") String username) {
+		
+		LOGGER.debug("begin ...");
+		List<StudentUiDto> studentUiDtoList = null;
+		try {
+			studentUiDtoList = studentRepository.getStudentsByUsername(username);
+		} catch (RuntimeException e) {
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+		LOGGER.debug("end ...");
+		return studentUiDtoList;
+	}
+	
+	@GET
 	@Path("/getStudentDtosInSchoolYear/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<StudentDto> getStudentDtosInSchoolYear(
@@ -481,13 +539,24 @@ public class StudentNotesResource {
 		return "";
 	}
 
-	private void sortNoteList(List<NoteDto> noteListDto) {
+	private void sortNoteSet(Set<NoteDto> noteSetDto) {
 		Comparator<NoteDto> comparator = new Comparator<NoteDto>() {
 		    @Override
 		    public int compare(NoteDto left, NoteDto right) {
 		    	return Long.valueOf(left.getTimestamp().getTime()).compareTo(right.getTimestamp().getTime());
 		    }
 		};
-		Collections.sort(noteListDto, comparator);
+		List<NoteDto> noteDtoList = new ArrayList<>(noteSetDto);
+		LOGGER.debug("before sort");
+		for (NoteDto noteDto : noteDtoList) {
+			LOGGER.debug("noteDto.getTimestamp(): {}", noteDto.getTimestamp());
+		}
+		Collections.sort(noteDtoList, comparator);
+		LOGGER.debug("after sort");
+		for (NoteDto noteDto : noteDtoList) {
+			LOGGER.debug("noteDto.getTimestamp(): {}", noteDto.getTimestamp());
+		}
+		noteSetDto.clear();
+		noteSetDto.addAll(new LinkedHashSet<>(noteDtoList));
 	}
 }

@@ -1,0 +1,48 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+	<!-- Tables -->
+    <changeSet author="Tarif Halabi" id="student-by-username">
+    	<createView viewName="student_by_username" replaceIfExists="true">
+<![CDATA[    	
+SELECT 
+distinct
+    UP.USERNAME, -- 0
+    S.ID AS STUDENT_ID, -- 1
+    S.FIRST_NAME,  -- 2
+    S.LAST_NAME,  -- 3
+g.id as grade_id, -- 4
+    g.GRADE,  -- 5
+g.version as grade_version, -- 6
+    N.ID AS NOTE_ID,  -- 7
+    N.TIMESTAMP,  -- 8
+    N.TEXT,  -- 9
+    N.VERSION AS NOTE_VERSION, -- 10
+    SY.ID AS SCHOOL_YEAR_ID,  -- 11
+    SY.SCHOOL_YEAR,  -- 12
+    SY.START_DATE,  -- 13
+    SY.END_DATE,  -- 14
+sy.version as school_year_version, -- 15
+    S.VERSION AS STUDENT_VERSION -- 16
+FROM PUBLIC.USER_PREFERENCE UP 
+LEFT OUTER JOIN PUBLIC.SCHOOL_YEAR SY 
+    ON UP.SCHOOL_YEAR_ID = SY.ID 
+LEFT OUTER JOIN PUBLIC.STUDENT_SCHOOL_YEAR SSY 
+    ON SY.ID = SSY.SCHOOL_YEAR_ID 
+LEFT OUTER JOIN PUBLIC.STUDENT S 
+    ON SSY.STUDENT_ID = S.ID 
+LEFT OUTER JOIN PUBLIC.STUDENT_NOTE SN 
+    ON S.ID = SN.STUDENT_ID 
+LEFT OUTER JOIN PUBLIC.NOTE N 
+    ON (SN.NOTE_ID = N.ID) 
+    AND ((N.TIMESTAMP IS NULL) 
+    OR ((SY.START_DATE <= N.TIMESTAMP) 
+    AND (SY.END_DATE >= N.TIMESTAMP)))
+left outer join student_grade sg
+on sg.student_id = s.id
+left outer join grade g
+on g.id = sg.grade_id
+]]>    
+		</createView>
+    </changeSet>
+</databaseChangeLog>

@@ -7,4 +7,6 @@ public class View {
     public static class StudentExtended extends Default {}
     
     public static class SchoolYearExtended extends Default {}
+    
+    public static class GradeExtended extends Default {}
 }

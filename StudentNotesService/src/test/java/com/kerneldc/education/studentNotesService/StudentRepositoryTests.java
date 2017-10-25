@@ -1,11 +1,14 @@
 package com.kerneldc.education.studentNotesService;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -13,7 +16,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -31,16 +37,21 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.jpa.repository.JpaContext;
+import org.springframework.test.annotation.Commit;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.kerneldc.education.studentNotesService.bean.GradeEnum;
+import com.kerneldc.education.studentNotesService.domain.Grade;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.dto.StudentDto;
+import com.kerneldc.education.studentNotesService.dto.transformer.StudentTransformer;
+import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
+import com.kerneldc.education.studentNotesService.util.KdcCollectionUtils;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = StudentNotesApplication.class)
@@ -71,14 +82,14 @@ public class StudentRepositoryTests implements InitializingBean {
 		Student student = studentRepository.findOne(1l);
 		student.setFirstName(student.getFirstName()+" v1");
 		student.setLastName(student.getLastName()+" v1");
-		student.setGrade(GradeEnum.FIVE);
+		//student.setGrade(GradeEnum.FIVE);
 		Student updatedStudent = studentRepository.save(student);
 		entityManager.flush();
 		Assert.assertTrue(
 			updatedStudent.getId().equals(1l) &&
 			updatedStudent.getFirstName().equals(student.getFirstName()) &&
-			updatedStudent.getLastName().equals(student.getLastName()) &&
-			updatedStudent.getGrade().equals(GradeEnum.FIVE));
+			updatedStudent.getLastName().equals(student.getLastName())/* &&
+			updatedStudent.getGrade().equals(GradeEnum.FIVE)*/);
     }
 
 	@Test
@@ -86,12 +97,12 @@ public class StudentRepositoryTests implements InitializingBean {
     public void testSaveChangeANoteTimestampAndText() {
 		
 		Student student = studentRepository.getStudentById(1l);
-		Note note = student.getNoteList().get(0);
+		Note note = student.getNoteSet().iterator().next();
 		note.setTimestamp(new Timestamp(System.currentTimeMillis()));
 		note.setText(note.getText()+" v1");
 		Student updatedStudent = studentRepository.save(student);
 		entityManager.flush();
-		Optional<Note> optionalNote = updatedStudent.getNoteList().stream()
+		Optional<Note> optionalNote = updatedStudent.getNoteSet().stream()
 			.filter(n->n.getId().equals(note.getId()))
 			.findAny();
 		if (optionalNote.isPresent()) {
@@ -109,12 +120,12 @@ public class StudentRepositoryTests implements InitializingBean {
     public void testSaveDeleteANote() {
 		
 		Student student = studentRepository.getStudentById(1l);
-		Note note = student.getNoteList().get(0);
+		Note note = student.getNoteSet().iterator().next();
 		Long id = note.getId();
-		student.getNoteList().remove(note);
+		student.getNoteSet().remove(note);
 		Student updatedStudent = studentRepository.save(student);
 		entityManager.flush();
-		Optional<Note> optionalNote = updatedStudent.getNoteList().stream()
+		Optional<Note> optionalNote = updatedStudent.getNoteSet().stream()
 			.filter(n->n.getId().equals(id))
 			.findAny();
 		Assert.assertTrue(!optionalNote.isPresent());
@@ -128,10 +139,10 @@ public class StudentRepositoryTests implements InitializingBean {
 		Note note = new Note();
 		note.setTimestamp(new Timestamp(System.currentTimeMillis()));
 		note.setText("note - testSaveAddANote");
-		student.getNoteList().add(note);
+		student.getNoteSet().add(note);
 		Student updatedStudent = studentRepository.save(student);
 		entityManager.flush();
-		Optional<Note> optionalNote = updatedStudent.getNoteList().stream()
+		Optional<Note> optionalNote = updatedStudent.getNoteSet().stream()
 			.filter(n->n.getTimestamp().equals(note.getTimestamp()) && n.getText().equals(note.getText()))
 			.findAny();
 		Assert.assertTrue(optionalNote.isPresent());
@@ -141,6 +152,9 @@ public class StudentRepositoryTests implements InitializingBean {
 	@DirtiesContext
     public void testDelete() {
 		
+		Student student = studentRepository.getStudentById(3l);
+		SchoolYear schoolYear = schoolYearRepository.findOne(1l);
+		student.removeSchoolYear(schoolYear);
 		studentRepository.delete(3l);
 		entityManager.flush();
 		Student deletedStudent = studentRepository.getStudentById(3l);
@@ -161,14 +175,15 @@ public class StudentRepositoryTests implements InitializingBean {
 		Student student = new Student();
 		student.setFirstName("first name - testSaveNewStudentWithNoNotes");
 		student.setLastName("last name - testSaveNewStudentWithNoNotes");
-		student.setGrade(GradeEnum.OTHER);
+		//student.setGrade(GradeEnum.OTHER);
+		LOGGER.debug("student: {}", student);
 		Student newStudent = studentRepository.save(student);
 		entityManager.flush();
 		List<Student> allStudents = studentRepository.getAllStudents();
 		Optional<Student> optionalStudent = allStudents.stream()
 				.filter(s->s.getFirstName().equals(student.getFirstName()) && 
-						s.getLastName().equals(student.getLastName()) &&
-						s.getGrade().equals(student.getGrade()))
+						s.getLastName().equals(student.getLastName())/* &&
+						s.getGrade().equals(student.getGrade())*/)
 				.findAny();
 		Assert.assertTrue(newStudent.getId() != null && optionalStudent.isPresent());
 	}
@@ -229,65 +244,124 @@ public class StudentRepositoryTests implements InitializingBean {
 		Student student = new Student();
 		student.setFirstName("first name - testSaveNewStudentWithOneNote");
 		student.setLastName("last name - testSaveNewStudentWithOneNote");
-		student.setGrade(GradeEnum.THREE);
+		Grade grade = new Grade();
+		grade.setGradeEnum(GradeEnum.THREE);
+		grade.setStudent(student);
+		grade.setSchoolYear(schoolYearRepository.findOne(1l));
+		student.getGradeSet().add(grade);
 		Note note = new Note();
 		note.setTimestamp(new Timestamp(System.currentTimeMillis()));
 		note.setText("note - testSaveNewStudentWithOneNote");
-		student.getNoteList().add(note);
+		student.getNoteSet().add(note);
 		Student newStudent = studentRepository.save(student);
 		entityManager.flush();
 		List<Student> allStudents = studentRepository.getAllStudents();
 		Optional<Student> optionalStudent = allStudents.stream()
 				.filter(s->s.getFirstName().equals(student.getFirstName()) && 
-						s.getLastName().equals(student.getLastName()) &&
-						s.getGrade().equals(student.getGrade()))
+						s.getLastName().equals(student.getLastName())/* &&
+						s.getGrade().equals(student.getGrade())*/)
 				.findAny();
 		assertTrue(newStudent.getId() != null && optionalStudent.isPresent());
-		assertTrue(optionalStudent.get().getNoteList().size() == 1);
+		assertTrue(optionalStudent.get().getNoteSet().size() == 1);
 		assertTrue(
-			optionalStudent.get().getNoteList().get(0).getId() != null &&
-			optionalStudent.get().getNoteList().get(0).getTimestamp().equals(note.getTimestamp()) &&
-			optionalStudent.get().getNoteList().get(0).getText().equals(note.getText()));
+			optionalStudent.get().getNoteSet().iterator().next().getId() != null &&
+			optionalStudent.get().getNoteSet().iterator().next().getTimestamp().equals(note.getTimestamp()) &&
+			optionalStudent.get().getNoteSet().iterator().next().getText().equals(note.getText()));
 	}
 
 	@Test
-    public void testGetStudentById() {
+	@DirtiesContext
+	@Commit
+    public void testGetStudentById_TwoNotesInTheRightOrder_Success() {
 
 		Student student = new Student();
 		student.setFirstName("first name - testGetStudentById");
 		student.setLastName("last name - testGetStudentById");
-		student.setGrade(GradeEnum.TWO);
+		//student.setGrade(GradeEnum.TWO);
 		Note note1 = new Note();
 		note1.setTimestamp(new Timestamp(System.currentTimeMillis()));
 		note1.setText("note 1 - testGetStudentById");
-		student.getNoteList().add(note1);
+		student.getNoteSet().add(note1);
 		Note note2 = new Note();
 		note2.setTimestamp(new Timestamp(note1.getTimestamp().getTime() - 60000)); // the second note 1 minute earlier
 		note2.setText("note 2 - testGetStudentById");
-		student.getNoteList().add(note2);
+		student.getNoteSet().add(note2);
 		Long newId = studentRepository.save(student).getId();
 		entityManager.flush();
 		entityManager.clear();
 		Student newStudent = studentRepository.getStudentById(newId);
-		Note newNote2 = newStudent.getNoteList().get(0);
-		Note newNote1 = newStudent.getNoteList().get(1);
+		assertThat(newStudent.getNoteSet(), hasSize(2));
+		Iterator<Note> iterator = newStudent.getNoteSet().iterator();
+		Note newNote2 = iterator.next();
+		Note newNote1 = iterator.next();
 		// Test that the note with the earlier timestamp is the first note retrieved ie the order by timestamp works
-		assertTrue(
-			newNote2.getId() != null &&
-			newNote2.getTimestamp().equals(note2.getTimestamp()) &&
-			newNote2.getText().equals(note2.getText()) &&
-			newNote1.getId() != null &&
-			newNote1.getTimestamp().equals(note1.getTimestamp()) &&
-			newNote1.getText().equals(note1.getText()));
+		assertThat(newNote2.getId(), notNullValue());
+		assertThat(newNote2.getTimestamp(), equalTo(note2.getTimestamp()));
+		assertThat(newNote2.getText(), equalTo(note2.getText()));
+		assertThat(newNote1.getId(), notNullValue());
+		assertThat(newNote1.getTimestamp(), equalTo(note1.getTimestamp()));
+		assertThat(newNote1.getText(), equalTo(note1.getText()));
 	}
 	
+	@Test
+    public void testGetStudentById_AddGrade_Success() {
+
+		Student student = new Student();
+		student.setFirstName("first name - testGetStudentById_AddGrade_Success");
+		student.setLastName("last name - testGetStudentById_AddGrade_Success");
+		Grade grade = new Grade();
+		student.setGradeSet(new HashSet<>(Arrays.asList(grade)));
+		SchoolYear schoolYear = schoolYearRepository.findOne(1l);
+		grade.setSchoolYear(schoolYear);
+		grade.setStudent(student);
+		//grade.setGrade2(GradeEnum.SEVEN);
+		Long newId = studentRepository.save(student).getId();
+		entityManager.flush();
+		entityManager.clear();
+		//Student newStudent = studentRepository.getStudentById(newId);
+		Student newStudent = studentRepository.findOne(newId);
+		assertThat(newStudent.getGradeSet(), hasSize(1));
+		Grade newGrade = newStudent.getGradeSet().iterator().next();
+		//assertThat(newGrade.getGrade2(), equalTo(GradeEnum.SEVEN));
+		assertThat(newGrade.getSchoolYear(), equalTo(schoolYear));
+	}
+
+	@Test
+    public void testGetStudentById_AddGradeAndNote_Success() {
+
+		Student student = new Student();
+		student.setFirstName("first name - testGetStudentById_AddGradeAndNote_Success");
+		student.setLastName("last name - testGetStudentById_AddGradeAndNote_Success");
+		Grade grade = new Grade();
+		student.setGradeSet(new HashSet<>(Arrays.asList(grade)));
+		SchoolYear schoolYear = schoolYearRepository.findOne(1l);
+		grade.setSchoolYear(schoolYear);
+		grade.setStudent(student);
+		//grade.setGrade2(GradeEnum.SEVEN);
+		Note note1 = new Note();
+		note1.setTimestamp(new Timestamp(System.currentTimeMillis()));
+		note1.setText("note 1 - testGetStudentById_AddGradeAndNote_Success");
+		student.getNoteSet().add(note1);
+		Long newId = studentRepository.save(student).getId();
+		entityManager.flush();
+		entityManager.clear();
+		//Student newStudent = studentRepository.getStudentById(newId);
+		Student newStudent = studentRepository.findOne(newId);
+		assertThat(newStudent.getGradeSet(), hasSize(1));
+		Grade newGrade = newStudent.getGradeSet().iterator().next();
+		//assertThat(newGrade.getGrade2(), equalTo(GradeEnum.SEVEN));
+		assertThat(newGrade.getSchoolYear(), equalTo(schoolYear));
+		assertThat(newStudent.getNoteSet(), hasSize(1));
+		assertThat(newStudent.getNoteSet().iterator().next(), equalTo(note1));
+	}
+
 	// TODO test should limit to 2 and take the first student pick his/her last note and compare it
 	// to the second student last note. The time stamp of the first should be later than the second
 	@Test
 	public void testGetLatestActiveStudents() {
 		Set<Student> students = studentRepository.getLatestActiveStudents(1);
 		System.out.println(students.size());
-		System.out.println(new ArrayList<Student>(students).get(0).getNoteList().size());
+		System.out.println(new ArrayList<Student>(students).get(0).getNoteSet().size());
 		assertTrue(students.size() == 1);
 	}
 
@@ -301,7 +375,7 @@ public class StudentRepositoryTests implements InitializingBean {
 		Student s1 = new Student();
 		s1.setFirstName("testGetStudentsByTimestampRange s1 first name");
 		s1.setLastName("testGetStudentsByTimestampRange s1 last name");
-		s1.setGrade(GradeEnum.SEVEN);
+		//s1.setGrade(GradeEnum.SEVEN);
 		Note s1n1 = new Note();
 		s1n1.setText("s1n1 note 1 text");
 		s1n1.setTimestamp(Timestamp.valueOf(LocalDate.of(2018,1,1).atStartOfDay()));
@@ -309,7 +383,7 @@ public class StudentRepositoryTests implements InitializingBean {
 		s1n2.setText("s1n2 note 2 text");
 		s1n2.setTimestamp(Timestamp.valueOf(LocalDate.of(2018,1,2).atStartOfDay()));
 		LOGGER.debug("s1n2.getTimestamp(): {}", s1n2.getTimestamp());
-		s1.getNoteList().addAll(Arrays.asList(s1n1, s1n2));
+		s1.getNoteSet().addAll(Arrays.asList(s1n1, s1n2));
 		studentRepository.save(s1);
 		entityManager.flush();
 
@@ -340,23 +414,23 @@ public class StudentRepositoryTests implements InitializingBean {
 		Student s2 = new Student();
 		s2.setFirstName("testGetStudentsByTimestampRange s2 first name");
 		s2.setLastName("testGetStudentsByTimestampRange s2 last name");
-		s2.setGrade(GradeEnum.EIGHT);
+		//s2.setGrade(GradeEnum.EIGHT);
 		Note s2n1 = new Note();
 		s2n1.setText("s2n1 note 1 text");
 		s2n1.setTimestamp(Timestamp.valueOf(LocalDate.of(2018,1,1).atStartOfDay()));
 		s2n1.setTimestamp(Timestamp.valueOf(LocalDateTime.of(2018, 2, 1, 10, 7)));
-		s2.getNoteList().add(s2n1);
+		s2.getNoteSet().add(s2n1);
 		studentRepository.save(s2);
 
 		Student s3 = new Student();
 		s3.setFirstName("testGetStudentsByTimestampRange s3 first name");
 		s3.setLastName("testGetStudentsByTimestampRange s3 last name");
-		s3.setGrade(GradeEnum.OTHER);
+		//s3.setGrade(GradeEnum.OTHER);
 		Note s3n1 = new Note();
 		s3n1.setText("s3n1 note 1 text");
 		s3n1.setTimestamp(Timestamp.valueOf(LocalDate.of(2018,1,1).atStartOfDay()));
 		s3n1.setTimestamp(Timestamp.valueOf(LocalDateTime.of(2018, 2, 2, 10, 7)));
-		s3.getNoteList().add(s3n1);
+		s3.getNoteSet().add(s3n1);
 		studentRepository.save(s3);
 		
 		entityManager.flush();
@@ -381,7 +455,7 @@ public class StudentRepositoryTests implements InitializingBean {
 	}
 	
 	private void checkStudentHasAtLeastOneTimestampBetween (Student student, Timestamp fromTimestamp, Timestamp toTimestamp) {
-		assertTrue(student.getNoteList().stream().anyMatch(
+		assertTrue(student.getNoteSet().stream().anyMatch(
 				note -> checkNotesTimestampIsBetween(note, fromTimestamp, toTimestamp)
 		));
 	}
@@ -403,23 +477,23 @@ public class StudentRepositoryTests implements InitializingBean {
         	if (s.getId().equals(SeedDBData.s1.getId())) {
         		assertEquals(SeedDBData.s1.getFirstName(), s.getFirstName());
         		assertEquals(SeedDBData.s1.getLastName(), s.getLastName());
-        		assertEquals(SeedDBData.s1.getGrade(), s.getGrade());
+        		//assertEquals(SeedDBData.s1.getGrade(), s.getGrade());
         	} else if (s.getId().equals(SeedDBData.s2.getId())) {
 	        		assertEquals(SeedDBData.s2.getFirstName(), s.getFirstName());
 	        		assertEquals(SeedDBData.s2.getLastName(), s.getLastName());
-	        		assertEquals(SeedDBData.s2.getGrade(), s.getGrade());
+	        		//assertEquals(SeedDBData.s2.getGrade(), s.getGrade());
             	} else if (s.getId().equals(SeedDBData.s3.getId())) {
             		assertEquals(SeedDBData.s3.getFirstName(), s.getFirstName());
             		assertEquals(SeedDBData.s3.getLastName(), s.getLastName());
-            		assertEquals(SeedDBData.s3.getGrade(), s.getGrade());
+            		//assertEquals(SeedDBData.s3.getGrade(), s.getGrade());
                 	}
         }		
 	}
 	
 	@Test
 	public void testNoteEquality() {
-		Note note1a = studentRepository.getStudentById(1l).getNoteList().get(0);
-		Note note1b = studentRepository.getStudentById(1l).getNoteList().get(0);
+		Note note1a = studentRepository.getStudentById(1l).getNoteSet().iterator().next();
+		Note note1b = studentRepository.getStudentById(1l).getNoteSet().iterator().next();
 		System.out.println(note1a);
 		System.out.println(note1b);
 		entityManager.detach(note1a);
@@ -430,56 +504,59 @@ public class StudentRepositoryTests implements InitializingBean {
 	@Test
 	public void testFindOne() {
 		Student student = studentRepository.findOne(1l);
-		student.getSchoolYearSet().size();
+		//student.getSchoolYearSet().size();
 	}
 	
 	@Test
+	public void testGetStudentById() {
+		Student student = studentRepository.getStudentById(1l);
+	}
+	
+	@Test
+	public void testGetStudentByIdWithGradeList() {
+		Student student = studentRepository.getStudentByIdWithGradeList(1l);
+	}
+	
+	@Test
+	public void testGetStudentByIdWithNodeListAndGradeList() {
+		Student student = studentRepository.getStudentByIdWithNodeListAndGradeList(1l);
+	}
+
+	@Test
 	@DirtiesContext
+	//@Commit
 	public void testAddSchoolYearToStudent() {
 		Student student = studentRepository.findOne(3l);
-		SchoolYear schoolYear = schoolYearRepository.findOne(1l);
+		SchoolYear schoolYear = schoolYearRepository.findOne(2l);
 		LOGGER.debug("schoolYear.getStudentSet().size(): {}", schoolYear.getStudentSet().size());
 		Long schoolYearVersion = new Long(schoolYear.getVersion());
 		student.addSchoolYear(schoolYear);
-		LOGGER.debug("student: {}", student);
 		studentRepository.save(student);
 		entityManager.flush();
-		assertEquals(1, student.getSchoolYearSet().size());
-		assertEquals(3, schoolYear.getStudentSet().size());
-		assertEquals(new Long(schoolYearVersion+1l), schoolYear.getVersion());
+		assertThat(student.getSchoolYearSet(), hasSize(2));
+		assertThat(schoolYear.getStudentSet(), hasSize(1));
+		assertThat(schoolYear.getVersion(), equalTo(schoolYearVersion+1l));
 	}
 
 	@Test
 	@DirtiesContext
 	public void testRemoveSchoolYearFromStudent() {
 		Student student = studentRepository.findOne(1l);
-		SchoolYear schoolYear = schoolYearRepository.findOne(1l);
-		student.addSchoolYear(schoolYear);
-		studentRepository.save(student);
-		entityManager.flush();
-		//entityManager.detach(student);
-		//entityManager.detach(schoolYear);
-		
-		student = studentRepository.findOne(1l);
-		assertEquals(1, student.getSchoolYearSet().size());
-		assertEquals("2016-2017", student.getSchoolYearSet().iterator().next().getSchoolYear());
-		
+		assertThat(student.getSchoolYearSet(), hasSize(1));
+		assertThat(student.getSchoolYearSet().iterator().next().getSchoolYear(), equalTo("2016-2017"));
 		student.removeSchoolYear(student.getSchoolYearSet().iterator().next());
-		
 		studentRepository.save(student);
 		entityManager.flush();
-		assertEquals(0, student.getSchoolYearSet().size());
-//		assertEquals(1, student.getSchoolYearSet().size());
-//		assertEquals(1, schoolYear.getStudentSet().size());
-//		assertEquals(new Long(schoolYearVersion+1l), schoolYear.getVersion());
+		assertThat(student.getSchoolYearSet(), hasSize(0));
 	}
 
 	@Test
 	@DirtiesContext
+	//@Commit
 	public void testAddTwoSchoolYearsToStudent() {
 		Student student = studentRepository.findOne(3l);
 		SchoolYear schoolYear1 = schoolYearRepository.findOne(1l);
-		
+		assertThat(schoolYear1.getStudentSet(), hasSize(3));
 		SchoolYear schoolYear2 = new SchoolYear();
 		schoolYear2.setSchoolYear("2018-2019");
 		schoolYear2.setStartDate(Date.valueOf(LocalDate.of(2018, 9, 1)));
@@ -493,41 +570,33 @@ public class StudentRepositoryTests implements InitializingBean {
 		LOGGER.debug("student: {}", student);
 		studentRepository.save(student);
 		entityManager.flush();
-		assertEquals(2, student.getSchoolYearSet().size());
-		assertEquals(3, schoolYear1.getStudentSet().size());
-		assertEquals(1, schoolYear2.getStudentSet().size());
-		assertEquals(new Long(schoolYear1Version+1l), schoolYear1.getVersion());
-		assertEquals(new Long(schoolYear2Version+1l), schoolYear2.getVersion());
+		assertThat(student.getSchoolYearSet(), hasSize(2));
+		assertThat(schoolYear1.getStudentSet(), hasSize(3));
+		assertThat(schoolYear2.getStudentSet(), hasSize(1));
+		assertThat(schoolYear1.getVersion(), equalTo(schoolYear1Version));
+		assertThat(schoolYear2.getVersion(), equalTo(schoolYear2Version+1l));
 	}
 
 
 	@Test
 	@DirtiesContext
+	@Commit
 	public void testRemoveOneSchoolYearFromStudentWithTwoSchoolYears() {
 		Student student = studentRepository.findOne(3l);
-		SchoolYear schoolYear1 = schoolYearRepository.findOne(1l);
+		SchoolYear secondSchoolYear = schoolYearRepository.findOne(2l);
 		
-		SchoolYear schoolYear2 = new SchoolYear();
-		schoolYear2.setSchoolYear("2018-2019");
-		schoolYear2.setStartDate(Date.valueOf(LocalDate.of(2018, 9, 1)));
-		schoolYear2.setEndDate(Date.valueOf(LocalDate.of(2019, 6, 30)));
-		schoolYearRepository.save(schoolYear2);
-		entityManager.flush();
-		Long schoolYear1Version = new Long(schoolYear1.getVersion());
-		Long schoolYear2Version = new Long(schoolYear2.getVersion());
-		student.addSchoolYear(schoolYear1);
-		student.addSchoolYear(schoolYear2);
-		LOGGER.debug("student: {}", student);
+		Long schoolYear1Version = new Long(secondSchoolYear.getVersion());
+		student.addSchoolYear(secondSchoolYear);
 		studentRepository.save(student);
 		entityManager.flush();
 		
-		student.removeSchoolYear(schoolYear1);
+		student.removeSchoolYear(secondSchoolYear);
 		studentRepository.save(student);
 		entityManager.flush();
-		assertEquals(1, student.getSchoolYearSet().size());
-		assertEquals(2, schoolYear1.getStudentSet().size());
-		assertEquals(new Long(schoolYear1Version+2l), schoolYear1.getVersion());
-		assertEquals(new Long(schoolYear2Version+1l), schoolYear2.getVersion());
+		assertThat(student.getSchoolYearSet(), hasSize(1));
+		assertThat(secondSchoolYear.getStudentSet(), hasSize(0));
+		assertEquals(new Long(schoolYear1Version+2l), secondSchoolYear.getVersion());
+//		assertEquals(new Long(schoolYear2Version+1l), schoolYear2.getVersion());
 	}
 
 	@Test
@@ -571,12 +640,89 @@ public class StudentRepositoryTests implements InitializingBean {
 	@Test
 	public void testGetStudentDtosInSchoolYear() {
 		List<StudentDto> students = studentRepository.getStudentDtosInSchoolYear(1l);
-		assertThat(students, hasSize(2));
+		assertThat(students, hasSize(3));
 	}
 	@Test
 	public void testGetStudentDtosNotInSchoolYear() {
-		List<StudentDto> students = studentRepository.getStudentDtosNotInSchoolYear(1l);
-		assertThat(students, hasSize(1));
+		List<StudentDto> students = studentRepository.getStudentDtosNotInSchoolYear(2l);
+		assertThat(students, hasSize(3));
 	}
 
+	@Test
+	@Commit
+	public void testChangeGrade_Success() {
+		//Student student = studentRepository.findOne(1l);
+		Student student = studentRepository.getStudentByIdWithGradeList(1l);
+		Grade grade = student.getGradeSet().iterator().next();
+		assertThat(grade.getGradeEnum(), equalTo(GradeEnum.JK));
+		assertThat(student.getGradeSet(), hasSize(1));
+		grade.setGradeEnum(GradeEnum.EIGHT);
+		assertThat(grade.getVersion(), equalTo(0l));
+		entityManager.flush();
+		assertThat(grade.getVersion(), equalTo(1l));
+	}
+
+	@Test
+	@Commit
+	public void testChangeGrade_UsingStudentFromUsernameTable_Success() {
+		//Student student = studentRepository.findOne(1l);
+		//Student student = studentRepository.getStudentByIdWithGradeList(1l);
+		List<StudentUiDto> students = studentRepository.getStudentsByUsername("TestUser");
+		assertThat(students, hasSize(3));
+		Map<Long, StudentUiDto> idToStudentUiDtoMap = KdcCollectionUtils.toMapGeneric(students, "id", Long.class);
+		StudentUiDto studentUiDto = idToStudentUiDtoMap.get(1l);
+		Student student = StudentTransformer.uiDtoToEntity(studentUiDto);
+		Grade grade = student.getGradeSet().iterator().next();
+		assertThat(grade.getGradeEnum(), equalTo(GradeEnum.JK));
+		assertThat(student.getGradeSet(), hasSize(1));
+		grade.setGradeEnum(GradeEnum.EIGHT);
+		assertThat(grade.getVersion(), equalTo(0l));
+		Student savedStudent = studentRepository.save(student);
+		entityManager.flush();
+		assertThat(savedStudent.getGradeSet().iterator().next().getVersion(), equalTo(1l));
+	}
+
+	@Test
+	public void testAddGrade_Success() {
+		//Student student = studentRepository.findOne(1l);
+		Student student = studentRepository.getStudentByIdWithGradeList(1l);
+		Grade grade = student.getGradeSet().iterator().next();
+		assertThat(student.getGradeSet(), hasSize(1));
+		assertThat(grade.getGradeEnum(), equalTo(GradeEnum.JK));
+		Grade newGrade = new Grade();
+		SchoolYear newSchoolYear = schoolYearRepository.findOne(2l);
+		newGrade.setStudent(student);
+		newGrade.setSchoolYear(newSchoolYear);
+		newGrade.setGradeEnum(GradeEnum.SK);
+		student.getGradeSet().add(newGrade);
+		entityManager.flush();
+		//assertThat(grade.getVersion(), equalTo(1l));
+	}
+	
+	@Test
+	//@Commit
+	public void testAddGradeUsingASuppliedEnityObject_Success() {
+		Student student = studentRepository.getStudentByIdWithGradeList(1l);
+		Grade grade = student.getGradeSet().iterator().next();
+		assertThat(student.getGradeSet(), hasSize(1));
+		assertThat(grade.getGradeEnum(), equalTo(GradeEnum.JK));
+		Grade newGrade = new Grade();
+		SchoolYear existingSchoolYear = new SchoolYear(); //SuppliedEnityObject
+		existingSchoolYear.setId(2l);
+		existingSchoolYear.setVersion(0l); // version has to be non null otherwise Hibernate thinks object is detached
+		newGrade.setStudent(student);
+		newGrade.setSchoolYear(existingSchoolYear);
+		newGrade.setGradeEnum(GradeEnum.SK);
+		student.getGradeSet().add(newGrade);
+		entityManager.flush();
+		entityManager.clear();
+		student = studentRepository.getStudentByIdWithGradeList(1l);
+		assertThat(student.getGradeSet(), hasSize(2));
+	}
+
+	@Test
+	public void testGetStudentsByUsername( ) {
+		List<StudentUiDto> students = studentRepository.getStudentsByUsername("TestUser");
+		assertThat(students, hasSize(3));
+	}
 }

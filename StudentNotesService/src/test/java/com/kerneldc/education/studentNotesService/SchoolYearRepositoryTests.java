@@ -152,10 +152,10 @@ public class SchoolYearRepositoryTests implements InitializingBean {
 		assertEquals(2, schoolYear.getStudentSet().size());
 		for (Student student: schoolYear.getStudentSet()) {
 			if (student.getId().equals(1l)) {
-				assertEquals(3, student.getNoteList().size());
+				assertEquals(3, student.getNoteSet().size());
 			}
 			if (student.getId().equals(2l)) {
-				assertEquals(0, student.getNoteList().size());
+				assertEquals(0, student.getNoteSet().size());
 			}
 		}
 	}
@@ -169,7 +169,7 @@ public class SchoolYearRepositoryTests implements InitializingBean {
 		assertEquals(1, schoolYear.getStudentSet().size());
 		for (Student student: schoolYear.getStudentSet()) {
 			if (student.getId().equals(1l)) {
-				assertEquals(3, student.getNoteList().size());
+				assertEquals(3, student.getNoteSet().size());
 			}
 //			if (student.getId().equals(2l)) {
 //				assertEquals(0, student.getNoteList().size());

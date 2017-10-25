@@ -30,7 +30,9 @@ import org.springframework.data.jpa.repository.JpaContext;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.domain.Student_;
+import com.kerneldc.education.studentNotesService.domain.resultTransformer.StudentUiDtoResultTtransformer;
 import com.kerneldc.education.studentNotesService.dto.StudentDto;
+import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
 
 
 public class StudentRepositoryImpl implements StudentRepositoryCustom, InitializingBean {
@@ -51,13 +53,28 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 	 */
 	@Override
 	public Student getStudentById(Long id) {
-		EntityGraph<?> graph = entityManager.getEntityGraph("Student.noteList");
+		EntityGraph<?> graph = entityManager.getEntityGraph("Student.noteSet");
 		Map<String,Object> hints = new HashMap<>();
 //		hints.put("javax.persistence.fetachgraph", graph);
 		hints.put("javax.persistence.loadgraph", graph);
 		return entityManager.find(Student.class, id, hints);
 	}
 	
+	@Override
+	public Student getStudentByIdWithGradeList(Long id) {
+		EntityGraph<?> graph = entityManager.getEntityGraph("Student.gradeSet");
+		Map<String,Object> hints = new HashMap<>();
+		hints.put("javax.persistence.loadgraph", graph);
+		return entityManager.find(Student.class, id, hints);
+	}
+	
+	@Override
+	public Student getStudentByIdWithNodeListAndGradeList(Long id) {
+		EntityGraph<?> graph = entityManager.getEntityGraph("Student.noteSetAndGradeSet");
+		Map<String,Object> hints = new HashMap<>();
+		hints.put("javax.persistence.loadgraph", graph);
+		return entityManager.find(Student.class, id, hints);
+	}
 	private List<Student> getStudents(List<Long> studentIds) {
     	CriteriaBuilder builder = entityManager.getCriteriaBuilder();
     	CriteriaQuery<Student> criteriaQuery = builder.createQuery(Student.class);
@@ -70,7 +87,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
     	
     	TypedQuery<Student> typedQuery = entityManager.createQuery(criteriaQuery);
 //    	typedQuery.setHint("javax.persistence.fetchgraph", entityManager.getEntityGraph("Student.noteList"));
-    	typedQuery.setHint("javax.persistence.loadgraph", entityManager.getEntityGraph("Student.noteList"));
+    	typedQuery.setHint("javax.persistence.loadgraph", entityManager.getEntityGraph("Student.noteSetAndGradeSet"));
     	List<Student> students = typedQuery.getResultList();
 		
 		return students;		
@@ -91,7 +108,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 			"	s.id student_id,\r\n" + 
 			"	s.first_name,\r\n" + 
 			"	s.last_name,\r\n" + 
-			"	s.grade,\r\n" + 
+			"	/*s.grade,*/\r\n" + 
 			"	s.version student_version,\r\n" + 
 			"	n.id note_id,\r\n" + 
 			"	n.timestamp,\r\n" + 
@@ -115,9 +132,9 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 	         .addProperty("id", "student_id")
 	         .addProperty("firstName", "first_name")
 	         .addProperty("lastName", "last_name")
-	         .addProperty("grade", "grade")
+	         //.addProperty("grade", "grade")
 	         .addProperty("version", "student_version");
-        query.addFetch("n", "s", "noteList")
+        query.addFetch("n", "s", "noteSet")
 	         .addProperty("key", "student_id")
 	         .addProperty("element", "note_id")
 	         .addProperty("element.id", "note_id")
@@ -156,15 +173,24 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 	         .addProperty("id", "student_id")
 	         .addProperty("firstName", "first_name")
 	         .addProperty("lastName", "last_name")
-	         .addProperty("grade", "grade")
+	         //.addProperty("grade", "old_grade")
 	         .addProperty("version", "student_version");
-        query.addFetch("n", "s", "noteList")
+        query.addFetch("n", "s", "noteSet")
 	         .addProperty("key", "student_id")
 	         .addProperty("element", "note_id")
 	         .addProperty("element.id", "note_id")
 	         .addProperty("element.timestamp", "timestamp")
 	         .addProperty("element.text", "text")
 	         .addProperty("element.version", "note_version");
+        query.addFetch("g", "s", "gradeSet")
+	        .addProperty("key", "student_id")
+	        .addProperty("element", "grade_id")
+	        .addProperty("element.id", "grade_id")
+	        .addProperty("element.student", "grade_student_id")
+	        .addProperty("element.schoolYear", "grade_school_year_id")
+	        .addProperty("element.grade", "grade")
+	        .addProperty("element.version", "grade_version");
+        
         query.setParameter("username", username);
         query.setParameter("limit", limit);
         
@@ -185,7 +211,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 			"	s.id student_id, \n" + 
 			"	s.first_name, \n" + 
 			"	s.last_name, \n" + 
-			"	s.grade, \n" + 
+			"	/*s.grade,*/ \n" + 
 			"	s.version student_version, \n" + 
 			"	n.id note_id, \n" + 
 			"	n.timestamp, \n" + 
@@ -200,9 +226,9 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 	        .addProperty("id", "student_id")
 	        .addProperty("firstName", "first_name")
 	        .addProperty("lastName", "last_name")
-	        .addProperty("grade", "grade")
+	        //.addProperty("grade", "grade")
 	        .addProperty("version", "student_version");
-		query.addFetch("n", "s", "noteList")
+		query.addFetch("n", "s", "noteSet")
 	        .addProperty("key", "student_id")
 	        .addProperty("element", "note_id")
 	        .addProperty("element.id", "note_id")
@@ -244,15 +270,23 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 				.addProperty("element.id", "student_id")
 				.addProperty("element.firstName", "first_name")
 				.addProperty("element.lastName", "last_name")
-				.addProperty("element.grade", "grade")
+				//.addProperty("element.grade", "grade")
 				.addProperty("element.version", "student_version");
-	        query.addFetch("n", "s", "noteList")
+	        query.addFetch("n", "s", "noteSet")
 				.addProperty("key", "student_id")
 				.addProperty("element", "note_id")
 				.addProperty("element.id", "note_id")
 				.addProperty("element.timestamp", "timestamp")
 				.addProperty("element.text", "text")
 				.addProperty("element.version", "note_version");
+	        query.addFetch("g", "s", "gradeSet")
+		        .addProperty("key", "student_id")
+		        .addProperty("element", "grade_id")
+		        .addProperty("element.id", "grade_id")
+		        .addProperty("element.student", "grade_student_id")
+		        .addProperty("element.schoolYear", "grade_school_year_id")
+		        .addProperty("element.grade", "grade")
+		        .addProperty("element.version", "grade_version");
 	        query.setParameter("username", username);
 	 		@SuppressWarnings("unchecked")
 			List<Object[]> result = query.list();
@@ -262,8 +296,6 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 	 		LinkedHashSet<SchoolYear> schoolYears = result.stream()
 	 				.map(o->(SchoolYear)o[0])
 	 				.collect(Collectors.toCollection(LinkedHashSet::new));
-	 		LOGGER.debug("schoolYears.size(): {}", schoolYears.size());
-			LOGGER.debug("schoolYears: {}", schoolYears);
 	 		return schoolYears.iterator().next();
 	}
 
@@ -273,7 +305,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 	public List<StudentDto> getStudentDtosInSchoolYear(Long schoolYearId) {
 		Session session = entityManager.unwrap(Session.class);
 		return session
-				.createSQLQuery("select s.id, s.first_name as firstName, s.last_name as lastName, s.grade, s.version\n"
+				.createSQLQuery("select s.id, s.first_name as firstName, s.last_name as lastName, /*s.grade,*/ s.version\n"
 						+ "  from student s\n" + " where exists (select 1\n"
 						+ "                 from student_school_year ssy\n"
 						+ "                where ssy.student_id = s.id and ssy.school_year_id = :school_year_id)\n"
@@ -289,7 +321,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 	public List<StudentDto> getStudentDtosNotInSchoolYear(Long schoolYearId) {
 		Session session = entityManager.unwrap(Session.class);
 		return session
-				.createSQLQuery("select s.id, s.first_name as firstName, s.last_name as lastName, s.grade, s.version\n"
+				.createSQLQuery("select s.id, s.first_name as firstName, s.last_name as lastName, /*s.grade,*/ s.version\n"
 						+ "  from student s\n" + " where not exists (select 1\n"
 						+ "                 from student_school_year ssy\n"
 						+ "                where ssy.student_id = s.id and ssy.school_year_id = :school_year_id)\n"
@@ -297,5 +329,41 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 				.addScalar("id", StandardBasicTypes.LONG).addScalar("firstName").addScalar("lastName")
 				.addScalar("version", StandardBasicTypes.LONG).setParameter("school_year_id", schoolYearId)
 				.setResultTransformer(new AliasToBeanResultTransformer(StudentDto.class)).list();
+	}
+	
+	@Override
+	@Transactional
+	public List<StudentUiDto> getStudentsByUsername(String username) {
+		Session session = entityManager.unwrap(Session.class);
+		SQLQuery query = session.createSQLQuery(
+				"select * "
+				+ "from STUDENT_BY_USERNAME "
+				+ "where username = :username "
+				+ "order by first_name, last_name, timestamp"
+		);
+		query.setParameter("username", username);
+		query.addScalar("username", StandardBasicTypes.STRING)
+				.addScalar("student_id", StandardBasicTypes.LONG)
+				.addScalar("first_name", StandardBasicTypes.STRING)
+				.addScalar("last_name", StandardBasicTypes.STRING)
+				.addScalar("grade_id", StandardBasicTypes.LONG)
+				.addScalar("grade", StandardBasicTypes.STRING)
+				.addScalar("grade_version", StandardBasicTypes.LONG)
+				.addScalar("note_id", StandardBasicTypes.LONG)
+				.addScalar("timestamp", StandardBasicTypes.TIMESTAMP)
+				.addScalar("text", StandardBasicTypes.STRING)
+				.addScalar("note_version", StandardBasicTypes.LONG)
+				.addScalar("school_year_id", StandardBasicTypes.LONG)
+				.addScalar("school_year", StandardBasicTypes.STRING)
+				.addScalar("start_date", StandardBasicTypes.DATE)
+				.addScalar("end_date", StandardBasicTypes.DATE)
+				.addScalar("school_year_version", StandardBasicTypes.LONG)
+				.addScalar("student_version", StandardBasicTypes.LONG);
+		query.setResultTransformer(new StudentUiDtoResultTtransformer());
+		@SuppressWarnings("unchecked")
+		List<StudentUiDto> result = query.list();
+ 		LOGGER.debug("result.size(): {}", result.size());
+		LOGGER.debug("result: {}", result);
+		return result; //squery.list();
 	}
 }

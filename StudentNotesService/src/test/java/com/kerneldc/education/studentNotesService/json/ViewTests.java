@@ -77,11 +77,10 @@ public class ViewTests {
 		s.setId(1l);
 		s.setFirstName("fn");
 		s.setLastName("ln");
-		s.setGrade(GradeEnum.EIGHT);
 		Note n1 = new Note();
 		n1.setId(2l);
 		n1.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-		s.setNoteList(Arrays.asList(n1));
+		s.setNoteSet(new HashSet<>(Arrays.asList(n1)));
 		
 		SchoolYear sy = new SchoolYear();
 		sy.setId(3l);

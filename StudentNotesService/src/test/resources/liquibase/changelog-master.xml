@@ -27,4 +27,14 @@
   
   <include file="liquibase/changelog-user-preference-graph.xml"/>
   
+  <include file="liquibase/changelog-grade.xml"/>
+  <include file="liquibase/data/changelog-grade-data.xml"/>
+  
+  <include file="liquibase/changelog-student-grade.xml"/>
+  <include file="liquibase/data/changelog-student-grade-data.xml"/>
+  
+<!--   <include file="liquibase/changelog-school-year-version-null.xml"/> -->
+
+  <include file="liquibase/changelog-student-by-username.xml"/>
+  
 </databaseChangeLog>

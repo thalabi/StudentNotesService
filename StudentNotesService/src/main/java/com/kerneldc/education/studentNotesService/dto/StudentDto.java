@@ -1,10 +1,10 @@
 package com.kerneldc.education.studentNotesService.dto;
 
-import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kerneldc.education.studentNotesService.bean.GradeEnum;
+import com.kerneldc.education.studentNotesService.domain.Grade;
 
 public class StudentDto extends AbstractBaseDto {
 
@@ -13,10 +13,12 @@ public class StudentDto extends AbstractBaseDto {
 	private Long id;
 	private String firstName;
 	private String lastName;
-	private GradeEnum grade;
+//	private GradeEnum grade;
+	@JsonProperty(value="gradeSet")
+	private Set<GradeDto> gradeDtoSet;
 	//@XmlElement(name="noteList")
-	@JsonProperty(value="noteList")
-	private List<NoteDto> noteDtoList;
+	@JsonProperty(value="noteSet")
+	private Set<NoteDto> noteDtoSet;
 	//@XmlElement(name="schoolYearSet")
 	@JsonProperty(value="schoolYearSet")
 	private Set<SchoolYearDto> schoolYearDtoSet;
@@ -39,17 +41,23 @@ public class StudentDto extends AbstractBaseDto {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	public GradeEnum getGrade() {
-		return grade;
+//	public GradeEnum getGrade() {
+//		return grade;
+//	}
+//	public void setGrade(GradeEnum grade) {
+//		this.grade = grade;
+//	}
+	public Set<GradeDto> getGradeDtoSet() {
+		return gradeDtoSet;
 	}
-	public void setGrade(GradeEnum grade) {
-		this.grade = grade;
+	public void setGradeDtoSet(Set<GradeDto> gradeDtoSet) {
+		this.gradeDtoSet = gradeDtoSet;
 	}
-	public List<NoteDto> getNoteDtoList() {
-		return noteDtoList;
+	public Set<NoteDto> getNoteDtoSet() {
+		return noteDtoSet;
 	}
-	public void setNoteDtoList(List<NoteDto> noteDtoList) {
-		this.noteDtoList = noteDtoList;
+	public void setNoteDtoSet(Set<NoteDto> noteDtoSet) {
+		this.noteDtoSet = noteDtoSet;
 	}
 	public Set<SchoolYearDto> getSchoolYearDtoSet() {
 		return schoolYearDtoSet;

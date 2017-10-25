@@ -4,6 +4,7 @@ import org.springframework.beans.BeanUtils;
 
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.dto.NoteDto;
+import com.kerneldc.education.studentNotesService.dto.ui.NoteUiDto;
 
 public class NoteTransformer {
 
@@ -20,6 +21,12 @@ public class NoteTransformer {
 	public static Note dtoToEntity(NoteDto noteDto) {
 		Note note = new Note();
 		BeanUtils.copyProperties(noteDto, note);
+		return note;
+	}
+
+	public static Note uiDtoToEntity(NoteUiDto noteUiDto) {
+		Note note = new Note();
+		BeanUtils.copyProperties(noteUiDto, note);
 		return note;
 	}
 }

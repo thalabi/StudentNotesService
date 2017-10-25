@@ -41,13 +41,6 @@ public class Note extends AbstractPersistableEntity {
 	@JsonView(View.Default.class)
 	private String text;
 	
-//	@ManyToOne
-//	@JoinTable(name = "STUDENT_NOTE",
-//		joinColumns = @JoinColumn(name = "NOTE_ID"),
-//		inverseJoinColumns = @JoinColumn( name="STUDENT_ID"))
-//	private Student student;
-
-	
 	public Long getId() {
 		return id;
 	}
