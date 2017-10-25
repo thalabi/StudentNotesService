@@ -59,7 +59,7 @@ public class StudentUiDtoResultTtransformer implements ResultTransformer {
 	@Override
 	public List transformList(List collection) {
 		@SuppressWarnings("unchecked")
-		Map<Long, StudentUiDto> studentUiDtoMap = KdcCollectionUtils.toMapGeneric(collection, "id", Long.class);
+		Map<Long, StudentUiDto> studentUiDtoMap = KdcCollectionUtils.convertToMap(collection, "id", Long.class);
 		for (Object object : collection) {
 			StudentUiDto studentUiDto = (StudentUiDto)object;
 			if (!/* not */studentUiDtoMap.containsKey(studentUiDto.getId())) {

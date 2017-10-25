@@ -4,11 +4,11 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -153,12 +153,20 @@ public class StudentRepositoryTests implements InitializingBean {
     public void testDelete() {
 		
 		Student student = studentRepository.getStudentById(3l);
-		SchoolYear schoolYear = schoolYearRepository.findOne(1l);
-		student.removeSchoolYear(schoolYear);
+		//SchoolYear schoolYear = schoolYearRepository.findOne(1l);
+		List<Long> schoolYearIdList = KdcCollectionUtils.convertToList(student.getSchoolYearSet(), "id");
+		Set<SchoolYear> schoolYearSet = student.getSchoolYearSet();
+		for (SchoolYear schoolYear : schoolYearSet) {
+			student.removeSchoolYear(schoolYear);
+		}
 		studentRepository.delete(3l);
 		entityManager.flush();
 		Student deletedStudent = studentRepository.getStudentById(3l);
-		Assert.assertTrue(deletedStudent == null);
+		assertThat(deletedStudent, nullValue());
+		for (Long id : schoolYearIdList) {
+			SchoolYear schoolYear = schoolYearRepository.findOne(id);
+			assertThat(schoolYear, notNullValue());
+		}
 	}
 
 	@Test(expected=EmptyResultDataAccessException.class)
@@ -669,7 +677,7 @@ public class StudentRepositoryTests implements InitializingBean {
 		//Student student = studentRepository.getStudentByIdWithGradeList(1l);
 		List<StudentUiDto> students = studentRepository.getStudentsByUsername("TestUser");
 		assertThat(students, hasSize(3));
-		Map<Long, StudentUiDto> idToStudentUiDtoMap = KdcCollectionUtils.toMapGeneric(students, "id", Long.class);
+		Map<Long, StudentUiDto> idToStudentUiDtoMap = KdcCollectionUtils.convertToMap(students, "id", Long.class);
 		StudentUiDto studentUiDto = idToStudentUiDtoMap.get(1l);
 		Student student = StudentTransformer.uiDtoToEntity(studentUiDto);
 		Grade grade = student.getGradeSet().iterator().next();

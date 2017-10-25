@@ -272,11 +272,17 @@ public class StudentNotesResource {
 	@Path("/deleteStudentById/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
 	public String deleteStudentById(
 		@PathParam("id") Long id) {
 		
 		LOGGER.debug("begin ...");
     	try {
+    		Student student = studentRepository.getStudentById(id);
+    		Set<SchoolYear> schoolYearSet = student.getSchoolYearSet();
+    		for (SchoolYear schoolYear : schoolYearSet) {
+    			student.removeSchoolYear(schoolYear);
+    		}
 			studentRepository.delete(id);
 		} catch (RuntimeException e) {
 			LOGGER.error("Exception encountered: {}", e);

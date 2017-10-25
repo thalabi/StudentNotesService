@@ -6,6 +6,8 @@ import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.UserPreference;
 import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
 import com.kerneldc.education.studentNotesService.dto.UserPreferenceDto;
+import com.kerneldc.education.studentNotesService.dto.ui.SchoolYearUiDto;
+import com.kerneldc.education.studentNotesService.dto.ui.UserPreferenceUiDto;
 
 public class UserPreferenceTransformer {
 
@@ -20,6 +22,15 @@ public class UserPreferenceTransformer {
 		BeanUtils.copyProperties(userPreference.getSchoolYear(), schoolYearDto);
 		userPreferenceDto.setSchoolYearDto(schoolYearDto);
 		return userPreferenceDto;
+	}
+
+	public static UserPreferenceUiDto entityToUiDto(UserPreference userPreference) {
+		UserPreferenceUiDto userPreferenceUiDto = new UserPreferenceUiDto();
+		BeanUtils.copyProperties(userPreference, userPreferenceUiDto);
+		SchoolYearUiDto schoolYearUiDto = new SchoolYearUiDto();
+		BeanUtils.copyProperties(userPreference.getSchoolYear(), schoolYearUiDto);
+		userPreferenceUiDto.setSchoolYearUiDto(schoolYearUiDto);
+		return userPreferenceUiDto;
 	}
 
 	public static UserPreference dtoToEntity(UserPreferenceDto userPreferenceDto) {

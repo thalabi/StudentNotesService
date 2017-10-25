@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import com.kerneldc.education.studentNotesService.domain.UserPreference;
 import com.kerneldc.education.studentNotesService.dto.UserPreferenceDto;
 import com.kerneldc.education.studentNotesService.dto.transformer.UserPreferenceTransformer;
+import com.kerneldc.education.studentNotesService.dto.ui.UserPreferenceUiDto;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
 import com.kerneldc.education.studentNotesService.repository.UserPreferenceRepository;
 
@@ -57,6 +58,25 @@ public class UserPreferenceResource {
 		}
 		LOGGER.debug("end ...");
 		return userPreferenceDto;
+	}
+
+	@GET
+	@Path("/getUiDtoByUsername/{username}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public UserPreferenceUiDto getUiDtoByUsername(
+		@PathParam("username") String username) {
+		
+		LOGGER.debug("begin ...");
+		UserPreferenceUiDto userPreferenceUiDto = new UserPreferenceUiDto();
+		try {
+			UserPreference userPreference = userPreferenceRepository.findByUsername(username).get(0);
+			userPreferenceUiDto = UserPreferenceTransformer.entityToUiDto(userPreference);
+			LOGGER.debug("userPreferenceUiDto: {}", userPreferenceUiDto);
+		} catch (RuntimeException e) {
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+		LOGGER.debug("end ...");
+		return userPreferenceUiDto;
 	}
 
     @POST
