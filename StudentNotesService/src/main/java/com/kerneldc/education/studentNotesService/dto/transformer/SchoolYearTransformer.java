@@ -26,7 +26,7 @@ public class SchoolYearTransformer {
 			for (Student student : schoolYear.getStudentSet()) {
 				studentDtos.add(StudentTransformer.entityToDto(student));
 			}
-			schoolYearDto.setStudentDtoSet(studentDtos);
+			//schoolYearDto.setStudentDtoSet(studentDtos);
 		}
 		return schoolYearDto;
 	}

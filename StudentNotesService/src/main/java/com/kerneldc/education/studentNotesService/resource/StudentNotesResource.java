@@ -278,11 +278,48 @@ public class StudentNotesResource {
     }
 	
     @POST
-	@Path("/saveStudentUiDto2")
+	@Path("/addStudentDetails")
     @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    public StudentUiDto saveStudentUiDto2(
+    public StudentUiDto addStudentDetails(
+    	StudentUiDto studentUiDto) {
+
+    	LOGGER.debug("begin ...");
+		LOGGER.debug("studentUiDto: {}", studentUiDto);
+		Student student = new Student();
+		// firstName and lastName
+		student.setFirstName(studentUiDto.getFirstName());
+		student.setLastName(studentUiDto.getLastName());
+		// grade
+		SchoolYear schoolYear = schoolYearRepository.findOne(studentUiDto.getSchoolYearUiDto().getId());
+		student.addSchoolYear(schoolYear);
+		if (studentUiDto.getGradeUiDto().getGradeEnum() != null) {
+    		Grade grade = new Grade();
+    		grade.setStudent(student);
+    		grade.setSchoolYear(schoolYear);
+			grade.setGradeEnum(studentUiDto.getGradeUiDto().getGradeEnum());
+			student.getGradeSet().add(grade);
+		}
+    	LOGGER.debug("student: {}", student);
+    	Student savedSudent;
+    	try {
+    		savedSudent = studentRepository.save(student);
+		} catch (RuntimeException e) {
+			LOGGER.error("Exception encountered: {}", e);
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+    	StudentUiDto savedStudentUiDto =StudentTransformer.entityToUiDto(savedSudent);
+    	LOGGER.debug("end ...");
+    	return savedStudentUiDto;
+    }
+	
+    @POST
+	@Path("/updateStudentDetails")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public StudentUiDto updateStudentDetails(
     	StudentUiDto studentUiDto) {
 
     	LOGGER.debug("begin ...");
