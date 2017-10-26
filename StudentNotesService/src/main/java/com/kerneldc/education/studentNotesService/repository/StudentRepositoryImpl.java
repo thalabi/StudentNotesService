@@ -69,7 +69,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 	}
 	
 	@Override
-	public Student getStudentByIdWithNodeListAndGradeList(Long id) {
+	public Student getStudentByIdWithNoteListAndGradeList(Long id) {
 		EntityGraph<?> graph = entityManager.getEntityGraph("Student.noteSetAndGradeSet");
 		Map<String,Object> hints = new HashMap<>();
 		hints.put("javax.persistence.loadgraph", graph);

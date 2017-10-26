@@ -38,10 +38,10 @@ LEFT OUTER JOIN PUBLIC.NOTE N
     AND ((N.TIMESTAMP IS NULL) 
     OR ((SY.START_DATE <= N.TIMESTAMP) 
     AND (SY.END_DATE >= N.TIMESTAMP)))
-left outer join student_grade sg
-on sg.student_id = s.id
-left outer join grade g
-on g.id = sg.grade_id
+LEFT OUTER JOIN (PUBLIC.STUDENT_GRADE SG 
+JOIN PUBLIC.GRADE G 
+    ON G.ID = SG.GRADE_ID
+) ON SG.STUDENT_ID = S.ID AND G.SCHOOL_YEAR_ID = UP.school_year_id
 ]]>    
 		</createView>
     </changeSet>

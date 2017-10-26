@@ -527,7 +527,7 @@ public class StudentRepositoryTests implements InitializingBean {
 	
 	@Test
 	public void testGetStudentByIdWithNodeListAndGradeList() {
-		Student student = studentRepository.getStudentByIdWithNodeListAndGradeList(1l);
+		Student student = studentRepository.getStudentByIdWithNoteListAndGradeList(1l);
 	}
 
 	@Test
@@ -691,6 +691,7 @@ public class StudentRepositoryTests implements InitializingBean {
 	}
 
 	@Test
+	@Commit
 	public void testAddGrade_Success() {
 		//Student student = studentRepository.findOne(1l);
 		Student student = studentRepository.getStudentByIdWithGradeList(1l);

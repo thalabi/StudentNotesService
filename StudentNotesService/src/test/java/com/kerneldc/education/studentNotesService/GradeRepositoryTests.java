@@ -25,7 +25,7 @@ import com.kerneldc.education.studentNotesService.bean.GradeEnum;
 import com.kerneldc.education.studentNotesService.domain.Grade;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
-import com.kerneldc.education.studentNotesService.repository.Grade2Repository;
+import com.kerneldc.education.studentNotesService.repository.GradeRepository;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 
@@ -37,7 +37,7 @@ public class GradeRepositoryTests implements InitializingBean {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 	
 	@Autowired
-	private Grade2Repository gradeRepository;
+	private GradeRepository gradeRepository;
 	
 	@Autowired
 	private StudentRepository studentRepository;
@@ -154,4 +154,11 @@ public class GradeRepositoryTests implements InitializingBean {
 
 	}
 
+	@Test
+	public void testFindByStudentAndSchoolYear_Success() {
+		Student student = studentRepository.findOne(1l);
+		SchoolYear schoolYear = schoolYearRepository.findOne(1l);
+		Grade grade = gradeRepository.findByStudentAndSchoolYear(student, schoolYear).get(0);
+		assertThat(grade.getGradeEnum(), equalTo(GradeEnum.JK));
+	}
 }

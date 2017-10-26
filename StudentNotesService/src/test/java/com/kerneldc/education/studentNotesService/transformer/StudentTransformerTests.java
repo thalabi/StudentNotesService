@@ -11,7 +11,6 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
-import com.kerneldc.education.studentNotesService.bean.GradeEnum;
 import com.kerneldc.education.studentNotesService.domain.Grade;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
@@ -48,7 +47,7 @@ public class StudentTransformerTests {
 		assertThat(student.getLastName(), equalTo(studentUiDto.getLastName()));
 		assertThat(student.getGradeSet(), hasSize(1));
 		Grade grade = student.getGradeSet().iterator().next();
-		assertThat(grade.getGradeEnum(), equalTo(studentUiDto.getGradeEnum()));
+		//assertThat(grade.getGradeEnum(), equalTo(studentUiDto.getGradeEnum()));
 		assertThat(student.getSchoolYearSet(), hasSize(1));
 		SchoolYear schoolYear = student.getSchoolYearSet().iterator().next();
 		//assertThat(schoolYear.getSchoolYear(), equalTo(studentUiDto.getSchoolYear()));
@@ -57,7 +56,7 @@ public class StudentTransformerTests {
 		StudentUiDto studentUiDto = new StudentUiDto();
 		studentUiDto.setFirstName("first name");
 		studentUiDto.setLastName("last name");
-		studentUiDto.setGradeEnum(GradeEnum.JK);
+		//studentUiDto.setGradeEnum(GradeEnum.JK);
 		//studentUiDto.setSchoolYear("2016-2017");
 		return studentUiDto;
 	}

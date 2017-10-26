@@ -18,7 +18,7 @@ public interface StudentRepositoryCustom {
 	 */
 	Student getStudentById(Long id);
 	Student getStudentByIdWithGradeList(Long id);
-	Student getStudentByIdWithNodeListAndGradeList(Long id);
+	Student getStudentByIdWithNoteListAndGradeList(Long id);
 	/**
 	 * Uses the NamedEntityGraph defined on the entity to retrieve all Students
 	 * @return a list of all students with their noteSet ordered by lastName, firstName and timestamp

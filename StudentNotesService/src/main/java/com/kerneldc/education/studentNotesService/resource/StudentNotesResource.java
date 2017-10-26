@@ -50,6 +50,7 @@ import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
 import com.kerneldc.education.studentNotesService.exception.RowNotFoundException;
 import com.kerneldc.education.studentNotesService.exception.SnsException;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
+import com.kerneldc.education.studentNotesService.repository.GradeRepository;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 import com.kerneldc.education.studentNotesService.service.PdfStudentNotesReportService;
@@ -65,6 +66,9 @@ public class StudentNotesResource {
 
 	@Autowired
 	private SchoolYearRepository schoolYearRepository;
+
+	@Autowired
+	private GradeRepository gradeRepository;
 
 	@Autowired
 	private PdfStudentNotesReportService pdfStudentNotesReportService;
@@ -244,6 +248,11 @@ public class StudentNotesResource {
     	return savedStudentDto;
     }
 	
+    /**
+     * Not used
+     * @param studentUiDto
+     * @return
+     */
     @POST
 	@Path("/saveStudentUiDto")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -268,6 +277,56 @@ public class StudentNotesResource {
     	return savedStudentUiDto;
     }
 	
+    @POST
+	@Path("/saveStudentUiDto2")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public StudentUiDto saveStudentUiDto2(
+    	StudentUiDto studentUiDto) {
+
+    	LOGGER.debug("begin ...");
+		LOGGER.debug("studentUiDto: {}", studentUiDto);
+    	//Student student = StudentTransformer.uiDtoToEntity(studentUiDto);
+		Student student = studentRepository.getStudentByIdWithNoteListAndGradeList(studentUiDto.getId());
+		// firstName and lastName
+		student.setFirstName(studentUiDto.getFirstName());
+		student.setLastName(studentUiDto.getLastName());
+		// grade
+		SchoolYear schoolYear = schoolYearRepository.findOne(studentUiDto.getSchoolYearUiDto().getId());
+		if (studentUiDto.getGradeUiDto().getGradeEnum() != null) {
+			Grade grade = getStudentGradeForYear(student, schoolYear);
+			Set<Grade> gradeSet = student.getGradeSet();
+			LOGGER.debug("gradeSet: {}", gradeSet);
+			gradeSet.remove(grade);
+			grade.setGradeEnum(studentUiDto.getGradeUiDto().getGradeEnum());
+			gradeSet.add(grade);
+		}
+    	LOGGER.debug("student: {}", student);
+    	Student savedSudent;
+    	try {
+    		//schoolYearRepository.save(student.getSchoolYearSet().iterator().next());
+    		savedSudent = studentRepository.save(student);
+		} catch (RuntimeException e) {
+			LOGGER.error("Exception encountered: {}", e);
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+    	StudentUiDto savedStudentUiDto =StudentTransformer.entityToUiDto(savedSudent);
+    	LOGGER.debug("end ...");
+    	return savedStudentUiDto;
+    }
+	
+    private Grade getStudentGradeForYear(Student student, SchoolYear schoolYear) {
+    	List<Grade> gradeList = gradeRepository.findByStudentAndSchoolYear(student, schoolYear);
+    	if (CollectionUtils.isNotEmpty(gradeList)) {
+    		return gradeList.get(0);
+    	} else {
+    		Grade grade = new Grade();
+    		grade.setStudent(student);
+    		grade.setSchoolYear(schoolYear);
+    		return grade;
+    	}
+    }
 	@DELETE
 	@Path("/deleteStudentById/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
