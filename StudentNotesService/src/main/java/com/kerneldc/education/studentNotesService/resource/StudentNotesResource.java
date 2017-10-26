@@ -288,7 +288,12 @@ public class StudentNotesResource {
     	LOGGER.debug("begin ...");
 		LOGGER.debug("studentUiDto: {}", studentUiDto);
     	//Student student = StudentTransformer.uiDtoToEntity(studentUiDto);
-		Student student = studentRepository.getStudentByIdWithNoteListAndGradeList(studentUiDto.getId());
+		Student student;
+		if (studentUiDto.getId() != null) {
+			student = studentRepository.getStudentByIdWithNoteListAndGradeList(studentUiDto.getId());
+		} else {
+			student = new Student();
+		}
 		// firstName and lastName
 		student.setFirstName(studentUiDto.getFirstName());
 		student.setLastName(studentUiDto.getLastName());

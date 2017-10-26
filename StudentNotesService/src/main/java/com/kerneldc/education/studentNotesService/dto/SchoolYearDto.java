@@ -16,8 +16,8 @@ public class SchoolYearDto extends AbstractBaseDto {
 	
 	//@XmlElement(name="studentSet")
 	// The above is not recognized during unit testing
-	@JsonProperty(value="studentSet")
-	private Set<StudentDto> studentDtoSet;
+//	@JsonProperty(value="studentSet")
+//	private Set<StudentDto> studentDtoSet;
 	
 	public Long getId() {
 		return id;
@@ -43,10 +43,10 @@ public class SchoolYearDto extends AbstractBaseDto {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
-	public Set<StudentDto> getStudentDtoSet() {
-		return studentDtoSet;
-	}
-	public void setStudentDtoSet(Set<StudentDto> studentDtoSet) {
-		this.studentDtoSet = studentDtoSet;
-	}
+//	public Set<StudentDto> getStudentDtoSet() {
+//		return studentDtoSet;
+//	}
+//	public void setStudentDtoSet(Set<StudentDto> studentDtoSet) {
+//		this.studentDtoSet = studentDtoSet;
+//	}
 }
