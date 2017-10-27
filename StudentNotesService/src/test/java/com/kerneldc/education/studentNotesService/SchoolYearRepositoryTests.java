@@ -23,12 +23,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.repository.JpaContext;
+import org.springframework.test.annotation.Commit;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
+import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = StudentNotesApplication.class)
@@ -40,6 +42,9 @@ public class SchoolYearRepositoryTests implements InitializingBean {
 	@Autowired
 	private SchoolYearRepository schoolYearRepository;
 	
+	@Autowired
+	private StudentRepository StudentRepository;
+
 	@Autowired
 	private JpaContext jpaContext;
 	
@@ -175,5 +180,23 @@ public class SchoolYearRepositoryTests implements InitializingBean {
 //				assertEquals(0, student.getNoteList().size());
 //			}
 		}
+	}
+	
+	@Test
+	@Commit
+	public void testCascade () {
+		Student student = new Student();
+		student.setFirstName("first name cascade");
+		student.setLastName("last name cascade");
+		//StudentRepository.save(student);
+		SchoolYear schoolYear = new SchoolYear();
+		schoolYear.setSchoolYear("sy 1");
+		schoolYear.setStartDate(Date.valueOf(LocalDate.of(2017, 9, 1)));
+		schoolYear.setEndDate(Date.valueOf(LocalDate.of(2018, 6, 30)));
+		schoolYear.getStudentSet().add(student);
+		schoolYearRepository.save(schoolYear);
+		entityManager.flush();
+		//schoolYear.getStudentSet().remove(student);
+		schoolYearRepository.delete(schoolYear);
 	}
 }	

@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.Consumes;
@@ -26,12 +27,14 @@ import org.springframework.util.Assert;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.kerneldc.education.studentNotesService.bean.SchoolYearIdAndLimit;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
+import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
 import com.kerneldc.education.studentNotesService.dto.transformer.SchoolYearTransformer;
 import com.kerneldc.education.studentNotesService.exception.RowNotFoundException;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
+import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 
 @Component
 @Path("/StudentNotesService/schoolYear")
@@ -41,6 +44,9 @@ public class SchoolYearResource {
 
 	@Autowired
 	private SchoolYearRepository schoolYearRepository;
+
+	@Autowired
+	private StudentRepository studentRepository;
 
 	public SchoolYearResource() {
 		LOGGER.info("Initialized ...");
@@ -216,4 +222,37 @@ public class SchoolYearResource {
 		return "";
 	}
 	
+	@POST
+	@Path("/saveRemoveStudentsToFromSchoolYear")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Transactional
+	public String saveRemoveStudents(
+		SaveRemoveStudentsToFromSchoolYearVO saveRemoveStudentsToFromSchoolYearVO) {
+		
+		LOGGER.debug("begin ...");
+		SchoolYear schoolYear = schoolYearRepository.findOne(saveRemoveStudentsToFromSchoolYearVO.getSchoolYearId());
+		LOGGER.debug("saveRemoveStudentsToFromSchoolYearVO: {}", saveRemoveStudentsToFromSchoolYearVO);
+		List<Student> oldSchoolYearStudents = saveRemoveStudentsToFromSchoolYearVO.getOldSchoolYearStudents();
+		List<Student> newSchoolYearStudents = saveRemoveStudentsToFromSchoolYearVO.getNewSchoolYearStudents();
+		List<Student> copyOfNewSchoolYearStudents = new ArrayList<>(newSchoolYearStudents);
+		newSchoolYearStudents.removeAll(oldSchoolYearStudents);
+		oldSchoolYearStudents.removeAll(copyOfNewSchoolYearStudents);
+		LOGGER.debug("Students to be added: {}", newSchoolYearStudents);
+		LOGGER.debug("Students to be removed: {}", oldSchoolYearStudents);
+		for (Student student : newSchoolYearStudents) {
+			student = studentRepository.findOne(student.getId());
+			student.addSchoolYear(schoolYear);
+			//studentRepository.save(student);
+		}
+		for (Student student : oldSchoolYearStudents) {
+			student = studentRepository.findOne(student.getId());
+			student.removeSchoolYear(schoolYear);
+			//studentRepository.save(student);
+		}
+		schoolYearRepository.save(schoolYear);
+		LOGGER.debug("end ...");
+		return "";
+	}
+
+
 }
