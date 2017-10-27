@@ -71,7 +71,7 @@ public class Student extends AbstractPersistableEntity {
 	@JsonView(View.Default.class)
 	private Set<Grade> gradeSet = new LinkedHashSet<>();
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.ALL/*, orphanRemoval = true*/)
 	@OrderBy("timestamp")
 	@JoinTable(
 		name = "student_note",
@@ -130,16 +130,16 @@ public class Student extends AbstractPersistableEntity {
 		this.schoolYearSet = schoolYearSet;
 	}
 	
-	@Override
-    public boolean equals(final Object object) {
-
-        return EqualsBuilder.reflectionEquals(this, object, "id", "version", "noteSet", "schoolYearSet", "gradeSet");
-    }
-	@Override
-    public int hashCode() {
-
-        return HashCodeBuilder.reflectionHashCode(this, "id", "version", "noteSet", "schoolYearSet", "gradeSet");
-    }
+//	@Override
+//    public boolean equals(final Object object) {
+//
+//        return EqualsBuilder.reflectionEquals(this, object, "id", "version", "noteSet", "schoolYearSet", "gradeSet");
+//    }
+//	@Override
+//    public int hashCode() {
+//
+//        return HashCodeBuilder.reflectionHashCode(this, "id", "version", "noteSet", "schoolYearSet", "gradeSet");
+//    }
 
 	// utility methods
 	

@@ -90,15 +90,15 @@ public class SchoolYear extends AbstractPersistableEntity {
 		this.studentSet = studentSet;
 	}
 
-	@Override
-    public boolean equals(final Object object) {
-
-        return EqualsBuilder.reflectionEquals(this, object, "id", "version", "studentSet");
-    }
-	@Override
-    public int hashCode() {
-
-        return HashCodeBuilder.reflectionHashCode(this, "id", "version", "studentSet");
-    }
+//	@Override
+//    public boolean equals(final Object object) {
+//
+//        return EqualsBuilder.reflectionEquals(this, object, "id", "version", "studentSet");
+//    }
+//	@Override
+//    public int hashCode() {
+//
+//        return HashCodeBuilder.reflectionHashCode(this, "id", "version", "studentSet");
+//    }
 
 }

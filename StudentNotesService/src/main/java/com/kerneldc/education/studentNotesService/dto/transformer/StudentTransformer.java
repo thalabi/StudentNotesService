@@ -74,11 +74,15 @@ public class StudentTransformer {
 	public static StudentUiDto entityToUiDto(Student student) {
 		StudentUiDto studentUiDto = new StudentUiDto();
 
+		// TODO these methods are not working properly they all return true irrespective
 		if (Persistence.getPersistenceUtil().isLoaded(student, "noteSet")) {
-			System.out.println("Persistence.getPersistenceUtil().isLoaded(student.getNoteSet())");
+			System.out.println("Persistence.getPersistenceUtil().isLoaded(student, \"noteSet\")");
 		}
 		if (Persistence.getPersistenceUtil().isLoaded(student, "gradeSet")) {
-			System.out.println("Persistence.getPersistenceUtil().isLoaded(student.getGradeSet())");
+			System.out.println("Persistence.getPersistenceUtil().isLoaded(student, \"gradeSet\")");
+		}
+		if (Persistence.getPersistenceUtil().isLoaded(student, "schoolYearSet")) {
+			System.out.println("Persistence.getPersistenceUtil().isLoaded(student, \"schoolYearSet\")");
 		}
 		
 		if (Hibernate.isInitialized(student.getNoteSet())) {
@@ -86,6 +90,10 @@ public class StudentTransformer {
 		}
 		if (Hibernate.isInitialized(student.getGradeSet())) {
 			System.out.println("Hibernate.isInitialized(student.getGradeSet())");
+		}
+		
+		if (Hibernate.isInitialized(student.getSchoolYearSet())) {
+			System.out.println("Hibernate.isInitialized(student.getSchoolYearSet())");
 		}
 		
 		BeanUtils.copyProperties(student, studentUiDto, "noteSet", "gradeSet");

@@ -65,16 +65,16 @@ public class Note extends AbstractPersistableEntity {
 //	public void setStudent(Student student) {
 //		this.student = student;
 //	}
-	@Override
-    public boolean equals(final Object object) {
-
-        return EqualsBuilder.reflectionEquals(this, object, "id", "version");
-    }
-	@Override
-    public int hashCode() {
-
-        return HashCodeBuilder.reflectionHashCode(this, "id", "version");
-    }
+//	@Override
+//    public boolean equals(final Object object) {
+//
+//        return EqualsBuilder.reflectionEquals(this, object, "id", "version");
+//    }
+//	@Override
+//    public int hashCode() {
+//
+//        return HashCodeBuilder.reflectionHashCode(this, "id", "version");
+//    }
 
 
 }

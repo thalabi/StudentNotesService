@@ -38,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.kerneldc.education.studentNotesService.bean.Students;
 import com.kerneldc.education.studentNotesService.bean.TimestampRange;
 import com.kerneldc.education.studentNotesService.domain.Grade;
+import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.domain.jsonView.View;
@@ -46,6 +47,7 @@ import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
 import com.kerneldc.education.studentNotesService.dto.StudentDto;
 import com.kerneldc.education.studentNotesService.dto.transformer.SchoolYearTransformer;
 import com.kerneldc.education.studentNotesService.dto.transformer.StudentTransformer;
+import com.kerneldc.education.studentNotesService.dto.ui.NoteUiDto;
 import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
 import com.kerneldc.education.studentNotesService.exception.RowNotFoundException;
 import com.kerneldc.education.studentNotesService.exception.SnsException;
@@ -393,6 +395,55 @@ public class StudentNotesResource {
 		return "";
 	}
 	
+    @POST
+	@Path("/updateStudentNotes")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public StudentUiDto updateStudentNotes(
+    	StudentUiDto studentUiDto) {
+
+    	LOGGER.debug("begin ...");
+		LOGGER.debug("studentUiDto: {}", studentUiDto);
+		Student student = studentRepository.getStudentByIdWithNoteListAndGradeList(studentUiDto.getId());
+		Set<Note> noteSet = student.getNoteSet();
+		SchoolYear schoolYear = schoolYearRepository.findOne(studentUiDto.getSchoolYearUiDto().getId());
+		Set<Note> notesNotInSchoolYear = getNotesNotInSchoolYear(noteSet, schoolYear);
+		Set<NoteUiDto> noteUiDtoSet = studentUiDto.getNoteUiDtoSet();
+		Set<Note> newNotes = new HashSet<>(noteUiDtoSet.size());
+		for (NoteUiDto noteUiDto : noteUiDtoSet) {
+			Note note = new Note();
+			note.setTimestamp(noteUiDto.getTimestamp());
+			note.setText(noteUiDto.getText());
+			newNotes.add(note);
+		}
+		student.setNoteSet(notesNotInSchoolYear);
+		student.getNoteSet().addAll(newNotes);
+    	LOGGER.debug("student: {}", student);
+    	Student savedSudent;
+    	try {
+    		savedSudent = studentRepository.save(student);
+		} catch (RuntimeException e) {
+			LOGGER.error("Exception encountered: {}", e);
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+    	StudentUiDto savedStudentUiDto = StudentTransformer.entityToUiDto(savedSudent);
+    	// TODO sort notes
+    	savedStudentUiDto.setSchoolYearUiDto(studentUiDto.getSchoolYearUiDto());
+    	LOGGER.debug("end ...");
+    	return savedStudentUiDto;
+    }
+	
+    private Set<Note> getNotesNotInSchoolYear(Set<Note> noteSet, SchoolYear schoolYear) {
+    	Set<Note> notesNotInSchoolYear = new HashSet<>();
+    	for (Note note : noteSet) {
+    		if (note.getTimestamp().before(schoolYear.getStartDate()) || note.getTimestamp().after(schoolYear.getEndDate())) {
+    			notesNotInSchoolYear.add(note);
+    		}
+    	}
+    	return notesNotInSchoolYear;
+    }
+    
 	@GET
 	@Path("/pdfAllTestFile")
 	@Produces("application/pdf")
