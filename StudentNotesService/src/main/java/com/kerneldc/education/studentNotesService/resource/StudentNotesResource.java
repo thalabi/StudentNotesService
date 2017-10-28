@@ -28,6 +28,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.junit.runner.manipulation.NoTestsRemainException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 import com.kerneldc.education.studentNotesService.dto.NoteDto;
 import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
 import com.kerneldc.education.studentNotesService.dto.StudentDto;
+import com.kerneldc.education.studentNotesService.dto.transformer.NoteTransformer;
 import com.kerneldc.education.studentNotesService.dto.transformer.SchoolYearTransformer;
 import com.kerneldc.education.studentNotesService.dto.transformer.StudentTransformer;
 import com.kerneldc.education.studentNotesService.dto.ui.NoteUiDto;
@@ -428,6 +430,8 @@ public class StudentNotesResource {
 			throw new SnsRuntimeException(e.getClass().getSimpleName());
 		}
     	StudentUiDto savedStudentUiDto = StudentTransformer.entityToUiDto(savedSudent);
+    	Set<NoteUiDto> noteUiDtosNotInSchoolYear = getNoteUiDtosNotInSchoolYear(savedStudentUiDto.getNoteUiDtoSet(), schoolYear);
+    	savedStudentUiDto.getNoteUiDtoSet().removeAll(noteUiDtosNotInSchoolYear);
     	// TODO sort notes
     	savedStudentUiDto.setSchoolYearUiDto(studentUiDto.getSchoolYearUiDto());
     	LOGGER.debug("end ...");
@@ -439,6 +443,16 @@ public class StudentNotesResource {
     	for (Note note : noteSet) {
     		if (note.getTimestamp().before(schoolYear.getStartDate()) || note.getTimestamp().after(schoolYear.getEndDate())) {
     			notesNotInSchoolYear.add(note);
+    		}
+    	}
+    	return notesNotInSchoolYear;
+    }
+    
+    private Set<NoteUiDto> getNoteUiDtosNotInSchoolYear(Set<NoteUiDto> noteUiDtoSet, SchoolYear schoolYear) {
+    	Set<NoteUiDto> notesNotInSchoolYear = new HashSet<>();
+    	for (NoteUiDto noteUiDto : noteUiDtoSet) {
+    		if (noteUiDto.getTimestamp().before(schoolYear.getStartDate()) || noteUiDto.getTimestamp().after(schoolYear.getEndDate())) {
+    			notesNotInSchoolYear.add(noteUiDto);
     		}
     	}
     	return notesNotInSchoolYear;

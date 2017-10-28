@@ -227,27 +227,25 @@ public class SchoolYearResource {
     @Consumes(MediaType.APPLICATION_JSON)
 	@Transactional
 	public String saveRemoveStudents(
-		SaveRemoveStudentsToFromSchoolYearVO saveRemoveStudentsToFromSchoolYearVO) {
+		SaveRemoveStudentsToFromSchoolYearVO2 saveRemoveStudentsToFromSchoolYearVO) {
 		
 		LOGGER.debug("begin ...");
 		SchoolYear schoolYear = schoolYearRepository.findOne(saveRemoveStudentsToFromSchoolYearVO.getSchoolYearId());
 		LOGGER.debug("saveRemoveStudentsToFromSchoolYearVO: {}", saveRemoveStudentsToFromSchoolYearVO);
-		List<Student> oldSchoolYearStudents = saveRemoveStudentsToFromSchoolYearVO.getOldSchoolYearStudents();
-		List<Student> newSchoolYearStudents = saveRemoveStudentsToFromSchoolYearVO.getNewSchoolYearStudents();
-		List<Student> copyOfNewSchoolYearStudents = new ArrayList<>(newSchoolYearStudents);
-		newSchoolYearStudents.removeAll(oldSchoolYearStudents);
-		oldSchoolYearStudents.removeAll(copyOfNewSchoolYearStudents);
-		LOGGER.debug("Students to be added: {}", newSchoolYearStudents);
-		LOGGER.debug("Students to be removed: {}", oldSchoolYearStudents);
-		for (Student student : newSchoolYearStudents) {
-			student = studentRepository.findOne(student.getId());
+		List<Long> oldSchoolYearStudentIds = saveRemoveStudentsToFromSchoolYearVO.getOldSchoolYearStudentIds();
+		List<Long> newSchoolYearStudentIds = saveRemoveStudentsToFromSchoolYearVO.getNewSchoolYearStudentIds();
+		List<Long> copyOfNewSchoolYearStudents = new ArrayList<>(newSchoolYearStudentIds);
+		newSchoolYearStudentIds.removeAll(oldSchoolYearStudentIds);
+		oldSchoolYearStudentIds.removeAll(copyOfNewSchoolYearStudents);
+		LOGGER.debug("Student ids to be added: {}", newSchoolYearStudentIds);
+		LOGGER.debug("Student ids to be removed: {}", oldSchoolYearStudentIds);
+		for (Long id : newSchoolYearStudentIds) {
+			Student student = studentRepository.findOne(id);
 			student.addSchoolYear(schoolYear);
-			//studentRepository.save(student);
 		}
-		for (Student student : oldSchoolYearStudents) {
-			student = studentRepository.findOne(student.getId());
+		for (Long id : oldSchoolYearStudentIds) {
+			Student student = studentRepository.findOne(id);
 			student.removeSchoolYear(schoolYear);
-			//studentRepository.save(student);
 		}
 		schoolYearRepository.save(schoolYear);
 		LOGGER.debug("end ...");

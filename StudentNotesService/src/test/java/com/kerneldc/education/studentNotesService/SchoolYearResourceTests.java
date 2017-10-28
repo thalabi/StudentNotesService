@@ -1,5 +1,8 @@
 package com.kerneldc.education.studentNotesService;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -9,6 +12,9 @@ import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
@@ -32,6 +38,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.annotation.Commit;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestExecutionListeners.MergeMode;
@@ -51,7 +58,7 @@ import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
 import com.kerneldc.education.studentNotesService.junit.MyTestExecutionListener;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
-import com.kerneldc.education.studentNotesService.resource.SaveRemoveStudentsToFromSchoolYearVO;
+import com.kerneldc.education.studentNotesService.resource.SaveRemoveStudentsToFromSchoolYearVO2;
 import com.kerneldc.education.studentNotesService.security.bean.User;
 import com.kerneldc.education.studentNotesService.security.constants.SecurityConstants;
 import com.kerneldc.education.studentNotesService.security.util.SimpleGrantedAuthorityMixIn;
@@ -259,7 +266,6 @@ public class SchoolYearResourceTests implements InitializingBean {
 	}
 	
 	@Test
-	@Transactional
 	public void testSaveRemoveStudents() {
 		Student student1 = createStudent("fn1", "ln1");
 		Student student2 = createStudent("fn2", "ln2");
@@ -268,12 +274,31 @@ public class SchoolYearResourceTests implements InitializingBean {
 		schoolYear.setSchoolYear("sy 1");
 		schoolYear.setStartDate(Date.valueOf(LocalDate.of(2017, 9, 1)));
 		schoolYear.setEndDate(Date.valueOf(LocalDate.of(2018, 6, 30)));
+		schoolYearRepository.save(schoolYear);
 		student1.addSchoolYear(schoolYear);
 		student2.addSchoolYear(schoolYear);
 		schoolYearRepository.save(schoolYear);
-		entityManager.flush();
-		SaveRemoveStudentsToFromSchoolYearVO saveRemoveStudentsToFromSchoolYearVO;
+		//schoolYear.getStudentSet().size();
+		assertThat(schoolYear.getStudentSet(), hasSize(2));
+		SaveRemoveStudentsToFromSchoolYearVO2 saveRemoveStudentsToFromSchoolYearVO2 = new SaveRemoveStudentsToFromSchoolYearVO2();
+		saveRemoveStudentsToFromSchoolYearVO2.setSchoolYearId(schoolYear.getId());
+		List<Long> oldSchoolYearStudentIds = new ArrayList<>(Arrays.asList(student1.getId(), student2.getId()));
+		saveRemoveStudentsToFromSchoolYearVO2.setOldSchoolYearStudentIds(oldSchoolYearStudentIds);
+		List<Long> newSchoolYearStudentIds = new ArrayList<>(Arrays.asList(student2.getId(), student3.getId()));
+		saveRemoveStudentsToFromSchoolYearVO2.setNewSchoolYearStudentIds(newSchoolYearStudentIds);
+		
+		HttpEntity<SaveRemoveStudentsToFromSchoolYearVO2> httpEntity = new HttpEntity<SaveRemoveStudentsToFromSchoolYearVO2>(saveRemoveStudentsToFromSchoolYearVO2,httpHeaders);
+
+		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/saveRemoveStudentsToFromSchoolYear", HttpMethod.POST, httpEntity, String.class);
+		assertEquals(HttpStatus.OK, response.getStatusCode());
+		// TODO test fails here becuase of no entity manager with actual transaction
+		entityManager.refresh(schoolYear);
+		//schoolYearRepository.findOne(schoolYear.getId());
+		assertThat(schoolYear.getStudentSet(), hasSize(2));
+		assertThat(schoolYear.getStudentSet(), hasItem(student2));
+		assertThat(schoolYear.getStudentSet(), hasItem(student3));
 	}
+	
 	private Student createStudent(String firstName, String lastName) {
 		Student student = new Student();
 		student.setFirstName(firstName);
