@@ -439,7 +439,7 @@ public class StudentNotesResource {
     }
 	
     private Set<Note> getNotesNotInSchoolYear(Set<Note> noteSet, SchoolYear schoolYear) {
-    	Set<Note> notesNotInSchoolYear = new HashSet<>();
+    	Set<Note> notesNotInSchoolYear = new LinkedHashSet<>();
     	for (Note note : noteSet) {
     		if (note.getTimestamp().before(schoolYear.getStartDate()) || note.getTimestamp().after(schoolYear.getEndDate())) {
     			notesNotInSchoolYear.add(note);
@@ -449,7 +449,7 @@ public class StudentNotesResource {
     }
     
     private Set<NoteUiDto> getNoteUiDtosNotInSchoolYear(Set<NoteUiDto> noteUiDtoSet, SchoolYear schoolYear) {
-    	Set<NoteUiDto> notesNotInSchoolYear = new HashSet<>();
+    	Set<NoteUiDto> notesNotInSchoolYear = new LinkedHashSet<>();
     	for (NoteUiDto noteUiDto : noteUiDtoSet) {
     		if (noteUiDto.getTimestamp().before(schoolYear.getStartDate()) || noteUiDto.getTimestamp().after(schoolYear.getEndDate())) {
     			notesNotInSchoolYear.add(noteUiDto);

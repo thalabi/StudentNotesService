@@ -13,9 +13,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.fasterxml.jackson.annotation.JsonView;
 import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 import com.kerneldc.education.studentNotesService.util.XmlTimestampAdapter;

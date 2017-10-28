@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class StudentUiDto extends AbstractBaseUiDto {
 
 	private static final long serialVersionUID = 1L;
+	
+	public static final String PROPERTY_ID = "id";
 
 	private String firstName;
 	private String lastName;

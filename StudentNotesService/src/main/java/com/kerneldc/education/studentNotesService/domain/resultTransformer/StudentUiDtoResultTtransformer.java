@@ -6,6 +6,7 @@ package com.kerneldc.education.studentNotesService.domain.resultTransformer;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,6 @@ import com.kerneldc.education.studentNotesService.dto.ui.GradeUiDto;
 import com.kerneldc.education.studentNotesService.dto.ui.NoteUiDto;
 import com.kerneldc.education.studentNotesService.dto.ui.SchoolYearUiDto;
 import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
-import com.kerneldc.education.studentNotesService.util.KdcCollectionUtils;
 
 public class StudentUiDtoResultTtransformer implements ResultTransformer {
 
@@ -58,8 +58,7 @@ public class StudentUiDtoResultTtransformer implements ResultTransformer {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public List transformList(List collection) {
-		@SuppressWarnings("unchecked")
-		Map<Long, StudentUiDto> studentUiDtoMap = KdcCollectionUtils.convertToMap(collection, "id", Long.class);
+		Map<Long, StudentUiDto> studentUiDtoMap = new LinkedHashMap<>();
 		for (Object object : collection) {
 			StudentUiDto studentUiDto = (StudentUiDto)object;
 			if (!/* not */studentUiDtoMap.containsKey(studentUiDto.getId())) {
