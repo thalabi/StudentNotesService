@@ -24,4 +24,5 @@
   <include file="liquibase/changelog-student-grade.xml"/>
   
   <include file="liquibase/changelog-student-by-username.xml"/>
+  <include file="liquibase/changelog-student-graph.xml"/>
 </databaseChangeLog>

@@ -119,27 +119,27 @@ public class StudentNotesResource {
 		return students;
 	}
 
-	@GET
-	@Path("/getAllStudentDtos")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<StudentDto> getAllStudentDtos() {
-		
-		LOGGER.debug("begin ...");
-		List<Student> students;
-		try {
-			students = studentRepository.getAllStudents();
-		} catch (RuntimeException e) {
-			LOGGER.error("Exception encountered: {}", e);
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
-		}
-		List<StudentDto> studentDtos = new ArrayList<>();
- 		for (Student student : students) {
- 			StudentDto studentDto = StudentTransformer.entityToDto(student);
- 			studentDtos.add(studentDto);
- 		}		
-		LOGGER.debug("end ...");
-		return studentDtos;
-	}
+//	@GET
+//	@Path("/getAllStudentDtos")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public List<StudentDto> getAllStudentDtos() {
+//		
+//		LOGGER.debug("begin ...");
+//		List<Student> students;
+//		try {
+//			students = studentRepository.getAllStudents();
+//		} catch (RuntimeException e) {
+//			LOGGER.error("Exception encountered: {}", e);
+//			throw new SnsRuntimeException(e.getClass().getSimpleName());
+//		}
+//		List<StudentDto> studentDtos = new ArrayList<>();
+// 		for (Student student : students) {
+// 			StudentDto studentDto = StudentTransformer.entityToDto(student);
+// 			studentDtos.add(studentDto);
+// 		}		
+//		LOGGER.debug("end ...");
+//		return studentDtos;
+//	}
 
 	// curl -H -i http://localhost:8080/StudentNotesService/getAllStudents
 	// curl -H -i http://localhost:8080/StudentNotesService/getStudentById/1
@@ -168,31 +168,31 @@ public class StudentNotesResource {
 		return student;
 	}
 
-	@GET
-	@Path("/getStudentDtoById/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public StudentDto getStudentDtoById(
-		@PathParam("id") Long id) throws RowNotFoundException {
-		
-		LOGGER.debug("begin ...");
-		Student student;
-		StudentDto studentDto;
-		try {
-			student = studentRepository.getStudentById(id);
-		} catch (RuntimeException e) {
-			String errorMessage = String.format("Encountered exception while looking up student id %s. Exception is: %s", id, e.getClass().getSimpleName());
-			LOGGER.error(errorMessage);
-			throw new SnsRuntimeException(errorMessage);
-		}
-		if (student == null) {
-			String errorMessage = String.format("Student id %s not found", id);
-			LOGGER.debug(errorMessage);
-			throw new RowNotFoundException(errorMessage);
-		}
-		studentDto = StudentTransformer.entityToDto(student);
-		LOGGER.debug("end ...");
-		return studentDto;
-	}
+//	@GET
+//	@Path("/getStudentDtoById/{id}")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public StudentDto getStudentDtoById(
+//		@PathParam("id") Long id) throws RowNotFoundException {
+//		
+//		LOGGER.debug("begin ...");
+//		Student student;
+//		StudentDto studentDto;
+//		try {
+//			student = studentRepository.getStudentById(id);
+//		} catch (RuntimeException e) {
+//			String errorMessage = String.format("Encountered exception while looking up student id %s. Exception is: %s", id, e.getClass().getSimpleName());
+//			LOGGER.error(errorMessage);
+//			throw new SnsRuntimeException(errorMessage);
+//		}
+//		if (student == null) {
+//			String errorMessage = String.format("Student id %s not found", id);
+//			LOGGER.debug(errorMessage);
+//			throw new RowNotFoundException(errorMessage);
+//		}
+//		studentDto = StudentTransformer.entityToDto(student);
+//		LOGGER.debug("end ...");
+//		return studentDto;
+//	}
 
     // curl -i -H "Content-Type: application/json" -X POST -d '{"id":2,"firstName":"xxxxxxxxxxxxxxxx","lastName":"halabi","grade":"GR-4","noteList":[]}' http://localhost:8080/StudentNotesService
     @POST
@@ -488,14 +488,15 @@ public class StudentNotesResource {
 		return Response.ok(stream).build();
 	}
 	
-	@GET
+	@POST
 	@Path("/pdfAll")
+    @Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/pdf")
-	public Response pdfAll() throws SnsException {
+	public Response pdfAll(PrintRequestVO printRequestVO) throws SnsException {
 
 		LOGGER.debug("begin ...");
 		Students students = new Students();
-		students.setStudentList(studentRepository.getAllStudents());
+		students.setStudentList(studentRepository.getStudentsInSchoolYear(printRequestVO.getSchoolYearId()));
 		byte[] pdfByteArray = pdfStudentNotesReportService.generateReport(students);
 		LOGGER.debug("end ...");
 		return Response.ok(pdfByteArray).build();
@@ -556,7 +557,7 @@ public class StudentNotesResource {
 		Students students = new Students();
 		students.setStudentList(studentRepository.getStudentsByTimestampRange(printRequestVO.getSchoolYearId(), printRequestVO.getFromTimestamp(), printRequestVO.getToTimestamp()));
 		byte[] pdfByteArray = null;
-		if (students.getStudentList().isEmpty()) {
+		if (!/* note */students.getStudentList().isEmpty()) {
 			pdfByteArray = pdfStudentNotesReportService.generateReport(students);
 		}
 		// TODO print an empty pdf when there are no students returned
@@ -649,6 +650,23 @@ public class StudentNotesResource {
 	}
 	
 	@GET
+	@Path("/getStudentGraphBySchoolYear/{schoolYearId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<StudentUiDto> getStudentGraphBySchoolYear(
+		@PathParam("schoolYearId") Long schoolYearId) {
+		
+		LOGGER.debug("begin ...");
+		List<StudentUiDto> studentUiDtoList = null;
+		try {
+			studentUiDtoList = studentRepository.getStudentGraphBySchoolYear(schoolYearId);
+		} catch (RuntimeException e) {
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+		LOGGER.debug("end ...");
+		return studentUiDtoList;
+	}
+	
+	@GET
 	@Path("/getStudentDtosInSchoolYear/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<StudentDto> getStudentDtosInSchoolYear(
@@ -714,6 +732,40 @@ public class StudentNotesResource {
 		return "";
 	}
 
+	@GET
+	@Path("/getStudentsInSchoolYear/{schoolYearId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<StudentUiDto> getStudentsInSchoolYear(
+		@PathParam("schoolYearId") Long schoolYearId) throws SnsException {
+
+		LOGGER.debug("begin ...");
+		List<StudentUiDto> studentUiDtoList = null;
+		try {
+			studentUiDtoList = studentRepository.getStudentsInSchoolYear(schoolYearId);
+		} catch (RuntimeException e) {
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+		LOGGER.debug("end ...");
+		return studentUiDtoList;
+	}
+	
+	@GET
+	@Path("/getStudentsNotInSchoolYear/{schoolYearId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<StudentUiDto> getStudentsNotInSchoolYear(
+		@PathParam("schoolYearId") Long schoolYearId) throws SnsException {
+
+		LOGGER.debug("begin ...");
+		List<StudentUiDto> studentUiDtoList = null;
+		try {
+			studentUiDtoList = studentRepository.getStudentsNotInSchoolYear(schoolYearId);
+		} catch (RuntimeException e) {
+			throw new SnsRuntimeException(e.getClass().getSimpleName());
+		}
+		LOGGER.debug("end ...");
+		return studentUiDtoList;
+	}
+	
 	private void sortNoteSet(Set<NoteDto> noteSetDto) {
 		Comparator<NoteDto> comparator = new Comparator<NoteDto>() {
 		    @Override
@@ -733,5 +785,5 @@ public class StudentNotesResource {
 		}
 		noteSetDto.clear();
 		noteSetDto.addAll(new LinkedHashSet<>(noteDtoList));
-	}
+	}	
 }

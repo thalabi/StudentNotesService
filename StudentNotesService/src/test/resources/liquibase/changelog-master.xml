@@ -36,5 +36,6 @@
 <!--   <include file="liquibase/changelog-school-year-version-null.xml"/> -->
 
   <include file="liquibase/changelog-student-by-username.xml"/>
+  <include file="liquibase/changelog-student-graph.xml"/>
   
 </databaseChangeLog>

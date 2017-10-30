@@ -30,6 +30,7 @@ import org.springframework.data.jpa.repository.JpaContext;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.domain.Student_;
+import com.kerneldc.education.studentNotesService.domain.resultTransformer.StudentGrpahResultTtransformer;
 import com.kerneldc.education.studentNotesService.domain.resultTransformer.StudentUiDtoResultTtransformer;
 import com.kerneldc.education.studentNotesService.dto.StudentDto;
 import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
@@ -353,6 +354,46 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 
 	@Override
 	@Transactional
+	public List<StudentUiDto> getStudentsInSchoolYear(Long schoolYearId) {
+		Session session = entityManager.unwrap(Session.class);
+		SQLQuery query = session.createSQLQuery(
+				"select * "
+				+ "from STUDENT_BY_USERNAME "
+				+ "where school_year_id = :schoolYearId "
+				+ "order by first_name, last_name, timestamp"
+		);
+		query.setParameter("schoolYearId", schoolYearId);
+		setDataTyes(query);
+		query.setResultTransformer(new StudentUiDtoResultTtransformer());
+		@SuppressWarnings("unchecked")
+		List<StudentUiDto> result = query.list();
+ 		LOGGER.debug("result.size(): {}", result.size());
+		LOGGER.debug("result: {}", result);
+		return result; //squery.list();
+	}
+
+	@Override
+	@Transactional
+	public List<StudentUiDto> getStudentsNotInSchoolYear(Long schoolYearId) {
+		Session session = entityManager.unwrap(Session.class);
+		SQLQuery query = session.createSQLQuery(
+				"select * "
+				+ "from STUDENT_BY_USERNAME "
+				+ "where school_year_id != :schoolYearId "
+				+ "order by first_name, last_name, timestamp"
+		);
+		query.setParameter("schoolYearId", schoolYearId);
+		setDataTyes(query);
+		query.setResultTransformer(new StudentUiDtoResultTtransformer());
+		@SuppressWarnings("unchecked")
+		List<StudentUiDto> result = query.list();
+ 		LOGGER.debug("result.size(): {}", result.size());
+		LOGGER.debug("result: {}", result);
+		return result; //squery.list();
+	}
+
+	@Override
+	@Transactional
 	public List<StudentUiDto> getStudentsByTimestampRange(Long schoolYearId, Timestamp fromTimestamp, Timestamp toTimestamp) {
 		LOGGER.debug("fromTimestamp: {}, toTimestamp: {}", fromTimestamp, toTimestamp);
 		Session session = entityManager.unwrap(Session.class);
@@ -398,8 +439,40 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 		return result; //squery.list();
 	}
 
+	@Override
+	@Transactional
+	public List<StudentUiDto> getStudentGraphBySchoolYear(Long schoolYearId) {
+		Session session = entityManager.unwrap(Session.class);
+		SQLQuery query = session.createSQLQuery(
+				"select * "
+				+ "from STUDENT_GRAPH "
+				+ "where school_year_id = :schoolYearId "
+				+ "order by first_name, last_name, timestamp"
+		);
+		query.setParameter("schoolYearId", schoolYearId);
+		setStudentGraphDataTyes(query);
+		query.setResultTransformer(new StudentGrpahResultTtransformer());
+		@SuppressWarnings("unchecked")
+		List<StudentUiDto> result = query.list();
+ 		LOGGER.debug("result.size(): {}", result.size());
+		LOGGER.debug("result: {}", result);
+		return result; //squery.list();
+	}
+
 	private void setDataTyes(SQLQuery query) {
 		query.addScalar("username", StandardBasicTypes.STRING).addScalar("student_id", StandardBasicTypes.LONG)
+				.addScalar("first_name", StandardBasicTypes.STRING).addScalar("last_name", StandardBasicTypes.STRING)
+				.addScalar("grade_id", StandardBasicTypes.LONG).addScalar("grade", StandardBasicTypes.STRING)
+				.addScalar("grade_version", StandardBasicTypes.LONG).addScalar("note_id", StandardBasicTypes.LONG)
+				.addScalar("timestamp", StandardBasicTypes.TIMESTAMP).addScalar("text", StandardBasicTypes.STRING)
+				.addScalar("note_version", StandardBasicTypes.LONG).addScalar("school_year_id", StandardBasicTypes.LONG)
+				.addScalar("school_year", StandardBasicTypes.STRING).addScalar("start_date", StandardBasicTypes.DATE)
+				.addScalar("end_date", StandardBasicTypes.DATE)
+				.addScalar("school_year_version", StandardBasicTypes.LONG)
+				.addScalar("student_version", StandardBasicTypes.LONG);
+	}
+	private void setStudentGraphDataTyes(SQLQuery query) {
+		query.addScalar("student_id", StandardBasicTypes.LONG)
 				.addScalar("first_name", StandardBasicTypes.STRING).addScalar("last_name", StandardBasicTypes.STRING)
 				.addScalar("grade_id", StandardBasicTypes.LONG).addScalar("grade", StandardBasicTypes.STRING)
 				.addScalar("grade_version", StandardBasicTypes.LONG).addScalar("note_id", StandardBasicTypes.LONG)
