@@ -27,7 +27,7 @@ public interface StudentRepositoryCustom {
 	
 	Set<Student> getLatestActiveStudents(int limit);
 	Set<Student> getLatestActiveStudents(String username, int limit);
-	Set<Student> getStudentsByTimestampRange(Timestamp fromTimestamp, Timestamp toTimestamp);
+	List<StudentUiDto> getStudentsByTimestampRange(Long schoolYearId, Timestamp fromTimestamp, Timestamp toTimestamp);
 	
 	List<Student> getStudentsByListOfIds(List<Long> studentIds);
 	SchoolYear getStudentsByUsernameInUserPreference(String username);
@@ -35,4 +35,5 @@ public interface StudentRepositoryCustom {
 	List<StudentDto> getStudentDtosInSchoolYear(Long schoolYearId);
 	List<StudentDto> getStudentDtosNotInSchoolYear(Long schoolYearId);
 	List<StudentUiDto> getStudentsByUsername(String username);
+	List<StudentUiDto> getStudentsByUsernameAndListOfIds(Long schoolYearId, List<Long> studentIds);
 }

@@ -69,7 +69,7 @@
   <!-- ========================= -->
   <xsl:template match="student">
   		<fo:block>
-          <fo:inline font-size="12pt" font-weight="bold"><xsl:value-of select="concat(firstName, ' ', lastName, ', ', grade)"/></fo:inline>
+          <fo:inline font-size="12pt" font-weight="bold"><xsl:value-of select="concat(firstName, ' ', lastName, ', ', gradeUiDto/gradeEnum)"/></fo:inline>
 		</fo:block>          
         
 		<fo:block space-before="0.3cm">

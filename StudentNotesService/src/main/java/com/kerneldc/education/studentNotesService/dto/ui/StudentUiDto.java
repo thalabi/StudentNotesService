@@ -3,8 +3,14 @@ package com.kerneldc.education.studentNotesService.dto.ui;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+//@XmlAccessorType(XmlAccessType.FIELD)
 public class StudentUiDto extends AbstractBaseUiDto {
 
 	private static final long serialVersionUID = 1L;
@@ -15,6 +21,8 @@ public class StudentUiDto extends AbstractBaseUiDto {
 	private String lastName;
 	private GradeUiDto gradeUiDto;
 	@JsonProperty(value="noteSet")
+	@XmlElementWrapper(name="notes")
+	@XmlElement(name="note")
 	private Set<NoteUiDto> noteUiDtoSet = new LinkedHashSet<>();
 	//private String schoolYear;
 	@JsonProperty(value="schoolYear")

@@ -2,10 +2,15 @@ package com.kerneldc.education.studentNotesService.dto.ui;
 
 import java.sql.Timestamp;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import com.kerneldc.education.studentNotesService.util.XmlTimestampAdapter;
+
 public class NoteUiDto extends AbstractBaseUiDto {
 
 	private static final long serialVersionUID = 1L;
 
+	@XmlJavaTypeAdapter(XmlTimestampAdapter.class)
 	private Timestamp timestamp;
 	private String text;
 	

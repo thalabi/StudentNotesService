@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -28,7 +31,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.junit.runner.manipulation.NoTestsRemainException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +39,6 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.kerneldc.education.studentNotesService.bean.Students;
-import com.kerneldc.education.studentNotesService.bean.TimestampRange;
 import com.kerneldc.education.studentNotesService.domain.Grade;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
@@ -46,7 +47,6 @@ import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 import com.kerneldc.education.studentNotesService.dto.NoteDto;
 import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
 import com.kerneldc.education.studentNotesService.dto.StudentDto;
-import com.kerneldc.education.studentNotesService.dto.transformer.NoteTransformer;
 import com.kerneldc.education.studentNotesService.dto.transformer.SchoolYearTransformer;
 import com.kerneldc.education.studentNotesService.dto.transformer.StudentTransformer;
 import com.kerneldc.education.studentNotesService.dto.ui.NoteUiDto;
@@ -531,29 +531,32 @@ public class StudentNotesResource {
  		return studentDtos;
 	}
 
-	@POST
-	@Path("/getStudentsByTimestampRange")
-    @Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Set<Student> getStudentsByTimestampRange(TimestampRange timestampRange) {
-		
-		LOGGER.debug("begin ...");
-		LOGGER.debug("timestampRange: {}", timestampRange);
-		LOGGER.debug("end ...");
-		return studentRepository.getStudentsByTimestampRange(timestampRange.getFromTimestamp(), timestampRange.getToTimestamp());
-	}
-
+//	@POST
+//	@Path("/getStudentsByTimestampRange")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public Set<Student> getStudentsByTimestampRange(TimestampRange timestampRange) {
+//		
+//		LOGGER.debug("begin ...");
+//		LOGGER.debug("timestampRange: {}", timestampRange);
+//		LOGGER.debug("end ...");
+//		return studentRepository.getStudentsByTimestampRange(timestampRange.getFromTimestamp(), timestampRange.getToTimestamp());
+//	}
+//
 	@POST
 	@Path("/pdfStudentsByTimestampRange")
     @Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/pdf")
-	public Response pdfStudentsByTimestampRange(TimestampRange timestampRange) throws SnsException {
+	public Response pdfStudentsByTimestampRange(PrintRequestVO printRequestVO) throws SnsException {
 
 		LOGGER.debug("begin ...");
+		LocalDateTime toMidnight = printRequestVO.getToTimestamp().toLocalDateTime().toLocalDate()
+				.atTime(LocalTime.MAX); // midnight
+		printRequestVO.setToTimestamp(Timestamp.valueOf(toMidnight));
 		Students students = new Students();
-		students.setStudentList(studentRepository.getStudentsByTimestampRange(timestampRange.getFromTimestamp(), timestampRange.getToTimestamp()));
+		students.setStudentList(studentRepository.getStudentsByTimestampRange(printRequestVO.getSchoolYearId(), printRequestVO.getFromTimestamp(), printRequestVO.getToTimestamp()));
 		byte[] pdfByteArray = null;
-		if (students.getStudentList().size() != 0) {
+		if (students.getStudentList().isEmpty()) {
 			pdfByteArray = pdfStudentNotesReportService.generateReport(students);
 		}
 		// TODO print an empty pdf when there are no students returned
@@ -577,11 +580,11 @@ public class StudentNotesResource {
 	@Path("/pdfStudentsByStudentIds")
     @Consumes(MediaType.APPLICATION_JSON)
 	@Produces("application/pdf")
-	public Response pdfStudentsByStudentIds(List<Long> studentIds) throws SnsException {
+	public Response pdfStudentsByStudentIds(PrintRequestVO printRequestVO) throws SnsException {
 
 		LOGGER.debug("begin ...");
 		Students students = new Students();
-		students.setStudentList(studentRepository.getStudentsByListOfIds(studentIds));
+		students.setStudentList(studentRepository.getStudentsByUsernameAndListOfIds(printRequestVO.getSchoolYearId(), printRequestVO.getStudentIds()));
 		byte[] pdfByteArray = null;
 		if (students.getStudentList().size() != 0) {
 			pdfByteArray = pdfStudentNotesReportService.generateReport(students);

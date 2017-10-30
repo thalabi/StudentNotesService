@@ -20,6 +20,8 @@ import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.kerneldc.education.studentNotesService.bean.Students;
@@ -28,6 +30,8 @@ import com.kerneldc.education.studentNotesService.exception.SnsException;
 @Service
 public class PdfStudentNotesReportService implements StudentNotesReportService {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
+	
 	private static final String XSL_FILE = "studentsToFo.xsl";
 	private static final SimpleDateFormat generatedFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a");
 
@@ -37,6 +41,7 @@ public class PdfStudentNotesReportService implements StudentNotesReportService {
 		byte[] xmlBytes;
 		try {
 			xmlBytes = beanToXml(students);
+			LOGGER.debug("xmlBytes: {}", new String(xmlBytes));
 		} catch (JAXBException e) {
 			throw new SnsException(e);
 		} 

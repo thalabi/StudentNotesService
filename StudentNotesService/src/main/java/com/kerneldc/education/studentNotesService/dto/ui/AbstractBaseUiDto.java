@@ -2,10 +2,13 @@ package com.kerneldc.education.studentNotesService.dto.ui;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-//@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.FIELD)
 public class AbstractBaseUiDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;

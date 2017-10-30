@@ -201,48 +201,48 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
  		return students;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	@Transactional
-	public Set<Student> getStudentsByTimestampRange(Timestamp fromTimestamp, Timestamp toTimestamp) {
-		Session session = entityManager.unwrap(Session.class);
-		SQLQuery query = session.createSQLQuery(
-			"select \n" + 
-			"	s.id student_id, \n" + 
-			"	s.first_name, \n" + 
-			"	s.last_name, \n" + 
-			"	/*s.grade,*/ \n" + 
-			"	s.version student_version, \n" + 
-			"	n.id note_id, \n" + 
-			"	n.timestamp, \n" + 
-			"	n.text, \n" + 
-			"	n.version note_version \n" + 
-			"from student s join student_note sn on s.id = sn.student_id \n" + 
-			"   join note n on sn.note_id = n.id \n" + 
-			"where n.timestamp between :fromTimestamp and :toTimestamp \n" +
-			"order by first_name, last_name, timestamp\n" 
-		);
-		query.addRoot("s", Student.class)
-	        .addProperty("id", "student_id")
-	        .addProperty("firstName", "first_name")
-	        .addProperty("lastName", "last_name")
-	        //.addProperty("grade", "grade")
-	        .addProperty("version", "student_version");
-		query.addFetch("n", "s", "noteSet")
-	        .addProperty("key", "student_id")
-	        .addProperty("element", "note_id")
-	        .addProperty("element.id", "note_id")
-	        .addProperty("element.timestamp", "timestamp")
-	        .addProperty("element.text", "text")
-	        .addProperty("element.version", "note_version");
-		query.setParameter("fromTimestamp", fromTimestamp);
-		query.setParameter("toTimestamp", toTimestamp);
- 		
-		List<Object[]> result = query.list();
- 		// Use LinkedHashSet so as to preserve the order
- 		LinkedHashSet<Student> students = result.stream().map(o->(Student)o[0]).collect(Collectors.toCollection(LinkedHashSet::new));
- 		return students;
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	@Transactional
+//	public Set<Student> getStudentsByTimestampRange(Timestamp fromTimestamp, Timestamp toTimestamp) {
+//		Session session = entityManager.unwrap(Session.class);
+//		SQLQuery query = session.createSQLQuery(
+//			"select \n" + 
+//			"	s.id student_id, \n" + 
+//			"	s.first_name, \n" + 
+//			"	s.last_name, \n" + 
+//			"	/*s.grade,*/ \n" + 
+//			"	s.version student_version, \n" + 
+//			"	n.id note_id, \n" + 
+//			"	n.timestamp, \n" + 
+//			"	n.text, \n" + 
+//			"	n.version note_version \n" + 
+//			"from student s join student_note sn on s.id = sn.student_id \n" + 
+//			"   join note n on sn.note_id = n.id \n" + 
+//			"where n.timestamp between :fromTimestamp and :toTimestamp \n" +
+//			"order by first_name, last_name, timestamp\n" 
+//		);
+//		query.addRoot("s", Student.class)
+//	        .addProperty("id", "student_id")
+//	        .addProperty("firstName", "first_name")
+//	        .addProperty("lastName", "last_name")
+//	        //.addProperty("grade", "grade")
+//	        .addProperty("version", "student_version");
+//		query.addFetch("n", "s", "noteSet")
+//	        .addProperty("key", "student_id")
+//	        .addProperty("element", "note_id")
+//	        .addProperty("element.id", "note_id")
+//	        .addProperty("element.timestamp", "timestamp")
+//	        .addProperty("element.text", "text")
+//	        .addProperty("element.version", "note_version");
+//		query.setParameter("fromTimestamp", fromTimestamp);
+//		query.setParameter("toTimestamp", toTimestamp);
+// 		
+//		List<Object[]> result = query.list();
+// 		// Use LinkedHashSet so as to preserve the order
+// 		LinkedHashSet<Student> students = result.stream().map(o->(Student)o[0]).collect(Collectors.toCollection(LinkedHashSet::new));
+// 		return students;
+//	}
 
 	public List<Student> getStudentsByListOfIds(List<Long> studentIds) {
 		return getStudents(studentIds);
@@ -342,28 +342,72 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 				+ "order by first_name, last_name, timestamp"
 		);
 		query.setParameter("username", username);
-		query.addScalar("username", StandardBasicTypes.STRING)
-				.addScalar("student_id", StandardBasicTypes.LONG)
-				.addScalar("first_name", StandardBasicTypes.STRING)
-				.addScalar("last_name", StandardBasicTypes.STRING)
-				.addScalar("grade_id", StandardBasicTypes.LONG)
-				.addScalar("grade", StandardBasicTypes.STRING)
-				.addScalar("grade_version", StandardBasicTypes.LONG)
-				.addScalar("note_id", StandardBasicTypes.LONG)
-				.addScalar("timestamp", StandardBasicTypes.TIMESTAMP)
-				.addScalar("text", StandardBasicTypes.STRING)
-				.addScalar("note_version", StandardBasicTypes.LONG)
-				.addScalar("school_year_id", StandardBasicTypes.LONG)
-				.addScalar("school_year", StandardBasicTypes.STRING)
-				.addScalar("start_date", StandardBasicTypes.DATE)
-				.addScalar("end_date", StandardBasicTypes.DATE)
-				.addScalar("school_year_version", StandardBasicTypes.LONG)
-				.addScalar("student_version", StandardBasicTypes.LONG);
+		setDataTyes(query);
 		query.setResultTransformer(new StudentUiDtoResultTtransformer());
 		@SuppressWarnings("unchecked")
 		List<StudentUiDto> result = query.list();
  		LOGGER.debug("result.size(): {}", result.size());
 		LOGGER.debug("result: {}", result);
 		return result; //squery.list();
+	}
+
+	@Override
+	@Transactional
+	public List<StudentUiDto> getStudentsByTimestampRange(Long schoolYearId, Timestamp fromTimestamp, Timestamp toTimestamp) {
+		LOGGER.debug("fromTimestamp: {}, toTimestamp: {}", fromTimestamp, toTimestamp);
+		Session session = entityManager.unwrap(Session.class);
+		SQLQuery query = session.createSQLQuery(
+				"select * "
+				+ "from STUDENT_BY_USERNAME "
+				+ "where school_year_id = :schoolYearId "
+				+ "  and timestamp >= :fromTimestamp and timestamp <= :toTimestamp "
+				+ "order by first_name, last_name, timestamp"
+		);
+		query.setParameter("schoolYearId", schoolYearId);
+		query.setParameter("fromTimestamp", fromTimestamp);
+		query.setParameter("toTimestamp", toTimestamp);
+		setDataTyes(query);
+		query.setResultTransformer(new StudentUiDtoResultTtransformer());
+		@SuppressWarnings("unchecked")
+		List<StudentUiDto> result = query.list();
+ 		LOGGER.debug("result.size(): {}", result.size());
+		LOGGER.debug("result: {}", result);
+		return result; //squery.list();
+	}
+
+	@Override
+	@Transactional
+	public List<StudentUiDto> getStudentsByUsernameAndListOfIds(Long schoolYearId, List<Long> studentIds) {
+		LOGGER.debug("schoolYearId: {}, studentIds: {}", schoolYearId, studentIds);
+		Session session = entityManager.unwrap(Session.class);
+		SQLQuery query = session.createSQLQuery(
+				"select * "
+				+ "from STUDENT_BY_USERNAME "
+				+ "where school_year_id = :schoolYearId "
+				+ "  and student_id in (:studentIds) "
+				+ "order by first_name, last_name, timestamp"
+		);
+		query.setParameter("schoolYearId", schoolYearId);
+		query.setParameterList("studentIds", studentIds);
+		setDataTyes(query);
+		query.setResultTransformer(new StudentUiDtoResultTtransformer());
+		@SuppressWarnings("unchecked")
+		List<StudentUiDto> result = query.list();
+ 		LOGGER.debug("result.size(): {}", result.size());
+		LOGGER.debug("result: {}", result);
+		return result; //squery.list();
+	}
+
+	private void setDataTyes(SQLQuery query) {
+		query.addScalar("username", StandardBasicTypes.STRING).addScalar("student_id", StandardBasicTypes.LONG)
+				.addScalar("first_name", StandardBasicTypes.STRING).addScalar("last_name", StandardBasicTypes.STRING)
+				.addScalar("grade_id", StandardBasicTypes.LONG).addScalar("grade", StandardBasicTypes.STRING)
+				.addScalar("grade_version", StandardBasicTypes.LONG).addScalar("note_id", StandardBasicTypes.LONG)
+				.addScalar("timestamp", StandardBasicTypes.TIMESTAMP).addScalar("text", StandardBasicTypes.STRING)
+				.addScalar("note_version", StandardBasicTypes.LONG).addScalar("school_year_id", StandardBasicTypes.LONG)
+				.addScalar("school_year", StandardBasicTypes.STRING).addScalar("start_date", StandardBasicTypes.DATE)
+				.addScalar("end_date", StandardBasicTypes.DATE)
+				.addScalar("school_year_version", StandardBasicTypes.LONG)
+				.addScalar("student_version", StandardBasicTypes.LONG);
 	}
 }
