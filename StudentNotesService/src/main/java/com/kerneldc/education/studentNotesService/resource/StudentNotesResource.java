@@ -18,6 +18,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.OptimisticLockException;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -327,11 +328,12 @@ public class StudentNotesResource {
     	StudentUiDto studentUiDto) {
 
     	LOGGER.debug("begin ...");
-		LOGGER.debug("studentUiDto: {}", studentUiDto);
+		//LOGGER.debug("studentUiDto: {}", studentUiDto);
     	//Student student = StudentTransformer.uiDtoToEntity(studentUiDto);
 		Student student;
 		if (studentUiDto.getId() != null) {
 			student = studentRepository.getStudentByIdWithNoteListAndGradeList(studentUiDto.getId());
+			checkVersion(studentUiDto.getVersion(), student.getVersion());
 		} else {
 			student = new Student();
 		}
@@ -343,12 +345,12 @@ public class StudentNotesResource {
 		if (studentUiDto.getGradeUiDto().getGradeEnum() != null) {
 			Grade grade = getStudentGradeForYear(student, schoolYear);
 			Set<Grade> gradeSet = student.getGradeSet();
-			LOGGER.debug("gradeSet: {}", gradeSet);
+			//LOGGER.debug("gradeSet: {}", gradeSet);
 			gradeSet.remove(grade);
 			grade.setGradeEnum(studentUiDto.getGradeUiDto().getGradeEnum());
 			gradeSet.add(grade);
 		}
-    	LOGGER.debug("student: {}", student);
+    	//LOGGER.debug("student: {}", student);
     	Student savedSudent;
     	try {
     		//schoolYearRepository.save(student.getSchoolYearSet().iterator().next());
@@ -362,6 +364,11 @@ public class StudentNotesResource {
     	return savedStudentUiDto;
     }
 	
+    private void checkVersion(Long clientVersion, Long entityVersion) {
+    	if (clientVersion.compareTo(entityVersion) != 0) {
+    		throw new SnsRuntimeException("Entity has been updated by another resource."); 
+    	}
+    }
     private Grade getStudentGradeForYear(Student student, SchoolYear schoolYear) {
     	List<Grade> gradeList = gradeRepository.findByStudentAndSchoolYear(student, schoolYear);
     	if (CollectionUtils.isNotEmpty(gradeList)) {
@@ -421,7 +428,7 @@ public class StudentNotesResource {
 		}
 		student.setNoteSet(notesNotInSchoolYear);
 		student.getNoteSet().addAll(newNotes);
-    	LOGGER.debug("student: {}", student);
+    	//LOGGER.debug("student: {}", student);
     	Student savedSudent;
     	try {
     		savedSudent = studentRepository.save(student);
@@ -565,16 +572,16 @@ public class StudentNotesResource {
 		return Response.ok(pdfByteArray).build();
 	}
 	
-	@GET
-	@Path("/getAllStudentsWithoutNotesList")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Iterable<Student> getAllStudentsWithoutNotesList() {
-		
-		LOGGER.debug("begin ...");
-		LOGGER.debug("end ...");
-		//return studentRepository.findAll();
-		return studentRepository.findAllByOrderByFirstNameAscLastNameAsc();
-	}
+//	@GET
+//	@Path("/getAllStudentsWithoutNotesList")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public Iterable<Student> getAllStudentsWithoutNotesList() {
+//		
+//		LOGGER.debug("begin ...");
+//		LOGGER.debug("end ...");
+//		//return studentRepository.findAll();
+//		return studentRepository.findAllByOrderByFirstNameAscLastNameAsc();
+//	}
 
 	// TODO not covered by a test case
 	@POST
@@ -632,22 +639,22 @@ public class StudentNotesResource {
 		return schoolYearDto;
 	}
 	
-	@GET
-	@Path("/getStudentsByUsername/{username}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<StudentUiDto> getStudentsByUsername(
-		@PathParam("username") String username) {
-		
-		LOGGER.debug("begin ...");
-		List<StudentUiDto> studentUiDtoList = null;
-		try {
-			studentUiDtoList = studentRepository.getStudentsByUsername(username);
-		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
-		}
-		LOGGER.debug("end ...");
-		return studentUiDtoList;
-	}
+//	@GET
+//	@Path("/getStudentsByUsername/{username}")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public List<StudentUiDto> getStudentsByUsername(
+//		@PathParam("username") String username) {
+//		
+//		LOGGER.debug("begin ...");
+//		List<StudentUiDto> studentUiDtoList = null;
+//		try {
+//			studentUiDtoList = studentRepository.getStudentsByUsername(username);
+//		} catch (RuntimeException e) {
+//			throw new SnsRuntimeException(e.getClass().getSimpleName());
+//		}
+//		LOGGER.debug("end ...");
+//		return studentUiDtoList;
+//	}
 	
 	@GET
 	@Path("/getStudentGraphBySchoolYear/{schoolYearId}")

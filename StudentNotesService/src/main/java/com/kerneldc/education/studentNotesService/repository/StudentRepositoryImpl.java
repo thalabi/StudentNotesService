@@ -332,25 +332,25 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 				.setResultTransformer(new AliasToBeanResultTransformer(StudentDto.class)).list();
 	}
 	
-	@Override
-	@Transactional
-	public List<StudentUiDto> getStudentsByUsername(String username) {
-		Session session = entityManager.unwrap(Session.class);
-		SQLQuery query = session.createSQLQuery(
-				"select * "
-				+ "from STUDENT_BY_USERNAME "
-				+ "where username = :username "
-				+ "order by first_name, last_name, timestamp"
-		);
-		query.setParameter("username", username);
-		setDataTyes(query);
-		query.setResultTransformer(new StudentUiDtoResultTtransformer());
-		@SuppressWarnings("unchecked")
-		List<StudentUiDto> result = query.list();
- 		LOGGER.debug("result.size(): {}", result.size());
-		LOGGER.debug("result: {}", result);
-		return result; //squery.list();
-	}
+//	@Override
+//	@Transactional
+//	public List<StudentUiDto> getStudentsByUsername(String username) {
+//		Session session = entityManager.unwrap(Session.class);
+//		SQLQuery query = session.createSQLQuery(
+//				"select * "
+//				+ "from STUDENT_GRAPH "
+//				+ "where username = :username "
+//				+ "order by first_name, last_name, timestamp"
+//		);
+//		query.setParameter("username", username);
+//		setDataTyes(query);
+//		query.setResultTransformer(new StudentGrpahResultTtransformer()/*new StudentUiDtoResultTtransformer()*/);
+//		@SuppressWarnings("unchecked")
+//		List<StudentUiDto> result = query.list();
+// 		LOGGER.debug("result.size(): {}", result.size());
+//		LOGGER.debug("result: {}", result);
+//		return result; //squery.list();
+//	}
 
 	@Override
 	@Transactional
@@ -358,17 +358,17 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 		Session session = entityManager.unwrap(Session.class);
 		SQLQuery query = session.createSQLQuery(
 				"select * "
-				+ "from STUDENT_BY_USERNAME "
+				+ "from STUDENT_GRAPH "
 				+ "where school_year_id = :schoolYearId "
 				+ "order by first_name, last_name, timestamp"
 		);
 		query.setParameter("schoolYearId", schoolYearId);
-		setDataTyes(query);
-		query.setResultTransformer(new StudentUiDtoResultTtransformer());
+		setStudentGraphDataTyes(query);
+		query.setResultTransformer(new StudentGrpahResultTtransformer()/*new StudentUiDtoResultTtransformer()*/);
 		@SuppressWarnings("unchecked")
 		List<StudentUiDto> result = query.list();
  		LOGGER.debug("result.size(): {}", result.size());
-		LOGGER.debug("result: {}", result);
+		//LOGGER.debug("result: {}", result);
 		return result; //squery.list();
 	}
 
@@ -378,17 +378,17 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 		Session session = entityManager.unwrap(Session.class);
 		SQLQuery query = session.createSQLQuery(
 				"select * "
-				+ "from STUDENT_BY_USERNAME "
+				+ "from STUDENT_GRAPH "
 				+ "where school_year_id != :schoolYearId "
 				+ "order by first_name, last_name, timestamp"
 		);
 		query.setParameter("schoolYearId", schoolYearId);
-		setDataTyes(query);
-		query.setResultTransformer(new StudentUiDtoResultTtransformer());
+		setStudentGraphDataTyes(query);
+		query.setResultTransformer(new StudentGrpahResultTtransformer()/*new StudentUiDtoResultTtransformer()*/);
 		@SuppressWarnings("unchecked")
 		List<StudentUiDto> result = query.list();
  		LOGGER.debug("result.size(): {}", result.size());
-		LOGGER.debug("result: {}", result);
+		//LOGGER.debug("result: {}", result);
 		return result; //squery.list();
 	}
 
@@ -399,7 +399,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 		Session session = entityManager.unwrap(Session.class);
 		SQLQuery query = session.createSQLQuery(
 				"select * "
-				+ "from STUDENT_BY_USERNAME "
+				+ "from STUDENT_GRAPH "
 				+ "where school_year_id = :schoolYearId "
 				+ "  and timestamp >= :fromTimestamp and timestamp <= :toTimestamp "
 				+ "order by first_name, last_name, timestamp"
@@ -407,12 +407,12 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 		query.setParameter("schoolYearId", schoolYearId);
 		query.setParameter("fromTimestamp", fromTimestamp);
 		query.setParameter("toTimestamp", toTimestamp);
-		setDataTyes(query);
-		query.setResultTransformer(new StudentUiDtoResultTtransformer());
+		setStudentGraphDataTyes(query);
+		query.setResultTransformer(new StudentGrpahResultTtransformer()/*new StudentUiDtoResultTtransformer()*/);
 		@SuppressWarnings("unchecked")
 		List<StudentUiDto> result = query.list();
  		LOGGER.debug("result.size(): {}", result.size());
-		LOGGER.debug("result: {}", result);
+		//LOGGER.debug("result: {}", result);
 		return result; //squery.list();
 	}
 
@@ -423,19 +423,19 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 		Session session = entityManager.unwrap(Session.class);
 		SQLQuery query = session.createSQLQuery(
 				"select * "
-				+ "from STUDENT_BY_USERNAME "
+				+ "from STUDENT_GRAPH "
 				+ "where school_year_id = :schoolYearId "
 				+ "  and student_id in (:studentIds) "
 				+ "order by first_name, last_name, timestamp"
 		);
 		query.setParameter("schoolYearId", schoolYearId);
 		query.setParameterList("studentIds", studentIds);
-		setDataTyes(query);
-		query.setResultTransformer(new StudentUiDtoResultTtransformer());
+		setStudentGraphDataTyes(query);
+		query.setResultTransformer(new StudentGrpahResultTtransformer()/*new StudentUiDtoResultTtransformer()*/);
 		@SuppressWarnings("unchecked")
 		List<StudentUiDto> result = query.list();
  		LOGGER.debug("result.size(): {}", result.size());
-		LOGGER.debug("result: {}", result);
+		//LOGGER.debug("result: {}", result);
 		return result; //squery.list();
 	}
 
@@ -455,7 +455,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 		@SuppressWarnings("unchecked")
 		List<StudentUiDto> result = query.list();
  		LOGGER.debug("result.size(): {}", result.size());
-		LOGGER.debug("result: {}", result);
+		//LOGGER.debug("result: {}", result);
 		return result; //squery.list();
 	}
 
