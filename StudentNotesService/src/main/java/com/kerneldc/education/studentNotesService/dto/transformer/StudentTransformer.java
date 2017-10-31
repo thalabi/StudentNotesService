@@ -34,10 +34,10 @@ public class StudentTransformer {
 	public static StudentDto entityToDto(Student student) {
 		StudentDto studentDto = new StudentDto();
 
-		if (Persistence.getPersistenceUtil().isLoaded(student, "noteSet")) {
+		if (Persistence.getPersistenceUtil().isLoaded(student.getNoteSet())) {
 			System.out.println("Persistence.getPersistenceUtil().isLoaded(student.getNoteSet())");
 		}
-		if (Persistence.getPersistenceUtil().isLoaded(student, "gradeSet")) {
+		if (Persistence.getPersistenceUtil().isLoaded(student.getGradeSet())) {
 			System.out.println("Persistence.getPersistenceUtil().isLoaded(student.getGradeSet())");
 		}
 		
@@ -49,7 +49,7 @@ public class StudentTransformer {
 		}
 		
 		BeanUtils.copyProperties(student, studentDto, "noteSet", "gradeSet");
-		if (Persistence.getPersistenceUtil().isLoaded(student, "noteSet")) {
+		if (Persistence.getPersistenceUtil().isLoaded(student.getNoteSet())) {
 			Set<NoteDto> noteDtoSet = new LinkedHashSet<>();
 			for (Note note : student.getNoteSet()) {
 				NoteDto noteDto = new NoteDto();
@@ -58,7 +58,7 @@ public class StudentTransformer {
 			}
 			studentDto.setNoteDtoSet(noteDtoSet);
 		}
-		if (Persistence.getPersistenceUtil().isLoaded(student, "gradeSet")) {
+		if (Persistence.getPersistenceUtil().isLoaded(student.getGradeSet())) {
 			Set<GradeDto> grade2DtoSet = new LinkedHashSet<>();
 			for (Grade grade : student.getGradeSet()) {
 				GradeDto gradeDto = new GradeDto();
@@ -75,13 +75,13 @@ public class StudentTransformer {
 		StudentUiDto studentUiDto = new StudentUiDto();
 
 		// TODO these methods are not working properly they all return true irrespective
-		if (Persistence.getPersistenceUtil().isLoaded(student, "noteSet")) {
+		if (Persistence.getPersistenceUtil().isLoaded(student.getNoteSet())) {
 			System.out.println("Persistence.getPersistenceUtil().isLoaded(student, \"noteSet\")");
 		}
-		if (Persistence.getPersistenceUtil().isLoaded(student, "gradeSet")) {
+		if (Persistence.getPersistenceUtil().isLoaded(student.getGradeSet())) {
 			System.out.println("Persistence.getPersistenceUtil().isLoaded(student, \"gradeSet\")");
 		}
-		if (Persistence.getPersistenceUtil().isLoaded(student, "schoolYearSet")) {
+		if (Persistence.getPersistenceUtil().isLoaded(student.getSchoolYearSet())) {
 			System.out.println("Persistence.getPersistenceUtil().isLoaded(student, \"schoolYearSet\")");
 		}
 		
@@ -97,7 +97,7 @@ public class StudentTransformer {
 		}
 		
 		BeanUtils.copyProperties(student, studentUiDto, "noteSet", "gradeSet");
-		if (Persistence.getPersistenceUtil().isLoaded(student, "noteSet")) {
+		if (Persistence.getPersistenceUtil().isLoaded(student.getNoteSet())) {
 			for (Note note : student.getNoteSet()) {
 				NoteUiDto noteUiDto = new NoteUiDto();
 				BeanUtils.copyProperties(note, noteUiDto);

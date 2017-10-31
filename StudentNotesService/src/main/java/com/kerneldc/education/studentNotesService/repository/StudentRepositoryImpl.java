@@ -30,8 +30,8 @@ import org.springframework.data.jpa.repository.JpaContext;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.domain.Student_;
+import com.kerneldc.education.studentNotesService.domain.resultTransformer.StudentBasicResultTtransformer;
 import com.kerneldc.education.studentNotesService.domain.resultTransformer.StudentGrpahResultTtransformer;
-import com.kerneldc.education.studentNotesService.domain.resultTransformer.StudentUiDtoResultTtransformer;
 import com.kerneldc.education.studentNotesService.dto.StudentDto;
 import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
 
@@ -357,18 +357,17 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 	public List<StudentUiDto> getStudentsInSchoolYear(Long schoolYearId) {
 		Session session = entityManager.unwrap(Session.class);
 		SQLQuery query = session.createSQLQuery(
-				"select * "
-				+ "from STUDENT_GRAPH "
-				+ "where school_year_id = :schoolYearId "
-				+ "order by first_name, last_name, timestamp"
+				"select s.id, s.first_name, s.last_name, s.version\n" + 
+				"from student s join student_school_year ssy on s.id = ssy.student_id join school_year sy on ssy.school_year_id = sy.id\n" + 
+				"where sy.id = :schoolYearId\n" + 
+				"order by first_name, last_name"
 		);
 		query.setParameter("schoolYearId", schoolYearId);
-		setStudentGraphDataTyes(query);
-		query.setResultTransformer(new StudentGrpahResultTtransformer()/*new StudentUiDtoResultTtransformer()*/);
+		setGetStudentsInSchoolYear2DataTyes(query);
+		query.setResultTransformer(new StudentBasicResultTtransformer());
 		@SuppressWarnings("unchecked")
 		List<StudentUiDto> result = query.list();
  		LOGGER.debug("result.size(): {}", result.size());
-		//LOGGER.debug("result: {}", result);
 		return result; //squery.list();
 	}
 
@@ -377,21 +376,22 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 	public List<StudentUiDto> getStudentsNotInSchoolYear(Long schoolYearId) {
 		Session session = entityManager.unwrap(Session.class);
 		SQLQuery query = session.createSQLQuery(
-				"select * "
-				+ "from STUDENT_GRAPH "
-				+ "where school_year_id != :schoolYearId "
-				+ "order by first_name, last_name, timestamp"
+				"select s.id, s.first_name, s.last_name, s.version from student s\n" + 
+				"minus\n" + 
+				"select s.id, s.first_name, s.last_name, s.version \n" + 
+				"from student s join student_school_year ssy on s.id = ssy.student_id join school_year sy on ssy.school_year_id = sy.id \n" + 
+				"where sy.id = :schoolYearId \n" + 
+				"order by first_name, last_name"
 		);
 		query.setParameter("schoolYearId", schoolYearId);
-		setStudentGraphDataTyes(query);
-		query.setResultTransformer(new StudentGrpahResultTtransformer()/*new StudentUiDtoResultTtransformer()*/);
+		setGetStudentsInSchoolYear2DataTyes(query);
+		query.setResultTransformer(new StudentBasicResultTtransformer());
 		@SuppressWarnings("unchecked")
 		List<StudentUiDto> result = query.list();
  		LOGGER.debug("result.size(): {}", result.size());
-		//LOGGER.debug("result: {}", result);
 		return result; //squery.list();
 	}
-
+	
 	@Override
 	@Transactional
 	public List<StudentUiDto> getStudentsByTimestampRange(Long schoolYearId, Timestamp fromTimestamp, Timestamp toTimestamp) {
@@ -482,5 +482,9 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 				.addScalar("end_date", StandardBasicTypes.DATE)
 				.addScalar("school_year_version", StandardBasicTypes.LONG)
 				.addScalar("student_version", StandardBasicTypes.LONG);
+	}
+	private void setGetStudentsInSchoolYear2DataTyes(SQLQuery query) {
+		query.addScalar("id", StandardBasicTypes.LONG).addScalar("first_name", StandardBasicTypes.STRING)
+				.addScalar("last_name", StandardBasicTypes.STRING).addScalar("version", StandardBasicTypes.LONG);
 	}
 }

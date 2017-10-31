@@ -503,7 +503,7 @@ public class StudentNotesResource {
 
 		LOGGER.debug("begin ...");
 		Students students = new Students();
-		students.setStudentList(studentRepository.getStudentsInSchoolYear(printRequestVO.getSchoolYearId()));
+		students.setStudentList(studentRepository.getStudentGraphBySchoolYear(printRequestVO.getSchoolYearId()));
 		byte[] pdfByteArray = pdfStudentNotesReportService.generateReport(students);
 		LOGGER.debug("end ...");
 		return Response.ok(pdfByteArray).build();
