@@ -6,7 +6,6 @@ import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 
 public interface SchoolYearRepositoryCustom {
 
-	SchoolYear getStudentsBySchoolYearId(Long id);
 	Set<SchoolYear> getLatestActiveStudentsBySchoolYearId(Long schoolYearId, int limit);
 //	List<Student> getAllStudents();
 //	

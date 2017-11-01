@@ -392,9 +392,12 @@ public class StudentNotesResource {
     	try {
     		Student student = studentRepository.getStudentById(id);
     		Set<SchoolYear> schoolYearSet = student.getSchoolYearSet();
-    		for (SchoolYear schoolYear : schoolYearSet) {
-    			student.removeSchoolYear(schoolYear);
+    		while (schoolYearSet.iterator().hasNext()) {
+    			student.removeSchoolYear(schoolYearSet.iterator().next());
     		}
+//    		for (SchoolYear schoolYear : schoolYearSet) {
+//    			student.removeSchoolYear(schoolYear);
+//    		}
 			studentRepository.delete(id);
 		} catch (RuntimeException e) {
 			LOGGER.error("Exception encountered: {}", e);

@@ -19,10 +19,14 @@
   <include file="liquibase/changelog-student-school-year.xml"/>
   <include file="liquibase/changelog-school-year-add-start-and-end-dates.xml"/>
   <include file="liquibase/changelog-user-preference.xml"/>
-  <include file="liquibase/changelog-user-preference-graph.xml"/>
+<!--   <include file="liquibase/changelog-user-preference-graph.xml"/> -->
   <include file="liquibase/changelog-grade.xml"/>
   <include file="liquibase/changelog-student-grade.xml"/>
   
-  <include file="liquibase/changelog-student-by-username.xml"/>
+<!--   <include file="liquibase/changelog-student-by-username.xml"/> -->
   <include file="liquibase/changelog-student-graph.xml"/>
+  
+  <include file="liquibase/data/changelog-school-year-data.xml"/>
+  <include file="liquibase/data/changelog-user-preference-data.xml"/>
+  
 </databaseChangeLog>

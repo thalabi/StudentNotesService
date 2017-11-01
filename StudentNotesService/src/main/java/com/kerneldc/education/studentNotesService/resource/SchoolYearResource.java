@@ -114,7 +114,7 @@ public class SchoolYearResource {
 		LOGGER.debug("begin ...");
 		SchoolYear schoolYear = null;
 		try {
-			schoolYear = schoolYearRepository.getStudentsBySchoolYearId(id);
+			schoolYear = schoolYearRepository.getById(id);
 		} catch (RuntimeException e) {
 			throw new SnsRuntimeException(e.getClass().getSimpleName());
 		}
@@ -131,7 +131,7 @@ public class SchoolYearResource {
 		LOGGER.debug("begin ...");
 		SchoolYear schoolYear = null;
 		try {
-			schoolYear = schoolYearRepository.getStudentsBySchoolYearId(id);
+			schoolYear = schoolYearRepository.getById(id);
 		} catch (RuntimeException e) {
 			throw new SnsRuntimeException(e.getClass().getSimpleName());
 		}
@@ -210,9 +210,9 @@ public class SchoolYearResource {
     	try {
     		// Check if there are students enrolled in this year
     		LOGGER.debug("id: {}", id);
-    		SchoolYear schoolYearToDelete = schoolYearRepository.getStudentsBySchoolYearId(id);
+    		SchoolYear schoolYearToDelete = schoolYearRepository.getById(id);
     		if (schoolYearToDelete == null) throw new NotFoundException();
-    		if (! schoolYearToDelete.getStudentSet().isEmpty()) throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>());
+    		if (!/* not */schoolYearToDelete.getStudentSet().isEmpty()) throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>());
     		schoolYearRepository.delete(id);
 		} catch (RuntimeException e) {
 			LOGGER.error("Exception encountered: {}", e);
