@@ -5,8 +5,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.kerneldc.education.studentNotesService.exception.SnsException;
 
 import liquibase.change.custom.CustomTaskChange;
 import liquibase.database.Database;
@@ -17,7 +20,19 @@ import liquibase.exception.SetupException;
 import liquibase.exception.ValidationErrors;
 import liquibase.resource.ResourceAccessor;
 
-public class MigrateGradeToTable implements CustomTaskChange {
+/**
+ * Class to migrate students to release supporting multi school years
+ * 1. Select all students that have note later than Sep 1, 2017
+ * 2. For each student, create two rows in student_school_year table for school years 2016-2017 & 2017-2018
+ * 3. For each student, create a row in grade and student_garde tables using school year 2017-2018 and the grade in the student row
+ * 4. For each student, create a row in grade and student_garde tables using school year 2016-2017 and a grade less than the one in the student row
+ * 5. Select all students that don't have a note later than Sep 1, 2017
+ * 6. For each student, create one row in student_school_year table for school year 2016-2017
+ * 7. For each student, create a row in grade and student_garde tables using school year 2016-2017 and the grade in the student row
+ * @author Tarif Halabi
+ *
+ */
+public class MigrateToMultiSchoolYearRelease implements CustomTaskChange {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 	
@@ -49,10 +64,12 @@ public class MigrateGradeToTable implements CustomTaskChange {
 			Long schoolYearId2017_2018 = getSchoolYearId(jdbcConnection, "2017-2018");
 			Long schoolYearId2016_2017 = getSchoolYearId(jdbcConnection, "2016-2017");
 			migrateStudents(jdbcConnection, SELECT_STUDENTS_IN_2017_2018_SQL, schoolYearId2017_2018,
-					insertStudentSchoolYearStatement, insertGradeStatement, insertStudentGradeStatement);
+					insertStudentSchoolYearStatement, insertGradeStatement, insertStudentGradeStatement, false);
+			migrateStudents(jdbcConnection, SELECT_STUDENTS_IN_2017_2018_SQL, schoolYearId2016_2017,
+					insertStudentSchoolYearStatement, insertGradeStatement, insertStudentGradeStatement, true);
 			migrateStudents(jdbcConnection, SELECT_STUDENTS_IN_2016_2017_SQL, schoolYearId2016_2017,
-					insertStudentSchoolYearStatement, insertGradeStatement, insertStudentGradeStatement);
-		} catch (DatabaseException | SQLException e) {
+					insertStudentSchoolYearStatement, insertGradeStatement, insertStudentGradeStatement, false);
+		} catch (DatabaseException | SQLException | SnsException e) {
 			throw new CustomChangeException("Student migration failed", e);
 			
 		}
@@ -60,7 +77,7 @@ public class MigrateGradeToTable implements CustomTaskChange {
 
 	private void migrateStudents(JdbcConnection jdbcConnection, String selectSql, Long schoolYearId,
 			PreparedStatement insertStudentSchoolYearStatement, PreparedStatement insertGradeStatement,
-			PreparedStatement insertStudentGradeStatement) throws SQLException {
+			PreparedStatement insertStudentGradeStatement, boolean decrementGradeValue) throws SQLException, SnsException {
 		Statement statement = null;
 		try {
 			statement = jdbcConnection.createStatement();
@@ -69,6 +86,10 @@ public class MigrateGradeToTable implements CustomTaskChange {
 				Long studentId = resultSet.getLong(1);
 				String grade = resultSet.getString(2);
 				LOGGER.debug("studentId: [{}], grade: [{}]", studentId, grade);
+				if (decrementGradeValue) {
+					grade = decrementGrade(grade);
+					LOGGER.debug("decremented grade: [{}]", grade);
+				}
 				insertStudentSchoolYearRow(insertStudentSchoolYearStatement, studentId, schoolYearId);
 				Long gradeId = insertGradeRow(insertGradeStatement, studentId, schoolYearId, grade);
 				LOGGER.debug("gradeId: [{}]", gradeId);
@@ -79,6 +100,37 @@ public class MigrateGradeToTable implements CustomTaskChange {
 		} finally {
 			if (statement != null) {
 				statement.close();
+			}
+		}
+	}
+	
+	private String decrementGrade (String grade) throws SnsException {
+		if (NumberUtils.isParsable(grade)) {
+			try {
+				int intGrade =  Integer.parseInt(grade);
+				if (intGrade > 8) {
+					throw new SnsException(String.format("Grade [%s] cannot be greater than 8.", grade));
+				}
+				if (intGrade >= 2) {
+					return String.valueOf(intGrade - 1);
+				}
+				if (intGrade == 1) {
+					return "SK";
+				}
+				throw new SnsException(String.format("Grade [%s] cannot be less that 1.", grade));
+			} catch (NumberFormatException e) {
+				throw new NumberFormatException(String.format("Grade [%s] cannot be converted to a number.", grade));
+			}
+		} else {
+			switch (grade) {
+			case "Other":
+				return grade;
+			case "SK":
+				return "JK";
+			case "JK":
+				return "Other";
+			default:
+				throw new SnsException(String.format("Grade [%s] value cannot be handled.", grade));
 			}
 		}
 	}

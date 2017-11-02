@@ -3,7 +3,7 @@
 
 	<!-- Tables -->
     <changeSet author="Tarif Halabi" id="migrate_grade_to_table">
-        <customChange class="com.kerneldc.education.studentNotesService.database.MigrateGradeToTable"/>
+        <customChange class="com.kerneldc.education.studentNotesService.database.MigrateToMultiSchoolYearRelease"/>
     </changeSet>
 
 </databaseChangeLog>
