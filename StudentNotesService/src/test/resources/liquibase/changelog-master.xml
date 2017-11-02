@@ -38,4 +38,6 @@
 <!--   <include file="liquibase/changelog-student-by-username.xml"/> -->
   <include file="liquibase/changelog-student-graph.xml"/>
   
+  <include file="liquibase/changelog-migrate-grade-to-table.xml"/>
+  
 </databaseChangeLog>

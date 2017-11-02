@@ -29,4 +29,6 @@
   <include file="liquibase/data/changelog-school-year-data.xml"/>
   <include file="liquibase/data/changelog-user-preference-data.xml"/>
   
+  <include file="liquibase/changelog-migrate-grade-to-table.xml"/>
+  
 </databaseChangeLog>
