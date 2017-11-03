@@ -48,6 +48,7 @@ import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 import com.kerneldc.education.studentNotesService.dto.NoteDto;
 import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
 import com.kerneldc.education.studentNotesService.dto.StudentDto;
+import com.kerneldc.education.studentNotesService.dto.transformer.NoteTransformer;
 import com.kerneldc.education.studentNotesService.dto.transformer.SchoolYearTransformer;
 import com.kerneldc.education.studentNotesService.dto.transformer.StudentTransformer;
 import com.kerneldc.education.studentNotesService.dto.ui.NoteUiDto;
@@ -56,6 +57,7 @@ import com.kerneldc.education.studentNotesService.exception.RowNotFoundException
 import com.kerneldc.education.studentNotesService.exception.SnsException;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
 import com.kerneldc.education.studentNotesService.repository.GradeRepository;
+import com.kerneldc.education.studentNotesService.repository.NoteRepository;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 import com.kerneldc.education.studentNotesService.service.PdfStudentNotesReportService;
@@ -71,6 +73,9 @@ public class StudentNotesResource {
 
 	@Autowired
 	private SchoolYearRepository schoolYearRepository;
+
+	@Autowired
+	private NoteRepository noteRepository;
 
 	@Autowired
 	private GradeRepository gradeRepository;
@@ -449,6 +454,38 @@ public class StudentNotesResource {
     	return savedStudentUiDto;
     }
 
+    @POST
+	@Path("/updateNote")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public NoteUiDto updateNote(
+    	NoteRequestVo noteRequestVo) throws SnsException {
+
+    	LOGGER.debug("begin ...");
+		LOGGER.debug("noteRequestVo: {}", noteRequestVo);
+		// check version of student
+		NoteUiDto noteUiDto = noteRequestVo.getNoteUiDto();
+		Note note = noteRepository.findOne(noteUiDto.getId());
+		if (!/* not */note.getVersion().equals(noteUiDto.getVersion())) {
+			throw new SnsException("Note version has changed.");
+		}
+		note.setTimestamp(noteUiDto.getTimestamp());
+		note.setText(noteUiDto.getText());
+		Note savedNote = null;
+    	try {
+    		savedNote = noteRepository.save(note);
+    	} catch (RuntimeException e) {
+    		LOGGER.error("Exception encountered: {}", e);
+    		throw new SnsRuntimeException(e.getClass().getSimpleName());
+    	}
+    	LOGGER.debug("savedNote: {}", savedNote);
+		noteUiDto = NoteTransformer.entityToUiDto(savedNote);
+    	LOGGER.debug("noteUiDto: {}", noteUiDto);
+    	LOGGER.debug("end ...");
+		return noteUiDto;
+    }
+
     private Set<Note> getNotesNotInSchoolYear(Set<Note> noteSet, SchoolYear schoolYear) {
     	Set<Note> notesNotInSchoolYear = new LinkedHashSet<>();
     	for (Note note : noteSet) {
@@ -805,10 +842,6 @@ public class StudentNotesResource {
 		    	return Long.valueOf(left.getTimestamp().getTime()).compareTo(right.getTimestamp().getTime());
 		    }
 		};
-//		List<NoteUiDto> noteUiDtoList = new ArrayList<>(noteUiDtoSet);
-//		Collections.sort(noteUiDtoList, comparator);
-//		noteUiDtoSet.clear();
-//		noteUiDtoSet.addAll(new LinkedHashSet<>(noteUiDtoList));
 		TreeSet<NoteUiDto> sortedSet = new TreeSet<>(comparator);
 		sortedSet.addAll(noteUiDtoSet);
 		return sortedSet;

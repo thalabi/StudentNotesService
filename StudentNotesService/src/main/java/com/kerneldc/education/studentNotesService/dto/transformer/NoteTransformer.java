@@ -18,6 +18,12 @@ public class NoteTransformer {
 		return noteDto;
 	}
 
+	public static NoteUiDto entityToUiDto(Note note) {
+		NoteUiDto noteUiDto = new NoteUiDto();
+		BeanUtils.copyProperties(note, noteUiDto);
+		return noteUiDto;
+	}
+
 	public static Note dtoToEntity(NoteDto noteDto) {
 		Note note = new Note();
 		BeanUtils.copyProperties(noteDto, note);

@@ -2,7 +2,7 @@ package com.kerneldc.education.studentNotesService.resource;
 
 import com.kerneldc.education.studentNotesService.dto.ui.NoteUiDto;
 
-public class NoteRequestVO extends AbstractBaseVO {
+public class NoteRequestVo extends AbstractBaseVO {
 
 	private static final long serialVersionUID = 1L;
 
