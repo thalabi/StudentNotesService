@@ -40,6 +40,10 @@ public class MigrateToMultiSchoolYearRelease implements CustomTaskChange {
 			"select distinct s.id,s.grade "
 			+ "from student s join student_note sn on s.id=sn.student_id join note n on sn.note_id = n.id "
 			+ "where n.timestamp>='2017-09-01'";
+	private static final String SELECT_STUDENTS_TO_CREATE_IN_2016_2017_W_GRADE_DECREMENTED = 
+			"select distinct s.id,s.grade from student s join student_note sn on s.id=sn.student_id join note n on sn.note_id = n.id "
+			+ "where n.timestamp<'2017-09-01' "
+			+ "  and s.id in (select distinct s.id from student s join student_note sn on s.id=sn.student_id join note n on sn.note_id = n.id where n.timestamp>='2017-09-01')";
 	private static final String SELECT_STUDENTS_IN_2016_2017_SQL =
 			"select s.id,s.grade from student s "
 			+ "minus "
@@ -65,7 +69,7 @@ public class MigrateToMultiSchoolYearRelease implements CustomTaskChange {
 			Long schoolYearId2016_2017 = getSchoolYearId(jdbcConnection, "2016-2017");
 			migrateStudents(jdbcConnection, SELECT_STUDENTS_IN_2017_2018_SQL, schoolYearId2017_2018,
 					insertStudentSchoolYearStatement, insertGradeStatement, insertStudentGradeStatement, false);
-			migrateStudents(jdbcConnection, SELECT_STUDENTS_IN_2017_2018_SQL, schoolYearId2016_2017,
+			migrateStudents(jdbcConnection, SELECT_STUDENTS_TO_CREATE_IN_2016_2017_W_GRADE_DECREMENTED, schoolYearId2016_2017,
 					insertStudentSchoolYearStatement, insertGradeStatement, insertStudentGradeStatement, true);
 			migrateStudents(jdbcConnection, SELECT_STUDENTS_IN_2016_2017_SQL, schoolYearId2016_2017,
 					insertStudentSchoolYearStatement, insertGradeStatement, insertStudentGradeStatement, false);

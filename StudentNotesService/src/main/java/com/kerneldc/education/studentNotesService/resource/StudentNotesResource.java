@@ -17,8 +17,8 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
-import javax.persistence.OptimisticLockException;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -442,12 +442,13 @@ public class StudentNotesResource {
     	StudentUiDto savedStudentUiDto = StudentTransformer.entityToUiDto(savedSudent);
     	Set<NoteUiDto> noteUiDtosNotInSchoolYear = getNoteUiDtosNotInSchoolYear(savedStudentUiDto.getNoteUiDtoSet(), schoolYear);
     	savedStudentUiDto.getNoteUiDtoSet().removeAll(noteUiDtosNotInSchoolYear);
-    	// TODO sort notes
+    	savedStudentUiDto.setNoteUiDtoSet(sortNoteUiDtoSet(savedStudentUiDto.getNoteUiDtoSet()));
     	savedStudentUiDto.setSchoolYearUiDto(studentUiDto.getSchoolYearUiDto());
+    	savedStudentUiDto.setGradeUiDto(studentUiDto.getGradeUiDto());
     	LOGGER.debug("end ...");
     	return savedStudentUiDto;
     }
-	
+
     private Set<Note> getNotesNotInSchoolYear(Set<Note> noteSet, SchoolYear schoolYear) {
     	Set<Note> notesNotInSchoolYear = new LinkedHashSet<>();
     	for (Note note : noteSet) {
@@ -795,5 +796,21 @@ public class StudentNotesResource {
 		}
 		noteSetDto.clear();
 		noteSetDto.addAll(new LinkedHashSet<>(noteDtoList));
+	}	
+	
+	private Set<NoteUiDto> sortNoteUiDtoSet(Set<NoteUiDto> noteUiDtoSet) {
+		Comparator<NoteUiDto> comparator = new Comparator<NoteUiDto>() {
+		    @Override
+		    public int compare(NoteUiDto left, NoteUiDto right) {
+		    	return Long.valueOf(left.getTimestamp().getTime()).compareTo(right.getTimestamp().getTime());
+		    }
+		};
+//		List<NoteUiDto> noteUiDtoList = new ArrayList<>(noteUiDtoSet);
+//		Collections.sort(noteUiDtoList, comparator);
+//		noteUiDtoSet.clear();
+//		noteUiDtoSet.addAll(new LinkedHashSet<>(noteUiDtoList));
+		TreeSet<NoteUiDto> sortedSet = new TreeSet<>(comparator);
+		sortedSet.addAll(noteUiDtoSet);
+		return sortedSet;
 	}	
 }
