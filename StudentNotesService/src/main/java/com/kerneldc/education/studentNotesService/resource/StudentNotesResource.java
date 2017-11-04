@@ -458,7 +458,6 @@ public class StudentNotesResource {
 	@Path("/updateNote")
     @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-    @Transactional
     public NoteUiDto updateNote(
     	NoteRequestVo noteRequestVo) throws SnsException {
 
