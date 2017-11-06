@@ -311,7 +311,6 @@ public class StudentNotesResource {
 			grade.setGradeEnum(studentUiDto.getGradeUiDto().getGradeEnum());
 			student.getGradeSet().add(grade);
 		}
-    	LOGGER.debug("student: {}", student);
     	Student savedSudent;
     	try {
     		savedSudent = studentRepository.save(student);
@@ -333,7 +332,6 @@ public class StudentNotesResource {
     	StudentUiDto studentUiDto) {
 
     	LOGGER.debug("begin ...");
-		//LOGGER.debug("studentUiDto: {}", studentUiDto);
     	//Student student = StudentTransformer.uiDtoToEntity(studentUiDto);
 		Student student;
 		if (studentUiDto.getId() != null) {
@@ -355,7 +353,6 @@ public class StudentNotesResource {
 			grade.setGradeEnum(studentUiDto.getGradeUiDto().getGradeEnum());
 			gradeSet.add(grade);
 		}
-    	//LOGGER.debug("student: {}", student);
     	Student savedSudent;
     	try {
     		//schoolYearRepository.save(student.getSchoolYearSet().iterator().next());
@@ -385,6 +382,7 @@ public class StudentNotesResource {
     		return grade;
     	}
     }
+    
 	@DELETE
 	@Path("/deleteStudentById/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
