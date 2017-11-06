@@ -6,21 +6,10 @@ public class NoteRequestVo extends AbstractBaseVO {
 
 	private static final long serialVersionUID = 1L;
 
-	public enum Operation {
-		CREATE,UPDATE,DELETE
-	}
-	
-	private Operation operation;
 	private Long studentId;
 	private Long studentVersion;
 	private NoteUiDto noteUiDto;
 	
-	public Operation getOperation() {
-		return operation;
-	}
-	public void setOperation(Operation operation) {
-		this.operation = operation;
-	}
 	public Long getStudentId() {
 		return studentId;
 	}
