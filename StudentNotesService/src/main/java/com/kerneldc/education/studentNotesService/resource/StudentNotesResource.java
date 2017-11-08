@@ -201,91 +201,91 @@ public class StudentNotesResource {
 //	}
 
     // curl -i -H "Content-Type: application/json" -X POST -d '{"id":2,"firstName":"xxxxxxxxxxxxxxxx","lastName":"halabi","grade":"GR-4","noteList":[]}' http://localhost:8080/StudentNotesService
-    @POST
-	@Path("/saveStudent")
-    @Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@JsonView(View.Default.class)
-    public Student saveStudent(
-    	Student student) {
-
-    	LOGGER.debug("begin ...");
-    	Student savedSudent;
-    	try {
-    		savedSudent = studentRepository.save(student);
-		} catch (RuntimeException e) {
-			LOGGER.error("Exception encountered: {}", e);
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
-		}
-    	LOGGER.debug("end ...");
-    	return savedSudent;
-    }
+//    @POST
+//	@Path("/saveStudent")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//	@Produces(MediaType.APPLICATION_JSON)
+//	@JsonView(View.Default.class)
+//    public Student saveStudent(
+//    	Student student) {
+//
+//    	LOGGER.debug("begin ...");
+//    	Student savedSudent;
+//    	try {
+//    		savedSudent = studentRepository.save(student);
+//		} catch (RuntimeException e) {
+//			LOGGER.error("Exception encountered: {}", e);
+//			throw new SnsRuntimeException(e.getClass().getSimpleName());
+//		}
+//    	LOGGER.debug("end ...");
+//    	return savedSudent;
+//    }
 	
-    @POST
-	@Path("/saveStudentDto")
-    @Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-    public StudentDto saveStudentDto(
-    	StudentDto studentDto) {
-
-    	LOGGER.debug("begin ...");
-    	LOGGER.debug("studentDto: {}", studentDto);
-    	Student student = StudentTransformer.dtoToEntity(studentDto);
-    	// Update grade object
-    	if (CollectionUtils.isNotEmpty(student.getGradeSet())) {
-    		Grade grade = student.getGradeSet().iterator().next();
-    		grade.setStudent(student);
-    		grade.setSchoolYear(student.getSchoolYearSet().iterator().next());
-    	}
-    	//student.getGradeSet().iterator().next().setStudent(student);
-    	//student.getGradeSet().iterator().next().setSchoolYear(student.getSchoolYearSet().iterator().next());
-    	LOGGER.debug("student: {}", student);
-    	Student savedStudent;
-    	StudentDto savedStudentDto;
-    	try {
-    		savedStudent = studentRepository.save(student);
-		} catch (RuntimeException e) {
-			LOGGER.error("Exception encountered: {}", e);
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
-		}
-    	savedStudentDto = StudentTransformer.entityToDto(savedStudent);
-    	sortNoteSet(savedStudentDto.getNoteDtoSet());
-		LOGGER.debug("after sortNoteSet call");
-		for (NoteDto noteDto : savedStudentDto.getNoteDtoSet()) {
-			LOGGER.debug("noteDto.getTimestamp(): {}", noteDto.getTimestamp());
-		}
-    	LOGGER.debug("end ...");
-    	return savedStudentDto;
-    }
+//    @POST
+//	@Path("/saveStudentDto")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//	@Produces(MediaType.APPLICATION_JSON)
+//    public StudentDto saveStudentDto(
+//    	StudentDto studentDto) {
+//
+//    	LOGGER.debug("begin ...");
+//    	LOGGER.debug("studentDto: {}", studentDto);
+//    	Student student = StudentTransformer.dtoToEntity(studentDto);
+//    	// Update grade object
+//    	if (CollectionUtils.isNotEmpty(student.getGradeSet())) {
+//    		Grade grade = student.getGradeSet().iterator().next();
+//    		grade.setStudent(student);
+//    		grade.setSchoolYear(student.getSchoolYearSet().iterator().next());
+//    	}
+//    	//student.getGradeSet().iterator().next().setStudent(student);
+//    	//student.getGradeSet().iterator().next().setSchoolYear(student.getSchoolYearSet().iterator().next());
+//    	LOGGER.debug("student: {}", student);
+//    	Student savedStudent;
+//    	StudentDto savedStudentDto;
+//    	try {
+//    		savedStudent = studentRepository.save(student);
+//		} catch (RuntimeException e) {
+//			LOGGER.error("Exception encountered: {}", e);
+//			throw new SnsRuntimeException(e.getClass().getSimpleName());
+//		}
+//    	savedStudentDto = StudentTransformer.entityToDto(savedStudent);
+//    	sortNoteSet(savedStudentDto.getNoteDtoSet());
+//		LOGGER.debug("after sortNoteSet call");
+//		for (NoteDto noteDto : savedStudentDto.getNoteDtoSet()) {
+//			LOGGER.debug("noteDto.getTimestamp(): {}", noteDto.getTimestamp());
+//		}
+//    	LOGGER.debug("end ...");
+//    	return savedStudentDto;
+//    }
 	
     /**
      * Not used
      * @param studentUiDto
      * @return
      */
-    @POST
-	@Path("/saveStudentUiDto")
-    @Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-    public StudentUiDto saveStudentUiDto(
-    	StudentUiDto studentUiDto) {
-
-    	LOGGER.debug("begin ...");
-		LOGGER.debug("studentUiDto: {}", studentUiDto);
-    	Student student = StudentTransformer.uiDtoToEntity(studentUiDto);
-    	LOGGER.debug("student: {}", student);
-    	Student savedSudent;
-    	try {
-    		//schoolYearRepository.save(student.getSchoolYearSet().iterator().next());
-    		savedSudent = studentRepository.save(student);
-		} catch (RuntimeException e) {
-			LOGGER.error("Exception encountered: {}", e);
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
-		}
-    	StudentUiDto savedStudentUiDto =StudentTransformer.entityToUiDto(savedSudent);
-    	LOGGER.debug("end ...");
-    	return savedStudentUiDto;
-    }
+//    @POST
+//	@Path("/saveStudentUiDto")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//	@Produces(MediaType.APPLICATION_JSON)
+//    public StudentUiDto saveStudentUiDto(
+//    	StudentUiDto studentUiDto) {
+//
+//    	LOGGER.debug("begin ...");
+//		LOGGER.debug("studentUiDto: {}", studentUiDto);
+//    	Student student = StudentTransformer.uiDtoToEntity(studentUiDto);
+//    	LOGGER.debug("student: {}", student);
+//    	Student savedSudent;
+//    	try {
+//    		//schoolYearRepository.save(student.getSchoolYearSet().iterator().next());
+//    		savedSudent = studentRepository.save(student);
+//		} catch (RuntimeException e) {
+//			LOGGER.error("Exception encountered: {}", e);
+//			throw new SnsRuntimeException(e.getClass().getSimpleName());
+//		}
+//    	StudentUiDto savedStudentUiDto =StudentTransformer.entityToUiDto(savedSudent);
+//    	LOGGER.debug("end ...");
+//    	return savedStudentUiDto;
+//    }
 	
     @POST
 	@Path("/addStudentDetails")
@@ -410,98 +410,98 @@ public class StudentNotesResource {
 		return "";
 	}
 	
-    @POST
-	@Path("/updateStudentNotes")
-    @Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-    @Transactional
-    public StudentUiDto updateStudentNotes(
-    	StudentUiDto studentUiDto) {
+//    @POST
+//	@Path("/updateStudentNotes")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//	@Produces(MediaType.APPLICATION_JSON)
+//    @Transactional
+//    public StudentUiDto updateStudentNotes(
+//    	StudentUiDto studentUiDto) {
+//
+//    	LOGGER.debug("begin ...");
+//		LOGGER.debug("studentUiDto: {}", studentUiDto);
+//		Student student = studentRepository.getStudentByIdWithNoteListAndGradeList(studentUiDto.getId());
+//		Set<Note> noteSet = student.getNoteSet();
+//		SchoolYear schoolYear = schoolYearRepository.findOne(studentUiDto.getSchoolYearUiDto().getId());
+//		Set<Note> notesNotInSchoolYear = getNotesNotInSchoolYear(noteSet, schoolYear);
+//		Set<NoteUiDto> noteUiDtoSet = studentUiDto.getNoteUiDtoSet();
+//		Set<Note> newNotes = new HashSet<>(noteUiDtoSet.size());
+//		for (NoteUiDto noteUiDto : noteUiDtoSet) {
+//			Note note = new Note();
+//			note.setTimestamp(noteUiDto.getTimestamp());
+//			note.setText(noteUiDto.getText());
+//			newNotes.add(note);
+//		}
+//		student.setNoteSet(notesNotInSchoolYear);
+//		student.getNoteSet().addAll(newNotes);
+//    	//LOGGER.debug("student: {}", student);
+//    	Student savedSudent;
+//    	try {
+//    		savedSudent = studentRepository.save(student);
+//		} catch (RuntimeException e) {
+//			LOGGER.error("Exception encountered: {}", e);
+//			throw new SnsRuntimeException(e.getClass().getSimpleName());
+//		}
+//    	StudentUiDto savedStudentUiDto = StudentTransformer.entityToUiDto(savedSudent);
+//    	Set<NoteUiDto> noteUiDtosNotInSchoolYear = getNoteUiDtosNotInSchoolYear(savedStudentUiDto.getNoteUiDtoSet(), schoolYear);
+//    	savedStudentUiDto.getNoteUiDtoSet().removeAll(noteUiDtosNotInSchoolYear);
+//    	savedStudentUiDto.setNoteUiDtoSet(sortNoteUiDtoSet(savedStudentUiDto.getNoteUiDtoSet()));
+//    	savedStudentUiDto.setSchoolYearUiDto(studentUiDto.getSchoolYearUiDto());
+//    	savedStudentUiDto.setGradeUiDto(studentUiDto.getGradeUiDto());
+//    	LOGGER.debug("end ...");
+//    	return savedStudentUiDto;
+//    }
 
-    	LOGGER.debug("begin ...");
-		LOGGER.debug("studentUiDto: {}", studentUiDto);
-		Student student = studentRepository.getStudentByIdWithNoteListAndGradeList(studentUiDto.getId());
-		Set<Note> noteSet = student.getNoteSet();
-		SchoolYear schoolYear = schoolYearRepository.findOne(studentUiDto.getSchoolYearUiDto().getId());
-		Set<Note> notesNotInSchoolYear = getNotesNotInSchoolYear(noteSet, schoolYear);
-		Set<NoteUiDto> noteUiDtoSet = studentUiDto.getNoteUiDtoSet();
-		Set<Note> newNotes = new HashSet<>(noteUiDtoSet.size());
-		for (NoteUiDto noteUiDto : noteUiDtoSet) {
-			Note note = new Note();
-			note.setTimestamp(noteUiDto.getTimestamp());
-			note.setText(noteUiDto.getText());
-			newNotes.add(note);
-		}
-		student.setNoteSet(notesNotInSchoolYear);
-		student.getNoteSet().addAll(newNotes);
-    	//LOGGER.debug("student: {}", student);
-    	Student savedSudent;
-    	try {
-    		savedSudent = studentRepository.save(student);
-		} catch (RuntimeException e) {
-			LOGGER.error("Exception encountered: {}", e);
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
-		}
-    	StudentUiDto savedStudentUiDto = StudentTransformer.entityToUiDto(savedSudent);
-    	Set<NoteUiDto> noteUiDtosNotInSchoolYear = getNoteUiDtosNotInSchoolYear(savedStudentUiDto.getNoteUiDtoSet(), schoolYear);
-    	savedStudentUiDto.getNoteUiDtoSet().removeAll(noteUiDtosNotInSchoolYear);
-    	savedStudentUiDto.setNoteUiDtoSet(sortNoteUiDtoSet(savedStudentUiDto.getNoteUiDtoSet()));
-    	savedStudentUiDto.setSchoolYearUiDto(studentUiDto.getSchoolYearUiDto());
-    	savedStudentUiDto.setGradeUiDto(studentUiDto.getGradeUiDto());
-    	LOGGER.debug("end ...");
-    	return savedStudentUiDto;
-    }
+//    @POST
+//	@Path("/updateNote")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//	@Produces(MediaType.APPLICATION_JSON)
+//    public NoteUiDto updateNote(
+//    	NoteRequestVo noteRequestVo) throws SnsException {
+//
+//    	LOGGER.debug("begin ...");
+//		LOGGER.debug("noteRequestVo: {}", noteRequestVo);
+//		// check version of student
+//		NoteUiDto noteUiDto = noteRequestVo.getNoteUiDto();
+//		Note note = noteRepository.findOne(noteUiDto.getId());
+//		if (!/* not */note.getVersion().equals(noteUiDto.getVersion())) {
+//			throw new SnsException("Note version has changed.");
+//		}
+//		note.setTimestamp(noteUiDto.getTimestamp());
+//		note.setText(noteUiDto.getText());
+//		Note savedNote = null;
+//    	try {
+//    		savedNote = noteRepository.save(note);
+//    	} catch (RuntimeException e) {
+//    		LOGGER.error("Exception encountered: {}", e);
+//    		throw new SnsRuntimeException(e.getClass().getSimpleName());
+//    	}
+//    	LOGGER.debug("savedNote: {}", savedNote);
+//		noteUiDto = NoteTransformer.entityToUiDto(savedNote);
+//    	LOGGER.debug("noteUiDto: {}", noteUiDto);
+//    	LOGGER.debug("end ...");
+//		return noteUiDto;
+//    }
 
-    @POST
-	@Path("/updateNote")
-    @Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-    public NoteUiDto updateNote(
-    	NoteRequestVo noteRequestVo) throws SnsException {
-
-    	LOGGER.debug("begin ...");
-		LOGGER.debug("noteRequestVo: {}", noteRequestVo);
-		// check version of student
-		NoteUiDto noteUiDto = noteRequestVo.getNoteUiDto();
-		Note note = noteRepository.findOne(noteUiDto.getId());
-		if (!/* not */note.getVersion().equals(noteUiDto.getVersion())) {
-			throw new SnsException("Note version has changed.");
-		}
-		note.setTimestamp(noteUiDto.getTimestamp());
-		note.setText(noteUiDto.getText());
-		Note savedNote = null;
-    	try {
-    		savedNote = noteRepository.save(note);
-    	} catch (RuntimeException e) {
-    		LOGGER.error("Exception encountered: {}", e);
-    		throw new SnsRuntimeException(e.getClass().getSimpleName());
-    	}
-    	LOGGER.debug("savedNote: {}", savedNote);
-		noteUiDto = NoteTransformer.entityToUiDto(savedNote);
-    	LOGGER.debug("noteUiDto: {}", noteUiDto);
-    	LOGGER.debug("end ...");
-		return noteUiDto;
-    }
-
-    private Set<Note> getNotesNotInSchoolYear(Set<Note> noteSet, SchoolYear schoolYear) {
-    	Set<Note> notesNotInSchoolYear = new LinkedHashSet<>();
-    	for (Note note : noteSet) {
-    		if (note.getTimestamp().before(schoolYear.getStartDate()) || note.getTimestamp().after(schoolYear.getEndDate())) {
-    			notesNotInSchoolYear.add(note);
-    		}
-    	}
-    	return notesNotInSchoolYear;
-    }
-    
-    private Set<NoteUiDto> getNoteUiDtosNotInSchoolYear(Set<NoteUiDto> noteUiDtoSet, SchoolYear schoolYear) {
-    	Set<NoteUiDto> notesNotInSchoolYear = new LinkedHashSet<>();
-    	for (NoteUiDto noteUiDto : noteUiDtoSet) {
-    		if (noteUiDto.getTimestamp().before(schoolYear.getStartDate()) || noteUiDto.getTimestamp().after(schoolYear.getEndDate())) {
-    			notesNotInSchoolYear.add(noteUiDto);
-    		}
-    	}
-    	return notesNotInSchoolYear;
-    }
+//    private Set<Note> getNotesNotInSchoolYear(Set<Note> noteSet, SchoolYear schoolYear) {
+//    	Set<Note> notesNotInSchoolYear = new LinkedHashSet<>();
+//    	for (Note note : noteSet) {
+//    		if (note.getTimestamp().before(schoolYear.getStartDate()) || note.getTimestamp().after(schoolYear.getEndDate())) {
+//    			notesNotInSchoolYear.add(note);
+//    		}
+//    	}
+//    	return notesNotInSchoolYear;
+//    }
+//    
+//    private Set<NoteUiDto> getNoteUiDtosNotInSchoolYear(Set<NoteUiDto> noteUiDtoSet, SchoolYear schoolYear) {
+//    	Set<NoteUiDto> notesNotInSchoolYear = new LinkedHashSet<>();
+//    	for (NoteUiDto noteUiDto : noteUiDtoSet) {
+//    		if (noteUiDto.getTimestamp().before(schoolYear.getStartDate()) || noteUiDto.getTimestamp().after(schoolYear.getEndDate())) {
+//    			notesNotInSchoolYear.add(noteUiDto);
+//    		}
+//    	}
+//    	return notesNotInSchoolYear;
+//    }
     
 	@GET
 	@Path("/pdfAllTestFile")
