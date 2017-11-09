@@ -622,24 +622,24 @@ public class StudentNotesResource {
 //		return studentRepository.findAllByOrderByFirstNameAscLastNameAsc();
 //	}
 
-	// TODO not covered by a test case
-	@POST
-	@Path("/pdfStudentsByStudentIds")
-    @Consumes(MediaType.APPLICATION_JSON)
-	@Produces("application/pdf")
-	public Response pdfStudentsByStudentIds(PrintRequestVo printRequestVo) throws SnsException {
-
-		LOGGER.debug("begin ...");
-		Students students = new Students();
-		students.setStudentList(studentRepository.getStudentsBySchoolYearIdAndListOfIds(printRequestVo.getSchoolYearId(), printRequestVo.getStudentIds()));
-		byte[] pdfByteArray = null;
-		if (students.getStudentList().size() != 0) {
-			pdfByteArray = pdfStudentNotesReportService.generateReport(students);
-		}
-		// TODO print an empty pdf when there are no students returned
-		LOGGER.debug("end ...");
-		return Response.ok(pdfByteArray).build();
-	}
+//	// TODO not covered by a test case
+//	@POST
+//	@Path("/pdfStudentsByStudentIds")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//	@Produces("application/pdf")
+//	public Response pdfStudentsByStudentIds(PrintRequestVo printRequestVo) throws SnsException {
+//
+//		LOGGER.debug("begin ...");
+//		Students students = new Students();
+//		students.setStudentList(studentRepository.getStudentsBySchoolYearIdAndListOfIds(printRequestVo.getSchoolYearId(), printRequestVo.getStudentIds()));
+//		byte[] pdfByteArray = null;
+//		if (students.getStudentList().size() != 0) {
+//			pdfByteArray = pdfStudentNotesReportService.generateReport(students);
+//		}
+//		// TODO print an empty pdf when there are no students returned
+//		LOGGER.debug("end ...");
+//		return Response.ok(pdfByteArray).build();
+//	}
 
 	@GET
 	@Path("/getStudentsBySchoolYearFromUserPreference/{username}")

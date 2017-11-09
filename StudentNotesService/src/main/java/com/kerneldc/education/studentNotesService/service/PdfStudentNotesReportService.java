@@ -41,13 +41,10 @@ public class PdfStudentNotesReportService implements StudentNotesReportService {
 		byte[] xmlBytes;
 		try {
 			xmlBytes = beanToXml(students);
-			LOGGER.debug("xmlBytes: {}", new String(xmlBytes));
 		} catch (JAXBException e) {
 			throw new SnsException(e);
 		} 
-		//byte[] navLogReportBeanXmlFoByteArray = xmlToXslFo(navLogReportBeanXmlByteArray, XSL_FILE); 
 		return xmlToPdf(xmlBytes);
-		//return navLogReportBeanXmlByteArray;
 	}
 	
 	public byte[] beanToXml (

@@ -435,8 +435,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 		@SuppressWarnings("unchecked")
 		List<StudentUiDto> result = query.list();
  		LOGGER.debug("result.size(): {}", result.size());
-		//LOGGER.debug("result: {}", result);
-		return result; //squery.list();
+		return result;
 	}
 
 	@Override

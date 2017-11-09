@@ -6,6 +6,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import com.kerneldc.education.studentNotesService.exception.ResponseSnsExceptionMapper;
 import com.kerneldc.education.studentNotesService.exception.ResponseSnsRuntimeExceptionMapper;
 import com.kerneldc.education.studentNotesService.resource.NoteResource;
+import com.kerneldc.education.studentNotesService.resource.PrintResource;
 import com.kerneldc.education.studentNotesService.resource.SchoolYearResource;
 import com.kerneldc.education.studentNotesService.resource.StudentNotesResource;
 import com.kerneldc.education.studentNotesService.resource.UserPreferenceResource;
@@ -38,6 +39,7 @@ public class JerseyResourceConfig extends ResourceConfig {
 		register(UserPreferenceResource.class);
 		
 		register(NoteResource.class);
+		register(PrintResource.class);
 		
 		register(ResponseSnsExceptionMapper.class);
 		register(ResponseSnsRuntimeExceptionMapper.class);
