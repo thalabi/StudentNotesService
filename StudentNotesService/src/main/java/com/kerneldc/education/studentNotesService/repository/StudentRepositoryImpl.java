@@ -418,7 +418,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 
 	@Override
 	@Transactional
-	public List<StudentUiDto> getStudentsByUsernameAndListOfIds(Long schoolYearId, List<Long> studentIds) {
+	public List<StudentUiDto> getStudentsBySchoolYearIdAndListOfIds(Long schoolYearId, List<Long> studentIds) {
 		LOGGER.debug("schoolYearId: {}, studentIds: {}", schoolYearId, studentIds);
 		Session session = entityManager.unwrap(Session.class);
 		SQLQuery query = session.createSQLQuery(

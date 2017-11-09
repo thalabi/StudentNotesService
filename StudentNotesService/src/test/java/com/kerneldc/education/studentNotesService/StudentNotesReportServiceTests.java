@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.HashSet;
 
 import javax.xml.bind.JAXBException;
 
@@ -51,7 +52,7 @@ public class StudentNotesReportServiceTests {
 		Student student = new Student();
 		student.setFirstName(firstName);
 		student.setLastName(lastName);
-		student.setGradeEnum(grade);
+		//student.setGradeEnum(grade);
 		
 		String note1TimestampText = "2017-01-29 16:11";
 		String note1Text = "note 1 text testBeanToXml";
@@ -67,7 +68,7 @@ public class StudentNotesReportServiceTests {
 		note2.setTimestamp(Timestamp.valueOf(timestamp2));
 		note2.setText(note2Text);
 
-		student.setNoteList(Arrays.asList(note1, note2));
+		student.setNoteSet(new HashSet<>(Arrays.asList(note1, note2)));
 
 		// Create student # 2
 		String firstName2 = "first name 2 testBeanToXml";
@@ -76,7 +77,7 @@ public class StudentNotesReportServiceTests {
 		Student student2 = new Student();
 		student2.setFirstName(firstName2);
 		student2.setLastName(lastName2);
-		student2.setGradeEnum(grade2);
+		//student2.setGradeEnum(grade2);
 		/*
 		String note1TimestampText = "2017-01-29 16:11";
 		String note1Text = "note 1 text testBeanToXml";

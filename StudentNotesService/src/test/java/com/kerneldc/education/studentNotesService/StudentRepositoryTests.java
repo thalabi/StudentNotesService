@@ -715,7 +715,7 @@ public class StudentRepositoryTests implements InitializingBean {
 
 	@Test
 	public void testgetStudentsByUsernameAndListOfIds() {
-		List<StudentUiDto> students = studentRepository.getStudentsByUsernameAndListOfIds(Long.valueOf(1l), Arrays.asList(Long.valueOf(1l)));
+		List<StudentUiDto> students = studentRepository.getStudentsBySchoolYearIdAndListOfIds(Long.valueOf(1l), Arrays.asList(Long.valueOf(1l)));
 		assertThat(students, hasSize(1));
 	}
 

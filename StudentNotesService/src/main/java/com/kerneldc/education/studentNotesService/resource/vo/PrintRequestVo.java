@@ -1,9 +1,9 @@
-package com.kerneldc.education.studentNotesService.resource;
+package com.kerneldc.education.studentNotesService.resource.vo;
 
 import java.sql.Timestamp;
 import java.util.List;
 
-public class PrintRequestVO extends AbstractBaseVO {
+public class PrintRequestVo extends AbstractBaseVo {
 
 	private static final long serialVersionUID = 1L;
 

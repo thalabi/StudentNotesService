@@ -24,6 +24,7 @@ import com.kerneldc.education.studentNotesService.exception.SnsException;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
 import com.kerneldc.education.studentNotesService.repository.NoteRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
+import com.kerneldc.education.studentNotesService.resource.vo.NoteRequestVo;
 
 @Component
 @Path("/StudentNotesService/noteResource")
