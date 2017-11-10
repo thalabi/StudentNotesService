@@ -57,7 +57,16 @@
         </fo:static-content>
         
         <fo:flow flow-name="xsl-region-body">
-                <xsl:apply-templates select="student"/>
+			<xsl:choose>
+				<xsl:when test="student">
+	                <xsl:apply-templates select="student"/>
+	            </xsl:when>
+	            <xsl:otherwise>
+			  		<fo:block>
+					</fo:block>          
+	            </xsl:otherwise>
+			</xsl:choose>
+
         </fo:flow>
 
       </fo:page-sequence>
