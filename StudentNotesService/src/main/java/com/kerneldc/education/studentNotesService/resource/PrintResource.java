@@ -1,5 +1,9 @@
 package com.kerneldc.education.studentNotesService.resource;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -41,10 +45,45 @@ public class PrintResource {
 		Students students = new Students();
 		students.setStudentList(studentRepository.getStudentsBySchoolYearIdAndListOfIds(printRequestVo.getSchoolYearId(), printRequestVo.getStudentIds()));
 		byte[] pdfByteArray = null;
-		if (students.getStudentList().size() != 0) {
+		if (!/* not */students.getStudentList().isEmpty()) {
 			pdfByteArray = pdfStudentNotesReportService.generateReport(students);
 		}
 		// TODO print an empty pdf when there are no students returned
+		LOGGER.debug("end ...");
+		return Response.ok(pdfByteArray).build();
+	}
+
+	@POST
+	@Path("/pdfStudentsByTimestampRange")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Produces("application/pdf")
+	public Response pdfStudentsByTimestampRange(PrintRequestVo printRequestVo) throws SnsException {
+
+		LOGGER.debug("begin ...");
+		LocalDateTime toMidnight = printRequestVo.getToTimestamp().toLocalDateTime().toLocalDate()
+				.atTime(LocalTime.MAX); // midnight
+		printRequestVo.setToTimestamp(Timestamp.valueOf(toMidnight));
+		Students students = new Students();
+		students.setStudentList(studentRepository.getStudentsByTimestampRange(printRequestVo.getSchoolYearId(), printRequestVo.getFromTimestamp(), printRequestVo.getToTimestamp()));
+		byte[] pdfByteArray = null;
+		//if (!/* note */students.getStudentList().isEmpty()) {
+			pdfByteArray = pdfStudentNotesReportService.generateReport(students);
+		//}
+		// TODO print an empty pdf when there are no students returned
+		LOGGER.debug("end ...");
+		return Response.ok(pdfByteArray).build();
+	}
+
+	@POST
+	@Path("/pdfAll")
+    @Consumes(MediaType.APPLICATION_JSON)
+	@Produces("application/pdf")
+	public Response pdfAll(PrintRequestVo printRequestVo) throws SnsException {
+
+		LOGGER.debug("begin ...");
+		Students students = new Students();
+		students.setStudentList(studentRepository.getStudentGraphBySchoolYear(printRequestVo.getSchoolYearId()));
+		byte[] pdfByteArray = pdfStudentNotesReportService.generateReport(students);
 		LOGGER.debug("end ...");
 		return Response.ok(pdfByteArray).build();
 	}

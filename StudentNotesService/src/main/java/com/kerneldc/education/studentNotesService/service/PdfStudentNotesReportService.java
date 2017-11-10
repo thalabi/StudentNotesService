@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.kerneldc.education.studentNotesService.bean.Students;
+import com.kerneldc.education.studentNotesService.constants.Constants;
 import com.kerneldc.education.studentNotesService.exception.SnsException;
 
 @Service
@@ -32,7 +33,7 @@ public class PdfStudentNotesReportService implements StudentNotesReportService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 	
-	private static final String XSL_FILE = "studentsToFo.xsl";
+	//private static final String XSL_FILE = "studentsToFo.xsl";
 	private static final SimpleDateFormat generatedFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a");
 
 	public byte[] generateReport (
@@ -41,6 +42,7 @@ public class PdfStudentNotesReportService implements StudentNotesReportService {
 		byte[] xmlBytes;
 		try {
 			xmlBytes = beanToXml(students);
+			LOGGER.debug("xmlBytes: {}", new String(xmlBytes));
 		} catch (JAXBException e) {
 			throw new SnsException(e);
 		} 
@@ -81,7 +83,8 @@ public class PdfStudentNotesReportService implements StudentNotesReportService {
 
 				// Setup XSLT
 				TransformerFactory factory = TransformerFactory.newInstance();
-				Transformer transformer = factory.newTransformer(new StreamSource(Thread.currentThread().getContextClassLoader().getResourceAsStream((XSL_FILE))));
+			Transformer transformer = factory.newTransformer(
+					new StreamSource(Thread.currentThread().getContextClassLoader().getResourceAsStream((Constants.STUDENTS_XML_TO_PDF))));
 
 				// Set the value of a <param> in the stylesheet
 				transformer.setParameter("timeGenerated", generatedFormat.format(new Date()));

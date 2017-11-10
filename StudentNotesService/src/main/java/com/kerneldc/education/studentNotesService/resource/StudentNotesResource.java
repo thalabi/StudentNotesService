@@ -534,20 +534,6 @@ public class StudentNotesResource {
 		return Response.ok(stream).build();
 	}
 	
-	@POST
-	@Path("/pdfAll")
-    @Consumes(MediaType.APPLICATION_JSON)
-	@Produces("application/pdf")
-	public Response pdfAll(PrintRequestVo printRequestVo) throws SnsException {
-
-		LOGGER.debug("begin ...");
-		Students students = new Students();
-		students.setStudentList(studentRepository.getStudentGraphBySchoolYear(printRequestVo.getSchoolYearId()));
-		byte[] pdfByteArray = pdfStudentNotesReportService.generateReport(students);
-		LOGGER.debug("end ...");
-		return Response.ok(pdfByteArray).build();
-	}
-
 	@GET
 	@Path("/getLatestActiveStudents/{username}/{limit}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -590,26 +576,6 @@ public class StudentNotesResource {
 //		return studentRepository.getStudentsByTimestampRange(timestampRange.getFromTimestamp(), timestampRange.getToTimestamp());
 //	}
 //
-	@POST
-	@Path("/pdfStudentsByTimestampRange")
-    @Consumes(MediaType.APPLICATION_JSON)
-	@Produces("application/pdf")
-	public Response pdfStudentsByTimestampRange(PrintRequestVo printRequestVo) throws SnsException {
-
-		LOGGER.debug("begin ...");
-		LocalDateTime toMidnight = printRequestVo.getToTimestamp().toLocalDateTime().toLocalDate()
-				.atTime(LocalTime.MAX); // midnight
-		printRequestVo.setToTimestamp(Timestamp.valueOf(toMidnight));
-		Students students = new Students();
-		students.setStudentList(studentRepository.getStudentsByTimestampRange(printRequestVo.getSchoolYearId(), printRequestVo.getFromTimestamp(), printRequestVo.getToTimestamp()));
-		byte[] pdfByteArray = null;
-		if (!/* note */students.getStudentList().isEmpty()) {
-			pdfByteArray = pdfStudentNotesReportService.generateReport(students);
-		}
-		// TODO print an empty pdf when there are no students returned
-		LOGGER.debug("end ...");
-		return Response.ok(pdfByteArray).build();
-	}
 	
 //	@GET
 //	@Path("/getAllStudentsWithoutNotesList")
@@ -620,25 +586,6 @@ public class StudentNotesResource {
 //		LOGGER.debug("end ...");
 //		//return studentRepository.findAll();
 //		return studentRepository.findAllByOrderByFirstNameAscLastNameAsc();
-//	}
-
-//	// TODO not covered by a test case
-//	@POST
-//	@Path("/pdfStudentsByStudentIds")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//	@Produces("application/pdf")
-//	public Response pdfStudentsByStudentIds(PrintRequestVo printRequestVo) throws SnsException {
-//
-//		LOGGER.debug("begin ...");
-//		Students students = new Students();
-//		students.setStudentList(studentRepository.getStudentsBySchoolYearIdAndListOfIds(printRequestVo.getSchoolYearId(), printRequestVo.getStudentIds()));
-//		byte[] pdfByteArray = null;
-//		if (students.getStudentList().size() != 0) {
-//			pdfByteArray = pdfStudentNotesReportService.generateReport(students);
-//		}
-//		// TODO print an empty pdf when there are no students returned
-//		LOGGER.debug("end ...");
-//		return Response.ok(pdfByteArray).build();
 //	}
 
 	@GET
