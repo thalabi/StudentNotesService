@@ -44,11 +44,7 @@ public class PrintResource {
 		LOGGER.debug("begin ...");
 		Students students = new Students();
 		students.setStudentList(studentRepository.getStudentsBySchoolYearIdAndListOfIds(printRequestVo.getSchoolYearId(), printRequestVo.getStudentIds()));
-		byte[] pdfByteArray = null;
-		if (!/* not */students.getStudentList().isEmpty()) {
-			pdfByteArray = pdfStudentNotesReportService.generateReport(students);
-		}
-		// TODO print an empty pdf when there are no students returned
+		byte[] pdfByteArray = pdfStudentNotesReportService.generateReport(students);
 		LOGGER.debug("end ...");
 		return Response.ok(pdfByteArray).build();
 	}
@@ -65,11 +61,7 @@ public class PrintResource {
 		printRequestVo.setToTimestamp(Timestamp.valueOf(toMidnight));
 		Students students = new Students();
 		students.setStudentList(studentRepository.getStudentsByTimestampRange(printRequestVo.getSchoolYearId(), printRequestVo.getFromTimestamp(), printRequestVo.getToTimestamp()));
-		byte[] pdfByteArray = null;
-		//if (!/* note */students.getStudentList().isEmpty()) {
-			pdfByteArray = pdfStudentNotesReportService.generateReport(students);
-		//}
-		// TODO print an empty pdf when there are no students returned
+		byte[] pdfByteArray = pdfStudentNotesReportService.generateReport(students);
 		LOGGER.debug("end ...");
 		return Response.ok(pdfByteArray).build();
 	}

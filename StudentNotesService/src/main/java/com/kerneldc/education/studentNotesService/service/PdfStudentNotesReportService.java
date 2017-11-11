@@ -16,12 +16,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.kerneldc.education.studentNotesService.bean.Students;
@@ -31,10 +30,7 @@ import com.kerneldc.education.studentNotesService.exception.SnsException;
 @Service
 public class PdfStudentNotesReportService implements StudentNotesReportService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
-	
-	//private static final String XSL_FILE = "studentsToFo.xsl";
-	private static final SimpleDateFormat generatedFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a");
+	private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a");
 
 	public byte[] generateReport (
 		Students students) throws SnsException {
@@ -42,14 +38,13 @@ public class PdfStudentNotesReportService implements StudentNotesReportService {
 		byte[] xmlBytes;
 		try {
 			xmlBytes = beanToXml(students);
-			LOGGER.debug("xmlBytes: {}", new String(xmlBytes));
 		} catch (JAXBException e) {
 			throw new SnsException(e);
 		} 
 		return xmlToPdf(xmlBytes);
 	}
 	
-	public byte[] beanToXml (
+	protected byte[] beanToXml (
 		Students students) throws JAXBException {
 
         JAXBContext jaxbContext = JAXBContext.newInstance(students.getClass()); 
@@ -65,8 +60,8 @@ public class PdfStudentNotesReportService implements StudentNotesReportService {
         return xmlByteArrayOutputStream.toByteArray(); 
 	}
 	
-	public byte[] xmlToPdf(
-		byte[] studentsXmlByteArray) {
+	protected byte[] xmlToPdf(
+		byte[] studentsXmlByteArray) throws SnsException {
 
 			// Configure fopFactory as desired
 			final FopFactory fopFactory = FopFactory.newInstance(new File(".").toURI());
@@ -83,11 +78,11 @@ public class PdfStudentNotesReportService implements StudentNotesReportService {
 
 				// Setup XSLT
 				TransformerFactory factory = TransformerFactory.newInstance();
-			Transformer transformer = factory.newTransformer(
-					new StreamSource(Thread.currentThread().getContextClassLoader().getResourceAsStream((Constants.STUDENTS_XML_TO_PDF))));
+				Transformer transformer = factory.newTransformer(new StreamSource(Thread.currentThread()
+						.getContextClassLoader().getResourceAsStream((Constants.STUDENTS_XML_TO_PDF))));
 
 				// Set the value of a <param> in the stylesheet
-				transformer.setParameter("timeGenerated", generatedFormat.format(new Date()));
+				transformer.setParameter("timeGenerated", dateFormat.format(new Date()));
 
 				// Setup input for XSLT transformation
 				Source src = new StreamSource(new ByteArrayInputStream(studentsXmlByteArray));
@@ -98,13 +93,10 @@ public class PdfStudentNotesReportService implements StudentNotesReportService {
 
 				// Start XSLT transformation and FOP processing
 				transformer.transform(src, res);
-				//out.close();
 				return pdfByteArrayOutputStream.toByteArray();
 
 			} catch (Exception e) {
-				e.printStackTrace(System.err);
+				throw new SnsException(ExceptionUtils.getRootCauseMessage(e));
 			}
-
-			return null;
 	}
 }

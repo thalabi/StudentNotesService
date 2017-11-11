@@ -3,6 +3,7 @@
   
   <xsl:output method="xml" version="1.0" omit-xml-declaration="no" indent="yes"/>
   
+  <xsl:param name="noData" select="'No stundent notes found'"/> 
   <xsl:param name="timeGenerated" select="'N/A'"/> 
   <xsl:param name="reportTitle" select="'Student Notes'"/>
 
@@ -62,7 +63,8 @@
 	                <xsl:apply-templates select="student"/>
 	            </xsl:when>
 	            <xsl:otherwise>
-			  		<fo:block>
+			  		<fo:block font-style="italic">
+			  			<xsl:value-of select="$noData"></xsl:value-of>
 					</fo:block>          
 	            </xsl:otherwise>
 			</xsl:choose>

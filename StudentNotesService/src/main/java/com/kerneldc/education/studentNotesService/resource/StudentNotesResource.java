@@ -81,9 +81,6 @@ public class StudentNotesResource {
 	@Autowired
 	private GradeRepository gradeRepository;
 
-	@Autowired
-	private PdfStudentNotesReportService pdfStudentNotesReportService;
-	
 	@Value("${version}")
 	private String version;
 
@@ -564,30 +561,6 @@ public class StudentNotesResource {
  		return studentDtos;
 	}
 
-//	@POST
-//	@Path("/getStudentsByTimestampRange")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public Set<Student> getStudentsByTimestampRange(TimestampRange timestampRange) {
-//		
-//		LOGGER.debug("begin ...");
-//		LOGGER.debug("timestampRange: {}", timestampRange);
-//		LOGGER.debug("end ...");
-//		return studentRepository.getStudentsByTimestampRange(timestampRange.getFromTimestamp(), timestampRange.getToTimestamp());
-//	}
-//
-	
-//	@GET
-//	@Path("/getAllStudentsWithoutNotesList")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public Iterable<Student> getAllStudentsWithoutNotesList() {
-//		
-//		LOGGER.debug("begin ...");
-//		LOGGER.debug("end ...");
-//		//return studentRepository.findAll();
-//		return studentRepository.findAllByOrderByFirstNameAscLastNameAsc();
-//	}
-
 	@GET
 	@Path("/getStudentsBySchoolYearFromUserPreference/{username}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -624,23 +597,6 @@ public class StudentNotesResource {
 		LOGGER.debug("end ...");
 		return schoolYearDto;
 	}
-	
-//	@GET
-//	@Path("/getStudentsByUsername/{username}")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public List<StudentUiDto> getStudentsByUsername(
-//		@PathParam("username") String username) {
-//		
-//		LOGGER.debug("begin ...");
-//		List<StudentUiDto> studentUiDtoList = null;
-//		try {
-//			studentUiDtoList = studentRepository.getStudentsByUsername(username);
-//		} catch (RuntimeException e) {
-//			throw new SnsRuntimeException(e.getClass().getSimpleName());
-//		}
-//		LOGGER.debug("end ...");
-//		return studentUiDtoList;
-//	}
 	
 	@GET
 	@Path("/getStudentGraphBySchoolYear/{schoolYearId}")
