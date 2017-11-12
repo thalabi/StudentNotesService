@@ -1,11 +1,8 @@
-package com.kerneldc.education.studentNotesService.resource;
+package com.kerneldc.education.studentNotesService.resource.vo;
 
 import java.util.List;
 
-import com.kerneldc.education.studentNotesService.domain.Student;
-import com.kerneldc.education.studentNotesService.resource.vo.AbstractBaseVo;
-
-public class SaveRemoveStudentsToFromSchoolYearVO2 extends AbstractBaseVo {
+public class SaveRemoveStudentsToFromSchoolYearVo extends AbstractBaseVo {
 
 	private static final long serialVersionUID = 1L;
 

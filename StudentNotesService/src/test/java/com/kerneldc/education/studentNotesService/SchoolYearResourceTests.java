@@ -58,7 +58,7 @@ import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
 import com.kerneldc.education.studentNotesService.junit.MyTestExecutionListener;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
-import com.kerneldc.education.studentNotesService.resource.SaveRemoveStudentsToFromSchoolYearVO2;
+import com.kerneldc.education.studentNotesService.resource.vo.SaveRemoveStudentsToFromSchoolYearVo;
 import com.kerneldc.education.studentNotesService.security.bean.User;
 import com.kerneldc.education.studentNotesService.security.constants.SecurityConstants;
 import com.kerneldc.education.studentNotesService.security.util.SimpleGrantedAuthorityMixIn;
@@ -280,14 +280,14 @@ public class SchoolYearResourceTests implements InitializingBean {
 		schoolYearRepository.save(schoolYear);
 		//schoolYear.getStudentSet().size();
 		assertThat(schoolYear.getStudentSet(), hasSize(2));
-		SaveRemoveStudentsToFromSchoolYearVO2 saveRemoveStudentsToFromSchoolYearVO2 = new SaveRemoveStudentsToFromSchoolYearVO2();
-		saveRemoveStudentsToFromSchoolYearVO2.setSchoolYearId(schoolYear.getId());
+		SaveRemoveStudentsToFromSchoolYearVo saveRemoveStudentsToFromSchoolYearVo = new SaveRemoveStudentsToFromSchoolYearVo();
+		saveRemoveStudentsToFromSchoolYearVo.setSchoolYearId(schoolYear.getId());
 		List<Long> oldSchoolYearStudentIds = new ArrayList<>(Arrays.asList(student1.getId(), student2.getId()));
-		saveRemoveStudentsToFromSchoolYearVO2.setOldSchoolYearStudentIds(oldSchoolYearStudentIds);
+		saveRemoveStudentsToFromSchoolYearVo.setOldSchoolYearStudentIds(oldSchoolYearStudentIds);
 		List<Long> newSchoolYearStudentIds = new ArrayList<>(Arrays.asList(student2.getId(), student3.getId()));
-		saveRemoveStudentsToFromSchoolYearVO2.setNewSchoolYearStudentIds(newSchoolYearStudentIds);
+		saveRemoveStudentsToFromSchoolYearVo.setNewSchoolYearStudentIds(newSchoolYearStudentIds);
 		
-		HttpEntity<SaveRemoveStudentsToFromSchoolYearVO2> httpEntity = new HttpEntity<SaveRemoveStudentsToFromSchoolYearVO2>(saveRemoveStudentsToFromSchoolYearVO2,httpHeaders);
+		HttpEntity<SaveRemoveStudentsToFromSchoolYearVo> httpEntity = new HttpEntity<SaveRemoveStudentsToFromSchoolYearVo>(saveRemoveStudentsToFromSchoolYearVo,httpHeaders);
 
 		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/saveRemoveStudentsToFromSchoolYear", HttpMethod.POST, httpEntity, String.class);
 		assertEquals(HttpStatus.OK, response.getStatusCode());

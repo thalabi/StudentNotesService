@@ -649,38 +649,6 @@ public class StudentNotesResource {
 		return students;
 	}
 	
-	
-	@POST
-	@Path("/saveRemoveStudentsToFromSchoolYear")
-    @Consumes(MediaType.APPLICATION_JSON)
-	@Transactional
-	public String saveRemoveStudentsToFromSchoolYear(
-		SaveRemoveStudentsToFromSchoolYearVO saveRemoveStudentsToFromSchoolYearVO) {
-		
-		LOGGER.debug("begin ...");
-		SchoolYear schoolYear = schoolYearRepository.findOne(saveRemoveStudentsToFromSchoolYearVO.getSchoolYearId());
-		LOGGER.debug("saveRemoveStudentsToFromSchoolYearVO: {}", saveRemoveStudentsToFromSchoolYearVO);
-		List<Student> oldSchoolYearStudents = saveRemoveStudentsToFromSchoolYearVO.getOldSchoolYearStudents();
-		List<Student> newSchoolYearStudents = saveRemoveStudentsToFromSchoolYearVO.getNewSchoolYearStudents();
-		List<Student> copyOfNewSchoolYearStudents = new ArrayList<>(newSchoolYearStudents);
-		newSchoolYearStudents.removeAll(oldSchoolYearStudents);
-		oldSchoolYearStudents.removeAll(copyOfNewSchoolYearStudents);
-		LOGGER.debug("Students to be added: {}", newSchoolYearStudents);
-		LOGGER.debug("Students to be removed: {}", oldSchoolYearStudents);
-		for (Student student : newSchoolYearStudents) {
-			student = studentRepository.findOne(student.getId());
-			student.addSchoolYear(schoolYear);
-			studentRepository.save(student);
-		}
-		for (Student student : oldSchoolYearStudents) {
-			student = studentRepository.findOne(student.getId());
-			student.removeSchoolYear(schoolYear);
-			studentRepository.save(student);
-		}
-		LOGGER.debug("end ...");
-		return "";
-	}
-
 	@GET
 	@Path("/getStudentsInSchoolYear/{schoolYearId}")
 	@Produces(MediaType.APPLICATION_JSON)

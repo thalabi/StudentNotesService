@@ -35,6 +35,7 @@ import com.kerneldc.education.studentNotesService.exception.RowNotFoundException
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
+import com.kerneldc.education.studentNotesService.resource.vo.SaveRemoveStudentsToFromSchoolYearVo;
 
 @Component
 @Path("/StudentNotesService/schoolYear")
@@ -227,7 +228,7 @@ public class SchoolYearResource {
     @Consumes(MediaType.APPLICATION_JSON)
 	@Transactional
 	public String saveRemoveStudents(
-		SaveRemoveStudentsToFromSchoolYearVO2 saveRemoveStudentsToFromSchoolYearVO) {
+		SaveRemoveStudentsToFromSchoolYearVo saveRemoveStudentsToFromSchoolYearVO) {
 		
 		LOGGER.debug("begin ...");
 		SchoolYear schoolYear = schoolYearRepository.findOne(saveRemoveStudentsToFromSchoolYearVO.getSchoolYearId());
