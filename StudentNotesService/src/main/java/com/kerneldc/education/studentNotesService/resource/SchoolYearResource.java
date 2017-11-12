@@ -1,5 +1,8 @@
 package com.kerneldc.education.studentNotesService.resource;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.kerneldc.education.studentNotesService.bean.SchoolYearIdAndLimit;
@@ -61,25 +63,6 @@ public class SchoolYearResource {
 		LOGGER.debug("end ...");
 		return "Hello";
 	}
-
-//	@GET
-//	@Path("/getAllSchoolYears")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	@JsonView(View.Default.class)
-//	public List<SchoolYear> getAllSchoolYears() {
-//		
-//		LOGGER.debug("begin ...");
-//		List<SchoolYear> schoolYears;
-//		try {
-//			//schoolYears = schoolYearRepository.findAllByOrderBySchoolYearAsc();
-//			schoolYears = schoolYearRepository.findAllByOrderByEndDateDesc();
-//		} catch (RuntimeException e) {
-//			LOGGER.error("Exception encountered: {}", e);
-//			throw new SnsRuntimeException(e.getClass().getSimpleName());
-//		}
-//		LOGGER.debug("end ...");
-//		return schoolYears;
-//	}
 
 	@GET
 	@Path("/getAllSchoolYearDtos")
@@ -154,7 +137,7 @@ public class SchoolYearResource {
 		try {
 			schoolYears = schoolYearRepository.getLatestActiveStudentsBySchoolYearId(schoolYearIdAndLimit.getSchoolYearId(), schoolYearIdAndLimit.getLimit());
 			LOGGER.debug("schoolYears.size(): {}", schoolYears.size());
-			Assert.isTrue(schoolYears.size() == 1);
+			assertThat(schoolYears, hasSize(1));
 		} catch (RuntimeException e) {
 			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
@@ -162,25 +145,6 @@ public class SchoolYearResource {
 		return schoolYears.iterator().next();
 	}
 
-//    @POST
-//	@Path("/saveSchoolYear")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//	@Produces(MediaType.APPLICATION_JSON)
-//	@JsonView(View.Default.class)
-//    public SchoolYear saveSchoolYear(SchoolYear schoolYear) {
-//
-//    	LOGGER.debug("begin ...");
-//    	SchoolYear savedSchoolYear;
-//    	try {
-//    		savedSchoolYear = schoolYearRepository.save(schoolYear);
-//		} catch (RuntimeException e) {
-//			LOGGER.error("Exception encountered: {}", e);
-//			throw new SnsRuntimeException(e.getClass().getSimpleName());
-//		}
-//    	LOGGER.debug("end ...");
-//    	return savedSchoolYear;
-//    }
-	
     @POST
 	@Path("/saveSchoolYearDto")
     @Consumes(MediaType.APPLICATION_JSON)

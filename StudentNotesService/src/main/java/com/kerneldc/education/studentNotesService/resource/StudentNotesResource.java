@@ -7,9 +7,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,6 +29,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,29 +37,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.kerneldc.education.studentNotesService.bean.Students;
 import com.kerneldc.education.studentNotesService.domain.Grade;
-import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 import com.kerneldc.education.studentNotesService.dto.NoteDto;
 import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
 import com.kerneldc.education.studentNotesService.dto.StudentDto;
-import com.kerneldc.education.studentNotesService.dto.transformer.NoteTransformer;
 import com.kerneldc.education.studentNotesService.dto.transformer.SchoolYearTransformer;
 import com.kerneldc.education.studentNotesService.dto.transformer.StudentTransformer;
 import com.kerneldc.education.studentNotesService.dto.ui.NoteUiDto;
 import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
-import com.kerneldc.education.studentNotesService.exception.RowNotFoundException;
 import com.kerneldc.education.studentNotesService.exception.SnsException;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
 import com.kerneldc.education.studentNotesService.repository.GradeRepository;
-import com.kerneldc.education.studentNotesService.repository.NoteRepository;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
-import com.kerneldc.education.studentNotesService.resource.vo.PrintRequestVo;
-import com.kerneldc.education.studentNotesService.service.PdfStudentNotesReportService;
 
 @Component
 @Path("/StudentNotesService")
@@ -74,9 +65,6 @@ public class StudentNotesResource {
 
 	@Autowired
 	private SchoolYearRepository schoolYearRepository;
-
-	@Autowired
-	private NoteRepository noteRepository;
 
 	@Autowired
 	private GradeRepository gradeRepository;
@@ -109,32 +97,6 @@ public class StudentNotesResource {
 	// curl -H -i http://localhost:8080/StudentNotesService/getAllStudents
 	// curl -H -i http://localhost:8080/StudentNotesService/getStudentById/1
 
-//	@GET
-//	@Path("/getStudentDtoById/{id}")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public StudentDto getStudentDtoById(
-//		@PathParam("id") Long id) throws RowNotFoundException {
-//		
-//		LOGGER.debug("begin ...");
-//		Student student;
-//		StudentDto studentDto;
-//		try {
-//			student = studentRepository.getStudentById(id);
-//		} catch (RuntimeException e) {
-//			String errorMessage = String.format("Encountered exception while looking up student id %s. Exception is: %s", id, e.getClass().getSimpleName());
-//			LOGGER.error(errorMessage);
-//			throw new SnsRuntimeException(errorMessage);
-//		}
-//		if (student == null) {
-//			String errorMessage = String.format("Student id %s not found", id);
-//			LOGGER.debug(errorMessage);
-//			throw new RowNotFoundException(errorMessage);
-//		}
-//		studentDto = StudentTransformer.entityToDto(student);
-//		LOGGER.debug("end ...");
-//		return studentDto;
-//	}
-
     // curl -i -H "Content-Type: application/json" -X POST -d '{"id":2,"firstName":"xxxxxxxxxxxxxxxx","lastName":"halabi","grade":"GR-4","noteList":[]}' http://localhost:8080/StudentNotesService
     @POST
 	@Path("/addStudentDetails")
@@ -165,7 +127,7 @@ public class StudentNotesResource {
     		savedSudent = studentRepository.save(student);
 		} catch (RuntimeException e) {
 			LOGGER.error("Exception encountered: {}", e);
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
+			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
     	StudentUiDto savedStudentUiDto =StudentTransformer.entityToUiDto(savedSudent);
     	LOGGER.debug("end ...");
@@ -208,7 +170,7 @@ public class StudentNotesResource {
     		savedSudent = studentRepository.save(student);
 		} catch (RuntimeException e) {
 			LOGGER.error("Exception encountered: {}", e);
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
+			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
     	StudentUiDto savedStudentUiDto =StudentTransformer.entityToUiDto(savedSudent);
     	LOGGER.debug("end ...");
@@ -253,105 +215,12 @@ public class StudentNotesResource {
 			studentRepository.delete(id);
 		} catch (RuntimeException e) {
 			LOGGER.error("Exception encountered: {}", e);
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
+			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
 		LOGGER.debug("end ...");
 		return "";
 	}
 	
-//    @POST
-//	@Path("/updateStudentNotes")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//	@Produces(MediaType.APPLICATION_JSON)
-//    @Transactional
-//    public StudentUiDto updateStudentNotes(
-//    	StudentUiDto studentUiDto) {
-//
-//    	LOGGER.debug("begin ...");
-//		LOGGER.debug("studentUiDto: {}", studentUiDto);
-//		Student student = studentRepository.getStudentByIdWithNoteListAndGradeList(studentUiDto.getId());
-//		Set<Note> noteSet = student.getNoteSet();
-//		SchoolYear schoolYear = schoolYearRepository.findOne(studentUiDto.getSchoolYearUiDto().getId());
-//		Set<Note> notesNotInSchoolYear = getNotesNotInSchoolYear(noteSet, schoolYear);
-//		Set<NoteUiDto> noteUiDtoSet = studentUiDto.getNoteUiDtoSet();
-//		Set<Note> newNotes = new HashSet<>(noteUiDtoSet.size());
-//		for (NoteUiDto noteUiDto : noteUiDtoSet) {
-//			Note note = new Note();
-//			note.setTimestamp(noteUiDto.getTimestamp());
-//			note.setText(noteUiDto.getText());
-//			newNotes.add(note);
-//		}
-//		student.setNoteSet(notesNotInSchoolYear);
-//		student.getNoteSet().addAll(newNotes);
-//    	//LOGGER.debug("student: {}", student);
-//    	Student savedSudent;
-//    	try {
-//    		savedSudent = studentRepository.save(student);
-//		} catch (RuntimeException e) {
-//			LOGGER.error("Exception encountered: {}", e);
-//			throw new SnsRuntimeException(e.getClass().getSimpleName());
-//		}
-//    	StudentUiDto savedStudentUiDto = StudentTransformer.entityToUiDto(savedSudent);
-//    	Set<NoteUiDto> noteUiDtosNotInSchoolYear = getNoteUiDtosNotInSchoolYear(savedStudentUiDto.getNoteUiDtoSet(), schoolYear);
-//    	savedStudentUiDto.getNoteUiDtoSet().removeAll(noteUiDtosNotInSchoolYear);
-//    	savedStudentUiDto.setNoteUiDtoSet(sortNoteUiDtoSet(savedStudentUiDto.getNoteUiDtoSet()));
-//    	savedStudentUiDto.setSchoolYearUiDto(studentUiDto.getSchoolYearUiDto());
-//    	savedStudentUiDto.setGradeUiDto(studentUiDto.getGradeUiDto());
-//    	LOGGER.debug("end ...");
-//    	return savedStudentUiDto;
-//    }
-
-//    @POST
-//	@Path("/updateNote")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//	@Produces(MediaType.APPLICATION_JSON)
-//    public NoteUiDto updateNote(
-//    	NoteRequestVo noteRequestVo) throws SnsException {
-//
-//    	LOGGER.debug("begin ...");
-//		LOGGER.debug("noteRequestVo: {}", noteRequestVo);
-//		// check version of student
-//		NoteUiDto noteUiDto = noteRequestVo.getNoteUiDto();
-//		Note note = noteRepository.findOne(noteUiDto.getId());
-//		if (!/* not */note.getVersion().equals(noteUiDto.getVersion())) {
-//			throw new SnsException("Note version has changed.");
-//		}
-//		note.setTimestamp(noteUiDto.getTimestamp());
-//		note.setText(noteUiDto.getText());
-//		Note savedNote = null;
-//    	try {
-//    		savedNote = noteRepository.save(note);
-//    	} catch (RuntimeException e) {
-//    		LOGGER.error("Exception encountered: {}", e);
-//    		throw new SnsRuntimeException(e.getClass().getSimpleName());
-//    	}
-//    	LOGGER.debug("savedNote: {}", savedNote);
-//		noteUiDto = NoteTransformer.entityToUiDto(savedNote);
-//    	LOGGER.debug("noteUiDto: {}", noteUiDto);
-//    	LOGGER.debug("end ...");
-//		return noteUiDto;
-//    }
-
-//    private Set<Note> getNotesNotInSchoolYear(Set<Note> noteSet, SchoolYear schoolYear) {
-//    	Set<Note> notesNotInSchoolYear = new LinkedHashSet<>();
-//    	for (Note note : noteSet) {
-//    		if (note.getTimestamp().before(schoolYear.getStartDate()) || note.getTimestamp().after(schoolYear.getEndDate())) {
-//    			notesNotInSchoolYear.add(note);
-//    		}
-//    	}
-//    	return notesNotInSchoolYear;
-//    }
-//    
-//    private Set<NoteUiDto> getNoteUiDtosNotInSchoolYear(Set<NoteUiDto> noteUiDtoSet, SchoolYear schoolYear) {
-//    	Set<NoteUiDto> notesNotInSchoolYear = new LinkedHashSet<>();
-//    	for (NoteUiDto noteUiDto : noteUiDtoSet) {
-//    		if (noteUiDto.getTimestamp().before(schoolYear.getStartDate()) || noteUiDto.getTimestamp().after(schoolYear.getEndDate())) {
-//    			notesNotInSchoolYear.add(noteUiDto);
-//    		}
-//    	}
-//    	return notesNotInSchoolYear;
-//    }
-    
 	@GET
 	@Path("/pdfAllTestFile")
 	@Produces("application/pdf")
@@ -424,7 +293,7 @@ public class StudentNotesResource {
 		try {
 			schoolYear = studentRepository.getStudentsByUsernameInUserPreference(username);
 		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
+			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
 		LOGGER.debug("end ...");
 		return schoolYear;
@@ -442,7 +311,7 @@ public class StudentNotesResource {
 		try {
 			schoolYear = studentRepository.getStudentsByUsernameInUserPreference(username);
 		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
+			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
 		SchoolYearDto schoolYearDto = SchoolYearTransformer.entityToDto(schoolYear);
 		LOGGER.debug("end ...");
@@ -460,7 +329,7 @@ public class StudentNotesResource {
 		try {
 			studentUiDtoList = studentRepository.getStudentGraphBySchoolYear(schoolYearId);
 		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
+			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
 		LOGGER.debug("end ...");
 		return studentUiDtoList;
@@ -477,7 +346,7 @@ public class StudentNotesResource {
 		try {
 			students = studentRepository.getStudentDtosInSchoolYear(id);
 		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
+			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
 		LOGGER.debug("end ...");
 		return students;
@@ -494,7 +363,7 @@ public class StudentNotesResource {
 		try {
 			students = studentRepository.getStudentDtosNotInSchoolYear(id);
 		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
+			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
 		LOGGER.debug("end ...");
 		return students;
@@ -511,7 +380,7 @@ public class StudentNotesResource {
 		try {
 			studentUiDtoList = studentRepository.getStudentsInSchoolYear(schoolYearId);
 		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
+			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
 		LOGGER.debug("end ...");
 		return studentUiDtoList;
@@ -528,7 +397,7 @@ public class StudentNotesResource {
 		try {
 			studentUiDtoList = studentRepository.getStudentsNotInSchoolYear(schoolYearId);
 		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
+			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
 		LOGGER.debug("end ...");
 		return studentUiDtoList;
