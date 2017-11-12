@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.kerneldc.education.studentNotesService.domain.Grade;
@@ -21,12 +22,15 @@ import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
 
 public class StudentTransformerTests {
 
+	@Ignore
 	@Test
 	public void testUiDtoToEntity_NoNotes_Success() {
 		StudentUiDto studentUiDto = getSimpleStudentUiDto();
 		Student student = StudentTransformer.uiDtoToEntity(studentUiDto);
-		checkSimpleStudentUiDtoProperties(student, studentUiDto);	}
+		checkSimpleStudentUiDtoProperties(student, studentUiDto);
+	}
 
+	@Ignore
 	@Test
 	public void testUiDtoToEntity_OneNote_Success() {
 		StudentUiDto studentUiDto = getSimpleStudentUiDto();
