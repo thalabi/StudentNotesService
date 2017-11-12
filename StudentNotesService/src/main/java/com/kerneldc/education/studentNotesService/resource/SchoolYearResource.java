@@ -18,6 +18,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,7 +118,7 @@ public class SchoolYearResource {
 		try {
 			schoolYear = schoolYearRepository.getById(id);
 		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
+			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
 		LOGGER.debug("end ...");
 		return schoolYear;
@@ -134,7 +135,7 @@ public class SchoolYearResource {
 		try {
 			schoolYear = schoolYearRepository.getById(id);
 		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
+			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
 		SchoolYearDto schoolYearDto = SchoolYearTransformer.entityToDto(schoolYear);
 		LOGGER.debug("end ...");
@@ -155,7 +156,7 @@ public class SchoolYearResource {
 			LOGGER.debug("schoolYears.size(): {}", schoolYears.size());
 			Assert.isTrue(schoolYears.size() == 1);
 		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
+			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
 		LOGGER.debug("end ...");
 		return schoolYears.iterator().next();
@@ -194,7 +195,7 @@ public class SchoolYearResource {
     		savedSchoolYear = schoolYearRepository.save(schoolYear);
 		} catch (RuntimeException e) {
 			LOGGER.error("Exception encountered: {}", e);
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
+			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
     	savedSchoolYearDto = SchoolYearTransformer.entityToDto(savedSchoolYear);
     	LOGGER.debug("end ...");    	
@@ -217,7 +218,7 @@ public class SchoolYearResource {
     		schoolYearRepository.delete(id);
 		} catch (RuntimeException e) {
 			LOGGER.error("Exception encountered: {}", e);
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
+			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
 		LOGGER.debug("end ...");
 		return "";

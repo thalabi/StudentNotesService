@@ -1,9 +1,6 @@
 package com.kerneldc.education.studentNotesService.dto;
 
 import java.util.Date;
-import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SchoolYearDto extends AbstractBaseDto {
 
