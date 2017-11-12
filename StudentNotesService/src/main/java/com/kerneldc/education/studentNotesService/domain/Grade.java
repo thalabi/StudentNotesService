@@ -39,7 +39,6 @@ public class Grade extends AbstractPersistableEntity {
 	private SchoolYear schoolYear;
 	
 	@Column(name = "grade")
-	@Convert(converter=GradeConverter.class)
 	private GradeEnum gradeEnum;
 	
 	public Long getId() {

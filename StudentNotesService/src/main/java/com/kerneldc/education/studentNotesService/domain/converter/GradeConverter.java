@@ -5,7 +5,7 @@ import javax.persistence.Converter;
 
 import com.kerneldc.education.studentNotesService.bean.GradeEnum;
 
-@Converter
+@Converter(autoApply = true)
 public class GradeConverter implements AttributeConverter<GradeEnum, String> {
 
 	@Override
