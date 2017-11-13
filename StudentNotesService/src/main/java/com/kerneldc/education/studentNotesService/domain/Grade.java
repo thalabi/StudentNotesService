@@ -1,7 +1,6 @@
 package com.kerneldc.education.studentNotesService.domain;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,11 +12,9 @@ import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlTransient;
 
 import com.kerneldc.education.studentNotesService.bean.GradeEnum;
-import com.kerneldc.education.studentNotesService.domain.converter.GradeConverter;
 
 @Entity
 @Table(name = "grade", uniqueConstraints=@UniqueConstraint(columnNames={"student_id", "school_year_id"}))
-//@XmlAccessorType(XmlAccessType.FIELD)
 public class Grade extends AbstractPersistableEntity {
 
 	private static final long serialVersionUID = 1L;
@@ -30,12 +27,10 @@ public class Grade extends AbstractPersistableEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "student_id", nullable=false)
-	//@JsonView(View.GradeExtended.class)
 	private Student student;
 
 	@ManyToOne
 	@JoinColumn(name = "school_year_id", nullable=false)
-	//@JsonView(View.GradeExtended.class)
 	private SchoolYear schoolYear;
 	
 	@Column(name = "grade")
@@ -65,15 +60,4 @@ public class Grade extends AbstractPersistableEntity {
 	public void setGradeEnum(GradeEnum gradeEnum) {
 		this.gradeEnum = gradeEnum;
 	}
-	
-//	@Override
-//    public boolean equals(final Object object) {
-//
-//        return EqualsBuilder.reflectionEquals(this, object, "id", "version"/*, "student", "schoolYear"*/);
-//    }
-//	@Override
-//    public int hashCode() {
-//
-//        return HashCodeBuilder.reflectionHashCode(this, "id", "version"/*, "student", "schoolYear"*/);
-//    }
 }

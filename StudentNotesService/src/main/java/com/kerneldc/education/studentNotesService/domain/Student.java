@@ -37,9 +37,6 @@ import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 	@NamedEntityGraph(name = "Student.noteSetAndGradeSet", attributeNodes = {@NamedAttributeNode(value = "noteSet"), @NamedAttributeNode(value = "gradeSet")})
 })
 @XmlAccessorType(XmlAccessType.FIELD)
-//@JsonIdentityInfo(
-//		  generator = ObjectIdGenerators.PropertyGenerator.class, 
-//		  property = "id")
 public class Student extends AbstractPersistableEntity {
 
 	private static final long serialVersionUID = 1L;
@@ -102,12 +99,6 @@ public class Student extends AbstractPersistableEntity {
 	public void setLastName(String lastName) {
 		this.lastName = lastName == null ? "" : lastName;
 	}
-//	public GradeEnum getGrade() {
-//		return grade;
-//	}
-//	public void setGrade(GradeEnum grade) {
-//		this.grade = grade;
-//	}
 	public Set<Grade> getGradeSet() {
 		return gradeSet;
 	}
@@ -126,17 +117,6 @@ public class Student extends AbstractPersistableEntity {
 	public void setSchoolYearSet(Set<SchoolYear> schoolYearSet) {
 		this.schoolYearSet = schoolYearSet;
 	}
-	
-//	@Override
-//    public boolean equals(final Object object) {
-//
-//        return EqualsBuilder.reflectionEquals(this, object, "id", "version", "noteSet", "schoolYearSet", "gradeSet");
-//    }
-//	@Override
-//    public int hashCode() {
-//
-//        return HashCodeBuilder.reflectionHashCode(this, "id", "version", "noteSet", "schoolYearSet", "gradeSet");
-//    }
 
 	// utility methods
 	

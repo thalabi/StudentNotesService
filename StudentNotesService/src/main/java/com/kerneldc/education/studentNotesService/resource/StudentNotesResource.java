@@ -264,24 +264,6 @@ public class StudentNotesResource {
 	}
 
 	@GET
-	@Path("/getLatestActiveStudentDtos/{username}/{limit}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Set<StudentDto> getLatestActiveStudentDtos(
-		@PathParam("username") String username,
-		@PathParam("limit") int limit) {
-		
-		LOGGER.debug("begin ...");
- 		Set<Student> students = new HashSet<>();//studentRepository.getLatestActiveStudents(username, limit);
- 		Set<StudentDto> studentDtos = new LinkedHashSet<>();
- 		for (Student student : students) {
- 			StudentDto studentDto = StudentTransformer.entityToDto(student);
- 			studentDtos.add(studentDto);
- 		}
-		LOGGER.debug("end ...");
- 		return studentDtos;
-	}
-
-	@GET
 	@Path("/getStudentsBySchoolYearFromUserPreference/{username}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@JsonView(View.SchoolYearExtended.class)

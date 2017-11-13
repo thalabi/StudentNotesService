@@ -42,25 +42,6 @@ public class UserPreferenceResource {
 	}
 
 	@GET
-	@Path("/getDtoByUsername/{username}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public UserPreferenceDto getDtoByUsername(
-		@PathParam("username") String username) {
-		
-		LOGGER.debug("begin ...");
-		UserPreferenceDto userPreferenceDto = new UserPreferenceDto();
-		try {
-			UserPreference userPreference = userPreferenceRepository.findByUsername(username).get(0);
-			userPreferenceDto = UserPreferenceTransformer.entityToDto(userPreference);
-			LOGGER.debug("userPreferenceDto: {}", userPreferenceDto);
-		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
-		}
-		LOGGER.debug("end ...");
-		return userPreferenceDto;
-	}
-
-	@GET
 	@Path("/getUiDtoByUsername/{username}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public UserPreferenceUiDto getUiDtoByUsername(
@@ -83,7 +64,8 @@ public class UserPreferenceResource {
 	@Path("/saveUserPreferenceDto")
     @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-    public UserPreferenceDto saveUserPreferenceDto(UserPreferenceDto userPreferenceDto) {
+    public UserPreferenceDto saveUserPreferenceDto(
+    	UserPreferenceDto userPreferenceDto) {
 
     	LOGGER.debug("begin ...");
     	UserPreference userPreference = UserPreferenceTransformer.dtoToEntity(userPreferenceDto);
@@ -99,26 +81,4 @@ public class UserPreferenceResource {
     	return savedUserPreferenceDto;
     }
 
-//	@DELETE
-//	@Path("/deleteSchoolYearById/{id}")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public String deleteSchoolYearById(@PathParam("id") Long id) {
-//		
-//		LOGGER.debug("begin ...");
-//    	try {
-//    		// Check if there are students enrolled in this year
-//    		LOGGER.debug("id: {}", id);
-//    		SchoolYear schoolYearToDelete = userPreferenceRepository.getStudentsBySchoolYearId(id);
-//    		if (schoolYearToDelete == null) throw new NotFoundException();
-//    		if (! schoolYearToDelete.getStudentSet().isEmpty()) throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>());
-//    		userPreferenceRepository.delete(id);
-//		} catch (RuntimeException e) {
-//			LOGGER.error("Exception encountered: {}", e);
-//			throw new SnsRuntimeException(e.getClass().getSimpleName());
-//		}
-//		LOGGER.debug("end ...");
-//		return "";
-//	}
-//	
 }

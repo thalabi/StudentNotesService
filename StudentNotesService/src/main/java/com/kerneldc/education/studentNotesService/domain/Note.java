@@ -56,22 +56,4 @@ public class Note extends AbstractPersistableEntity {
 	public void setText(String text) {
 		this.text = text;
 	}
-//	public Student getStudent() {
-//		return student;
-//	}
-//	public void setStudent(Student student) {
-//		this.student = student;
-//	}
-//	@Override
-//    public boolean equals(final Object object) {
-//
-//        return EqualsBuilder.reflectionEquals(this, object, "id", "version");
-//    }
-//	@Override
-//    public int hashCode() {
-//
-//        return HashCodeBuilder.reflectionHashCode(this, "id", "version");
-//    }
-
-
 }

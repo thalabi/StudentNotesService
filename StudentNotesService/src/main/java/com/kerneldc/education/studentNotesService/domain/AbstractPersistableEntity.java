@@ -25,7 +25,6 @@ public abstract class AbstractPersistableEntity implements Serializable {
 	@Version
 	@Column(name = "version")
 	@XmlTransient
-	//@JsonView(View.Default.class)
 	private Long version;
 
 	public Long getVersion() {

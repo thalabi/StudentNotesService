@@ -25,7 +25,7 @@ public class UserPreference extends AbstractPersistableEntity {
 	@Column(name = "username")
 	private String username;
 	
-	@ManyToOne//(fetch=FetchType.EAGER)
+	@ManyToOne
 	@JoinColumn(name = "school_year_id")
 	private SchoolYear schoolYear;
 	
