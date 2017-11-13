@@ -10,7 +10,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -209,9 +208,6 @@ public class StudentNotesResource {
     		while (schoolYearSet.iterator().hasNext()) {
     			student.removeSchoolYear(schoolYearSet.iterator().next());
     		}
-//    		for (SchoolYear schoolYear : schoolYearSet) {
-//    			student.removeSchoolYear(schoolYear);
-//    		}
 			studentRepository.delete(id);
 		} catch (RuntimeException e) {
 			LOGGER.error("Exception encountered: {}", e);

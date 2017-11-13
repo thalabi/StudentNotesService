@@ -10,9 +10,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 @Entity
 @Table(name = "user_preference", uniqueConstraints=@UniqueConstraint(columnNames={"username"}))
 public class UserPreference extends AbstractPersistableEntity {
@@ -47,14 +44,4 @@ public class UserPreference extends AbstractPersistableEntity {
 	public void setSchoolYear(SchoolYear schoolYear) {
 		this.schoolYear = schoolYear;
 	}
-	@Override
-	public boolean equals(final Object object) {
-
-        return EqualsBuilder.reflectionEquals(this, object, "id", "version");
-    }
-	@Override
-    public int hashCode() {
-
-        return HashCodeBuilder.reflectionHashCode(this, "id", "version");
-    }
 }
