@@ -177,17 +177,17 @@ public class SchoolYearResourceTests implements InitializingBean {
         //assertEquals(2, schoolYearDto.getStudentDtoSet().size());
     }
 
-	@Test
-	public void testGetLatestActiveStudentsBySchoolYearId() {
-		SchoolYearIdAndLimit schoolYearIdAndLimit = new SchoolYearIdAndLimit();
-		schoolYearIdAndLimit.setSchoolYearId(1l);
-		schoolYearIdAndLimit.setLimit(5);
-		HttpEntity<SchoolYearIdAndLimit> httpEntity = new HttpEntity<SchoolYearIdAndLimit>(schoolYearIdAndLimit,httpHeaders);
-		ResponseEntity<SchoolYear> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/getLatestActiveStudentsBySchoolYearId", HttpMethod.POST, httpEntity, SchoolYear.class);
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		SchoolYear schoolYear = response.getBody();
-		assertEquals(2, schoolYear.getStudentSet().size());
-	}
+//	@Test
+//	public void testGetLatestActiveStudentsBySchoolYearId() {
+//		SchoolYearIdAndLimit schoolYearIdAndLimit = new SchoolYearIdAndLimit();
+//		schoolYearIdAndLimit.setSchoolYearId(1l);
+//		schoolYearIdAndLimit.setLimit(5);
+//		HttpEntity<SchoolYearIdAndLimit> httpEntity = new HttpEntity<SchoolYearIdAndLimit>(schoolYearIdAndLimit,httpHeaders);
+//		ResponseEntity<SchoolYear> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/getLatestActiveStudentsBySchoolYearId", HttpMethod.POST, httpEntity, SchoolYear.class);
+//		assertEquals(HttpStatus.OK, response.getStatusCode());
+//		SchoolYear schoolYear = response.getBody();
+//		assertEquals(2, schoolYear.getStudentSet().size());
+//	}
 
 	@Test
 	@DirtiesContext

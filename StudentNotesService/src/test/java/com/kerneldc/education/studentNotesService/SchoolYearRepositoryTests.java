@@ -162,23 +162,23 @@ public class SchoolYearRepositoryTests implements InitializingBean {
 		}
 	}
 
-	@Test
-    public void testGetLatestActiveStudentsBySchoolYearId() {
-		Set<SchoolYear> schoolYears = schoolYearRepository.getLatestActiveStudentsBySchoolYearId(1l, 5);
-		LOGGER.debug("schoolYears: {}", schoolYears);
-		assertEquals(1, schoolYears.size());
-		SchoolYear schoolYear = schoolYears.iterator().next(); 
-		assertEquals(2, schoolYear.getStudentSet().size());
-		for (Student student: schoolYear.getStudentSet()) {
-			if (student.getId().equals(1l)) {
-				assertEquals(3, student.getNoteSet().size());
-			}
-			if (student.getId().equals(2l)) {
-				assertEquals(0, student.getNoteSet().size());
-			}
-		}
-	}
-	
+//	@Test
+//    public void testGetLatestActiveStudentsBySchoolYearId() {
+//		Set<SchoolYear> schoolYears = schoolYearRepository.getLatestActiveStudentsBySchoolYearId(1l, 5);
+//		LOGGER.debug("schoolYears: {}", schoolYears);
+//		assertEquals(1, schoolYears.size());
+//		SchoolYear schoolYear = schoolYears.iterator().next(); 
+//		assertEquals(2, schoolYear.getStudentSet().size());
+//		for (Student student: schoolYear.getStudentSet()) {
+//			if (student.getId().equals(1l)) {
+//				assertEquals(3, student.getNoteSet().size());
+//			}
+//			if (student.getId().equals(2l)) {
+//				assertEquals(0, student.getNoteSet().size());
+//			}
+//		}
+//	}
+//	
 	@Test
 	@DirtiesContext
 	public void testCascade () throws ParseException {

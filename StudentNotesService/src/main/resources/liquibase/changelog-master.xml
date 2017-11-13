@@ -31,4 +31,6 @@
   
   <include file="liquibase/changelog-migrate-to-multi-school-year.xml"/>
   
+  <include file="liquibase/changelog-student-drop-grade-column.xml"/>
+  
 </databaseChangeLog>

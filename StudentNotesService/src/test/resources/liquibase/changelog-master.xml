@@ -33,4 +33,6 @@
   
   <include file="liquibase/changelog-student-graph.xml"/>
   
+  <include file="liquibase/changelog-student-drop-grade-column.xml"/>
+  
 </databaseChangeLog>

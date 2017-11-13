@@ -9,6 +9,7 @@ import org.junit.Test;
 
 public class T1 {
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testOne() {
 		// mock creation

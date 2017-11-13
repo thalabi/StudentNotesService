@@ -1,8 +1,5 @@
 package com.kerneldc.education.studentNotesService.resource;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -125,25 +122,23 @@ public class SchoolYearResource {
 		return schoolYearDto;
 	}
 
-	@POST
-	@Path("/getLatestActiveStudentsBySchoolYearId")
-	@Produces(MediaType.APPLICATION_JSON)
-	@JsonView(View.SchoolYearExtended.class)
-	public SchoolYear getLatestActiveStudentsBySchoolYearId(SchoolYearIdAndLimit schoolYearIdAndLimit) {
-		
-		LOGGER.debug("begin ...");
-		LOGGER.debug("schoolYearIdAndLimitBean: {}", schoolYearIdAndLimit);
-		Set<SchoolYear> schoolYears = new HashSet<>();
-		try {
-			schoolYears = schoolYearRepository.getLatestActiveStudentsBySchoolYearId(schoolYearIdAndLimit.getSchoolYearId(), schoolYearIdAndLimit.getLimit());
-			LOGGER.debug("schoolYears.size(): {}", schoolYears.size());
-			assertThat(schoolYears, hasSize(1));
-		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
-		}
-		LOGGER.debug("end ...");
-		return schoolYears.iterator().next();
-	}
+//	@POST
+//	@Path("/getLatestActiveStudentsBySchoolYearId")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	@JsonView(View.SchoolYearExtended.class)
+//	public SchoolYear getLatestActiveStudentsBySchoolYearId(SchoolYearIdAndLimit schoolYearIdAndLimit) {
+//		
+//		LOGGER.debug("begin ...");
+//		LOGGER.debug("schoolYearIdAndLimitBean: {}", schoolYearIdAndLimit);
+//		Set<SchoolYear> schoolYears = new HashSet<>();
+//		try {
+//			schoolYears = schoolYearRepository.getLatestActiveStudentsBySchoolYearId(schoolYearIdAndLimit.getSchoolYearId(), schoolYearIdAndLimit.getLimit());
+//		} catch (RuntimeException e) {
+//			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
+//		}
+//		LOGGER.debug("end ...");
+//		return schoolYears.iterator().next();
+//	}
 
     @POST
 	@Path("/saveSchoolYearDto")
