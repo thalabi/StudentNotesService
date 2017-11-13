@@ -1,9 +1,7 @@
 package com.kerneldc.education.studentNotesService.service;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -11,7 +9,6 @@ import java.util.HashSet;
 
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -22,12 +19,10 @@ import com.kerneldc.education.studentNotesService.bean.Students;
 import com.kerneldc.education.studentNotesService.dto.ui.GradeUiDto;
 import com.kerneldc.education.studentNotesService.dto.ui.NoteUiDto;
 import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
-import com.kerneldc.education.studentNotesService.exception.SnsException;
 
 public class StudentNotesReportServiceTests {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
-	private final SimpleDateFormat timestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	
 	private static PdfStudentNotesReportService fixture;
 	
@@ -68,7 +63,7 @@ public class StudentNotesReportServiceTests {
 		// Create student # 2
 		String firstName2 = "first name 2 testBeanToXml";
 		String lastName2 = "last name 2 testBeanToXml";
-		GradeEnum grade2 = GradeEnum.FOUR;
+		//GradeEnum grade2 = GradeEnum.FOUR;
 		StudentUiDto student2 = new StudentUiDto();
 		student2.setFirstName(firstName2);
 		student2.setLastName(lastName2);

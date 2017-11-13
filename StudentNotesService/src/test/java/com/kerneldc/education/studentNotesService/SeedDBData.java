@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import com.kerneldc.education.studentNotesService.bean.GradeEnum;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
 

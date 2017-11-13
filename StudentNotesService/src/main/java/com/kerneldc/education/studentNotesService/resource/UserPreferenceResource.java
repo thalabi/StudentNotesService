@@ -8,13 +8,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kerneldc.education.studentNotesService.domain.UserPreference;
-import com.kerneldc.education.studentNotesService.dto.UserPreferenceDto;
 import com.kerneldc.education.studentNotesService.dto.transformer.UserPreferenceTransformer;
 import com.kerneldc.education.studentNotesService.dto.ui.UserPreferenceUiDto;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
@@ -54,31 +54,31 @@ public class UserPreferenceResource {
 			userPreferenceUiDto = UserPreferenceTransformer.entityToUiDto(userPreference);
 			LOGGER.debug("userPreferenceUiDto: {}", userPreferenceUiDto);
 		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
+			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
 		LOGGER.debug("end ...");
 		return userPreferenceUiDto;
 	}
 
     @POST
-	@Path("/saveUserPreferenceDto")
+	@Path("/saveUserPreferenceUiDto")
     @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-    public UserPreferenceDto saveUserPreferenceDto(
-    	UserPreferenceDto userPreferenceDto) {
+    public UserPreferenceUiDto saveUserPreferenceUiDto(
+    	UserPreferenceUiDto userPreferenceUiDto) {
 
     	LOGGER.debug("begin ...");
-    	UserPreference userPreference = UserPreferenceTransformer.dtoToEntity(userPreferenceDto);
-    	UserPreferenceDto savedUserPreferenceDto;
+    	UserPreference userPreference = UserPreferenceTransformer.uiDtoToEntity(userPreferenceUiDto);
+    	UserPreferenceUiDto savedUserPreferenceUiDto;
     	try {
     		userPreference = userPreferenceRepository.save(userPreference);
-    		savedUserPreferenceDto = UserPreferenceTransformer.entityToDto(userPreference);
+    		savedUserPreferenceUiDto = UserPreferenceTransformer.entityToUiDto(userPreference);
 		} catch (RuntimeException e) {
 			LOGGER.error("Exception encountered: {}", e);
-			throw new SnsRuntimeException(e.getClass().getSimpleName());
+			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
     	LOGGER.debug("end ...");
-    	return savedUserPreferenceDto;
+    	return savedUserPreferenceUiDto;
     }
 
 }

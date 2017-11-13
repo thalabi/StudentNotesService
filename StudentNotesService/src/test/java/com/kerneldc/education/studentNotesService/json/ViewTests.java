@@ -11,7 +11,6 @@ import org.junit.Test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kerneldc.education.studentNotesService.bean.GradeEnum;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;

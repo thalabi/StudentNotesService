@@ -1,36 +1,18 @@
 package com.kerneldc.education.studentNotesService.repository;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+public class SchoolYearRepositoryImpl implements SchoolYearRepositoryCustom/*, InitializingBean*/ {
 
-import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
-
-import org.hibernate.SQLQuery;
-import org.hibernate.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaContext;
-
-import com.kerneldc.education.studentNotesService.domain.SchoolYear;
-
-public class SchoolYearRepositoryImpl implements SchoolYearRepositoryCustom, InitializingBean {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
-
-	@Autowired
-	private JpaContext jpaContext;
-
-	private EntityManager entityManager;
-	
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		entityManager = jpaContext.getEntityManagerByManagedType(SchoolYear.class);
-	}
+//	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
+//
+//	@Autowired
+//	private JpaContext jpaContext;
+//
+//	private EntityManager entityManager;
+//	
+//	@Override
+//	public void afterPropertiesSet() throws Exception {
+//		entityManager = jpaContext.getEntityManagerByManagedType(SchoolYear.class);
+//	}
 
 //	@Override
 //	@Transactional

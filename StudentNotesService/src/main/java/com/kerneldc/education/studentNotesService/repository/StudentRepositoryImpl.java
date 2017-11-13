@@ -458,18 +458,18 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 		return result; //squery.list();
 	}
 
-	private void setDataTyes(SQLQuery query) {
-		query.addScalar("username", StandardBasicTypes.STRING).addScalar("student_id", StandardBasicTypes.LONG)
-				.addScalar("first_name", StandardBasicTypes.STRING).addScalar("last_name", StandardBasicTypes.STRING)
-				.addScalar("grade_id", StandardBasicTypes.LONG).addScalar("grade", StandardBasicTypes.STRING)
-				.addScalar("grade_version", StandardBasicTypes.LONG).addScalar("note_id", StandardBasicTypes.LONG)
-				.addScalar("timestamp", StandardBasicTypes.TIMESTAMP).addScalar("text", StandardBasicTypes.STRING)
-				.addScalar("note_version", StandardBasicTypes.LONG).addScalar("school_year_id", StandardBasicTypes.LONG)
-				.addScalar("school_year", StandardBasicTypes.STRING).addScalar("start_date", StandardBasicTypes.DATE)
-				.addScalar("end_date", StandardBasicTypes.DATE)
-				.addScalar("school_year_version", StandardBasicTypes.LONG)
-				.addScalar("student_version", StandardBasicTypes.LONG);
-	}
+//	private void setDataTyes(SQLQuery query) {
+//		query.addScalar("username", StandardBasicTypes.STRING).addScalar("student_id", StandardBasicTypes.LONG)
+//				.addScalar("first_name", StandardBasicTypes.STRING).addScalar("last_name", StandardBasicTypes.STRING)
+//				.addScalar("grade_id", StandardBasicTypes.LONG).addScalar("grade", StandardBasicTypes.STRING)
+//				.addScalar("grade_version", StandardBasicTypes.LONG).addScalar("note_id", StandardBasicTypes.LONG)
+//				.addScalar("timestamp", StandardBasicTypes.TIMESTAMP).addScalar("text", StandardBasicTypes.STRING)
+//				.addScalar("note_version", StandardBasicTypes.LONG).addScalar("school_year_id", StandardBasicTypes.LONG)
+//				.addScalar("school_year", StandardBasicTypes.STRING).addScalar("start_date", StandardBasicTypes.DATE)
+//				.addScalar("end_date", StandardBasicTypes.DATE)
+//				.addScalar("school_year_version", StandardBasicTypes.LONG)
+//				.addScalar("student_version", StandardBasicTypes.LONG);
+//	}
 	private void setStudentGraphDataTyes(SQLQuery query) {
 		query.addScalar("student_id", StandardBasicTypes.LONG)
 				.addScalar("first_name", StandardBasicTypes.STRING).addScalar("last_name", StandardBasicTypes.STRING)

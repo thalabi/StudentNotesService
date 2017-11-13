@@ -7,13 +7,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
@@ -40,12 +35,10 @@ import com.kerneldc.education.studentNotesService.domain.Grade;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.domain.jsonView.View;
-import com.kerneldc.education.studentNotesService.dto.NoteDto;
 import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
 import com.kerneldc.education.studentNotesService.dto.StudentDto;
 import com.kerneldc.education.studentNotesService.dto.transformer.SchoolYearTransformer;
 import com.kerneldc.education.studentNotesService.dto.transformer.StudentTransformer;
-import com.kerneldc.education.studentNotesService.dto.ui.NoteUiDto;
 import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
 import com.kerneldc.education.studentNotesService.exception.SnsException;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
@@ -381,36 +374,36 @@ public class StudentNotesResource {
 		return studentUiDtoList;
 	}
 	
-	private void sortNoteSet(Set<NoteDto> noteSetDto) {
-		Comparator<NoteDto> comparator = new Comparator<NoteDto>() {
-		    @Override
-		    public int compare(NoteDto left, NoteDto right) {
-		    	return Long.valueOf(left.getTimestamp().getTime()).compareTo(right.getTimestamp().getTime());
-		    }
-		};
-		List<NoteDto> noteDtoList = new ArrayList<>(noteSetDto);
-		LOGGER.debug("before sort");
-		for (NoteDto noteDto : noteDtoList) {
-			LOGGER.debug("noteDto.getTimestamp(): {}", noteDto.getTimestamp());
-		}
-		Collections.sort(noteDtoList, comparator);
-		LOGGER.debug("after sort");
-		for (NoteDto noteDto : noteDtoList) {
-			LOGGER.debug("noteDto.getTimestamp(): {}", noteDto.getTimestamp());
-		}
-		noteSetDto.clear();
-		noteSetDto.addAll(new LinkedHashSet<>(noteDtoList));
-	}	
-	
-	private Set<NoteUiDto> sortNoteUiDtoSet(Set<NoteUiDto> noteUiDtoSet) {
-		Comparator<NoteUiDto> comparator = new Comparator<NoteUiDto>() {
-		    @Override
-		    public int compare(NoteUiDto left, NoteUiDto right) {
-		    	return Long.valueOf(left.getTimestamp().getTime()).compareTo(right.getTimestamp().getTime());
-		    }
-		};
-		TreeSet<NoteUiDto> sortedSet = new TreeSet<>(comparator);
-		sortedSet.addAll(noteUiDtoSet);
-		return sortedSet;
-	}	
+//	private void sortNoteSet(Set<NoteDto> noteSetDto) {
+//		Comparator<NoteDto> comparator = new Comparator<NoteDto>() {
+//		    @Override
+//		    public int compare(NoteDto left, NoteDto right) {
+//		    	return Long.valueOf(left.getTimestamp().getTime()).compareTo(right.getTimestamp().getTime());
+//		    }
+//		};
+//		List<NoteDto> noteDtoList = new ArrayList<>(noteSetDto);
+//		LOGGER.debug("before sort");
+//		for (NoteDto noteDto : noteDtoList) {
+//			LOGGER.debug("noteDto.getTimestamp(): {}", noteDto.getTimestamp());
+//		}
+//		Collections.sort(noteDtoList, comparator);
+//		LOGGER.debug("after sort");
+//		for (NoteDto noteDto : noteDtoList) {
+//			LOGGER.debug("noteDto.getTimestamp(): {}", noteDto.getTimestamp());
+//		}
+//		noteSetDto.clear();
+//		noteSetDto.addAll(new LinkedHashSet<>(noteDtoList));
+//	}	
+//	
+//	private Set<NoteUiDto> sortNoteUiDtoSet(Set<NoteUiDto> noteUiDtoSet) {
+//		Comparator<NoteUiDto> comparator = new Comparator<NoteUiDto>() {
+//		    @Override
+//		    public int compare(NoteUiDto left, NoteUiDto right) {
+//		    	return Long.valueOf(left.getTimestamp().getTime()).compareTo(right.getTimestamp().getTime());
+//		    }
+//		};
+//		TreeSet<NoteUiDto> sortedSet = new TreeSet<>(comparator);
+//		sortedSet.addAll(noteUiDtoSet);
+//		return sortedSet;
+//	}	
 }

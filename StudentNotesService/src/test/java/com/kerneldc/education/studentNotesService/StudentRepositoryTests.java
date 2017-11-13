@@ -2,6 +2,7 @@ package com.kerneldc.education.studentNotesService;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
@@ -19,7 +20,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -47,7 +47,6 @@ import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.dto.StudentDto;
-import com.kerneldc.education.studentNotesService.dto.transformer.StudentTransformer;
 import com.kerneldc.education.studentNotesService.dto.ui.NoteUiDto;
 import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
@@ -516,22 +515,25 @@ public class StudentRepositoryTests implements InitializingBean {
 	@Test
 	public void testFindOne() {
 		Student student = studentRepository.findOne(1l);
-		//student.getSchoolYearSet().size();
+		assertThat(student, notNullValue());
 	}
 	
 	@Test
 	public void testGetStudentById() {
 		Student student = studentRepository.getStudentById(1l);
+		assertThat(student, notNullValue());
 	}
 	
 	@Test
 	public void testGetStudentByIdWithGradeList() {
 		Student student = studentRepository.getStudentByIdWithGradeList(1l);
+		assertThat(student, notNullValue());
 	}
 	
 	@Test
 	public void testGetStudentByIdWithNodeListAndGradeList() {
 		Student student = studentRepository.getStudentByIdWithNoteListAndGradeList(1l);
+		assertThat(student, notNullValue());
 	}
 
 	@Test
@@ -728,5 +730,6 @@ public class StudentRepositoryTests implements InitializingBean {
 	@Test
 	public void testGetStudentsInSchoolYear2() {
 		List<StudentUiDto> students = studentRepository.getStudentsInSchoolYear(Long.valueOf(1l));
+		assertThat(students.size(), greaterThan(0));
 	}
 }

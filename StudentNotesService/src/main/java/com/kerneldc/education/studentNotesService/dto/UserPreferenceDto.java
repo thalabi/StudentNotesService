@@ -8,7 +8,6 @@ public class UserPreferenceDto extends AbstractBaseDto {
 
 	private Long id;
 	private String username;
-	//@XmlElement(name="schoolYear")
 	@JsonProperty(value="schoolYear")
 	private SchoolYearDto schoolYearDto;
 	

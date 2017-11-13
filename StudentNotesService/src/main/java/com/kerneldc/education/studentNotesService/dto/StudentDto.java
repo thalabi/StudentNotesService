@@ -3,8 +3,6 @@ package com.kerneldc.education.studentNotesService.dto;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.kerneldc.education.studentNotesService.bean.GradeEnum;
-import com.kerneldc.education.studentNotesService.domain.Grade;
 
 public class StudentDto extends AbstractBaseDto {
 

@@ -3,7 +3,6 @@ package com.kerneldc.education.studentNotesService.resource;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
@@ -25,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.kerneldc.education.studentNotesService.bean.SchoolYearIdAndLimit;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.domain.jsonView.View;

@@ -12,9 +12,7 @@ import java.util.HashSet;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.kerneldc.education.studentNotesService.domain.Grade;
 import com.kerneldc.education.studentNotesService.domain.Note;
-import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.dto.transformer.StudentTransformer;
 import com.kerneldc.education.studentNotesService.dto.ui.NoteUiDto;
@@ -50,10 +48,10 @@ public class StudentTransformerTests {
 		assertThat(student.getFirstName(), equalTo(studentUiDto.getFirstName()));
 		assertThat(student.getLastName(), equalTo(studentUiDto.getLastName()));
 		assertThat(student.getGradeSet(), hasSize(1));
-		Grade grade = student.getGradeSet().iterator().next();
+		//Grade grade = student.getGradeSet().iterator().next();
 		//assertThat(grade.getGradeEnum(), equalTo(studentUiDto.getGradeEnum()));
 		assertThat(student.getSchoolYearSet(), hasSize(1));
-		SchoolYear schoolYear = student.getSchoolYearSet().iterator().next();
+		//SchoolYear schoolYear = student.getSchoolYearSet().iterator().next();
 		//assertThat(schoolYear.getSchoolYear(), equalTo(studentUiDto.getSchoolYear()));
 	}
 	public static StudentUiDto getSimpleStudentUiDto() {

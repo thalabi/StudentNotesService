@@ -11,18 +11,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 //import static org.junit.Assert.assertEquals;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -32,14 +27,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.repository.JpaContext;
-import org.springframework.test.annotation.Commit;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
-import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = StudentNotesApplication.class)
@@ -52,9 +45,6 @@ public class SchoolYearRepositoryTests implements InitializingBean {
 	@Autowired
 	private SchoolYearRepository schoolYearRepository;
 	
-	@Autowired
-	private StudentRepository StudentRepository;
-
 	@Autowired
 	private JpaContext jpaContext;
 	

@@ -2,27 +2,11 @@ package com.kerneldc.education.studentNotesService;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -39,7 +23,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.test.annotation.Commit;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestExecutionListeners.MergeMode;
@@ -50,20 +33,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.kerneldc.education.studentNotesService.bean.GradeEnum;
-import com.kerneldc.education.studentNotesService.bean.TimestampRange;
 import com.kerneldc.education.studentNotesService.constants.Constants;
-import com.kerneldc.education.studentNotesService.domain.Grade;
-import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
-import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 import com.kerneldc.education.studentNotesService.dto.StudentDto;
-import com.kerneldc.education.studentNotesService.dto.ui.GradeUiDto;
-import com.kerneldc.education.studentNotesService.dto.ui.NoteUiDto;
-import com.kerneldc.education.studentNotesService.dto.ui.SchoolYearUiDto;
-import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
 import com.kerneldc.education.studentNotesService.junit.MyTestExecutionListener;
-import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 import com.kerneldc.education.studentNotesService.security.bean.User;
 import com.kerneldc.education.studentNotesService.security.constants.SecurityConstants;
@@ -82,9 +55,6 @@ public class StudentNotesResourceTests {
 	
 	@Autowired
 	private StudentRepository studentRepository;
-
-	@Autowired
-	private SchoolYearRepository schoolYearRepository;
 
 	@Value("${webapp.username}")
 	private String username;

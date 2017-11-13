@@ -41,4 +41,13 @@ public class UserPreferenceTransformer {
 		userPreference.setSchoolYear(schoolYear);
 		return userPreference;
 	}
+
+	public static UserPreference uiDtoToEntity(UserPreferenceUiDto userPreferenceUiDto) {
+		UserPreference userPreference = new UserPreference();
+		BeanUtils.copyProperties(userPreferenceUiDto, userPreference);
+		SchoolYear schoolYear = new SchoolYear();
+		BeanUtils.copyProperties(userPreferenceUiDto.getSchoolYearUiDto(), schoolYear);
+		userPreference.setSchoolYear(schoolYear);
+		return userPreference;
+	}
 }

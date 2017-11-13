@@ -38,8 +38,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.UserPreference;
-import com.kerneldc.education.studentNotesService.dto.UserPreferenceDto;
 import com.kerneldc.education.studentNotesService.dto.transformer.UserPreferenceTransformer;
+import com.kerneldc.education.studentNotesService.dto.ui.UserPreferenceUiDto;
 import com.kerneldc.education.studentNotesService.junit.MyTestExecutionListener;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.UserPreferenceRepository;
@@ -117,50 +117,21 @@ public class UserPreferenceResourceTests {
 
 	@Test
 	@DirtiesContext
-	public void testSaveUserPreferenceDto() throws ParseException {
+	public void testSaveUserPreferenceUiDto() throws ParseException {
 		
 		UserPreference userPreference = userPreferenceRepository.findByUsername("TestUser").get(0);
 		assertThat(userPreference.getSchoolYear().getId(), equalTo(1l));
 		SchoolYear schoolYear = schoolYearRepository.findOne(2l);
 		userPreference.setSchoolYear(schoolYear);
 		
-		UserPreferenceDto userPreferenceDto = UserPreferenceTransformer.entityToDto(userPreference);
+		UserPreferenceUiDto userPreferenceUiDto = UserPreferenceTransformer.entityToUiDto(userPreference);
 		
-		HttpEntity<UserPreferenceDto> httpEntity = new HttpEntity<UserPreferenceDto>(userPreferenceDto, httpHeaders);
-		ResponseEntity<UserPreferenceDto> response = testRestTemplate.exchange(
-				BASE_URI + "/userPreference/saveUserPreferenceDto", HttpMethod.POST, httpEntity, UserPreferenceDto.class);
+		HttpEntity<UserPreferenceUiDto> httpEntity = new HttpEntity<UserPreferenceUiDto>(userPreferenceUiDto, httpHeaders);
+		ResponseEntity<UserPreferenceUiDto> response = testRestTemplate.exchange(
+				BASE_URI + "/userPreference/saveUserPreferenceUiDto", HttpMethod.POST, httpEntity, UserPreferenceUiDto.class);
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
-		UserPreferenceDto savedUserPreferenceDto = response.getBody();
-		assertThat(savedUserPreferenceDto.getSchoolYearDto().getId(), equalTo(2l));
+		UserPreferenceUiDto savedUserPreferenceUiDto = response.getBody();
+		assertThat(savedUserPreferenceUiDto.getSchoolYearUiDto().getId(), equalTo(2l));
 	}
-//
-//	@Test
-//	@DirtiesContext
-//	public void testDeleteSchoolYearById() throws ParseException {
-//		SchoolYear newSchoolYear = new SchoolYear();
-//		newSchoolYear.setSchoolYear("new school year 1");
-//		newSchoolYear.setStartDate(dateFormat.parse("2027-09-01"));
-//		newSchoolYear.setEndDate(dateFormat.parse("2028-06-31"));
-//		schoolYearRepository.save(newSchoolYear);
-//		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
-//		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/deleteSchoolYearById/"+newSchoolYear.getId(), HttpMethod.DELETE, httpEntity, String.class);
-//        assertEquals(HttpStatus.OK, response.getStatusCode());
-//        SchoolYear shouldNotExistSchoolYear = schoolYearRepository.findOne(newSchoolYear.getId());
-//		assertEquals("school year should not exist", null, shouldNotExistSchoolYear);
-//	}
-//	
-//	@Test
-//	public void testDeleteSchoolYearByIdNotFound() {
-//		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
-//		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/deleteSchoolYearById/777777", HttpMethod.DELETE, httpEntity, String.class);
-//        assertEquals(Constants.SN_EXCEPTION_RESPONSE_STATUS_CODE, response.getStatusCode().value());
-//	}
-//
-//	@Test
-//	public void testDeleteSchoolYearByIdWithStudents() {
-//		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
-//		ResponseEntity<String> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/deleteSchoolYearById/1", HttpMethod.DELETE, httpEntity, String.class);
-//        assertEquals(Constants.SN_EXCEPTION_RESPONSE_STATUS_CODE, response.getStatusCode().value());
-//	}
 }

@@ -9,7 +9,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
 
 @XmlRootElement

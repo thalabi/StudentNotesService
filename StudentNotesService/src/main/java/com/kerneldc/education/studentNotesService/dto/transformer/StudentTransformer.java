@@ -7,8 +7,6 @@ import javax.persistence.Persistence;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Hibernate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 
 import com.kerneldc.education.studentNotesService.domain.Grade;
@@ -24,7 +22,7 @@ import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
 
 public class StudentTransformer {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
+	//private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
 	
 	private StudentTransformer() {
 	    throw new IllegalStateException("Cannot instantiate a utility class.");
