@@ -1,6 +1,5 @@
 package com.kerneldc.education.studentNotesService;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -115,20 +114,6 @@ public class UserPreferenceResourceTests {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Hello", response.getBody());
     }
-
-	@Test
-	public void testGetDtoByUsername() {
-		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
-		String username = "TestUser";
-		ResponseEntity<UserPreferenceDto> response = testRestTemplate.exchange(BASE_URI+"/userPreference/getDtoByUsername/"+username, HttpMethod.GET, httpEntity, UserPreferenceDto.class);
-		assertEquals(HttpStatus.OK, response.getStatusCode());
-		UserPreferenceDto userPreferenceDto = response.getBody();
-		assertThat(userPreferenceDto, notNullValue());
-		LOGGER.debug("userPreference: {}", userPreferenceDto);
-		assertThat(userPreferenceDto.getUsername(), equalTo(username));
-		assertThat(userPreferenceDto.getId(), equalTo(1l));
-		assertThat(userPreferenceDto.getSchoolYearDto().getId(), equalTo(1l));
-	}
 
 	@Test
 	@DirtiesContext
