@@ -2,16 +2,21 @@ package com.kerneldc.education.studentNotesService.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "user_preference", uniqueConstraints=@UniqueConstraint(columnNames={"username"}))
+@NamedEntityGraph(name = "UserPreference.schoolYear", 
+	attributeNodes = @NamedAttributeNode(value = "schoolYear"))
 public class UserPreference extends AbstractPersistableEntity {
 
 	private static final long serialVersionUID = 1L;
@@ -22,7 +27,8 @@ public class UserPreference extends AbstractPersistableEntity {
 	@Column(name = "username")
 	private String username;
 	
-	@ManyToOne
+	// Change the default to LAZY
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "school_year_id")
 	private SchoolYear schoolYear;
 	
