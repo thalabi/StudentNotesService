@@ -25,10 +25,12 @@ public class Grade extends AbstractPersistableEntity {
 	@XmlTransient
 	private Long id;
 
+	// TODO change default fetch mode to LAZY
 	@ManyToOne
 	@JoinColumn(name = "student_id", nullable=false)
 	private Student student;
 
+	// TODO change default fetch mode to LAZY
 	@ManyToOne
 	@JoinColumn(name = "school_year_id", nullable=false)
 	private SchoolYear schoolYear;
