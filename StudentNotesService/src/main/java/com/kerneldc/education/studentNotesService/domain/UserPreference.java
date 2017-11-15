@@ -27,7 +27,7 @@ public class UserPreference extends AbstractPersistableEntity {
 	@Column(name = "username")
 	private String username;
 	
-	// Change the default to LAZY
+	// Change the default fetch mode to LAZY
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "school_year_id")
 	private SchoolYear schoolYear;
