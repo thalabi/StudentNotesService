@@ -2,6 +2,7 @@ package com.kerneldc.education.studentNotesService.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,13 +26,11 @@ public class Grade extends AbstractPersistableEntity {
 	@XmlTransient
 	private Long id;
 
-	// TODO change default fetch mode to LAZY
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "student_id", nullable=false)
 	private Student student;
 
-	// TODO change default fetch mode to LAZY
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "school_year_id", nullable=false)
 	private SchoolYear schoolYear;
 	
