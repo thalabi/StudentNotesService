@@ -156,15 +156,15 @@ public class SchoolYearResourceTests implements InitializingBean {
         assertEquals(2, schoolYearDtos.length);
     }
 
-	@Test
-    public void testGetStudentsBySchoolYearId() {
-		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
-		ResponseEntity<SchoolYear> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/getStudentsBySchoolYearId/1", HttpMethod.GET, httpEntity, SchoolYear.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        SchoolYear schoolYear = response.getBody();
-        assertNotNull(schoolYear);
-        assertEquals(3, schoolYear.getStudentSet().size());
-    }
+//	@Test
+//    public void testGetStudentsBySchoolYearId() {
+//		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+//		ResponseEntity<SchoolYear> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/getStudentsBySchoolYearId/1", HttpMethod.GET, httpEntity, SchoolYear.class);
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//        SchoolYear schoolYear = response.getBody();
+//        assertNotNull(schoolYear);
+//        assertEquals(3, schoolYear.getStudentSet().size());
+//    }
 
 	@Test
     public void testGetStudentDtosBySchoolYearId() {

@@ -84,23 +84,23 @@ public class SchoolYearResource {
 		return schoolYearDtos;
 	}
 
-	@GET
-	@Path("/getStudentsBySchoolYearId/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	@JsonView(View.SchoolYearExtended.class)
-	public SchoolYear getStudentsBySchoolYearId(
-		@PathParam("id") Long id) throws RowNotFoundException {
-		
-		LOGGER.debug("begin ...");
-		SchoolYear schoolYear = null;
-		try {
-			schoolYear = schoolYearRepository.getById(id);
-		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
-		}
-		LOGGER.debug("end ...");
-		return schoolYear;
-	}
+//	@GET
+//	@Path("/getStudentsBySchoolYearId/{id}")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	@JsonView(View.SchoolYearExtended.class)
+//	public SchoolYear getStudentsBySchoolYearId(
+//		@PathParam("id") Long id) throws RowNotFoundException {
+//		
+//		LOGGER.debug("begin ...");
+//		SchoolYear schoolYear = null;
+//		try {
+//			schoolYear = schoolYearRepository.getById(id);
+//		} catch (RuntimeException e) {
+//			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
+//		}
+//		LOGGER.debug("end ...");
+//		return schoolYear;
+//	}
 
 	@GET
 	@Path("/getStudentDtosBySchoolYearId/{id}")
