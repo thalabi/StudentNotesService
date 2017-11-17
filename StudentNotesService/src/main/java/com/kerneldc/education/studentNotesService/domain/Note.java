@@ -13,8 +13,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 import com.kerneldc.education.studentNotesService.util.XmlTimestampAdapter;
 
 @Entity
@@ -28,14 +26,11 @@ public class Note extends AbstractPersistableEntity {
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@XmlTransient
-	@JsonView(View.Default.class)
 	private Long id;
 	@Column(name = "timestamp")
 	@XmlJavaTypeAdapter(XmlTimestampAdapter.class)
-	@JsonView(View.Default.class)
 	private Timestamp timestamp;
 	@Column(name = "text")
-	@JsonView(View.Default.class)
 	private String text;
 	
 	public Long getId() {

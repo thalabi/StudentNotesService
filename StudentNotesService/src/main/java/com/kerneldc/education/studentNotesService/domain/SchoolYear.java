@@ -19,9 +19,6 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.kerneldc.education.studentNotesService.domain.jsonView.View;
-
 @Entity
 @Table(name = "school_year", uniqueConstraints=@UniqueConstraint(columnNames={"school_year"}))
 @NamedEntityGraph(name = "SchoolYear.studentSet", 
@@ -33,16 +30,12 @@ public class SchoolYear extends AbstractPersistableEntity {
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@JsonView(View.Default.class)
 	private Long id;
 	@Column(name = "school_year")
-	@JsonView(View.Default.class)
 	private String schoolYear;
 	@Column(name = "start_date")
-	@JsonView(View.Default.class)
 	private Date startDate;
 	@Column(name = "end_date")
-	@JsonView(View.Default.class)
 	private Date endDate;
 
 	@ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH})  
@@ -51,7 +44,6 @@ public class SchoolYear extends AbstractPersistableEntity {
     	joinColumns=@JoinColumn(name="school_year_id"),
     	inverseJoinColumns=@JoinColumn(name="student_id"))
 	@OrderBy(value="firstName") //TODO add last name
-	@JsonView(View.SchoolYearExtended.class)
 	private Set<Student> studentSet = new HashSet<>();
 	
 	public Long getId() {

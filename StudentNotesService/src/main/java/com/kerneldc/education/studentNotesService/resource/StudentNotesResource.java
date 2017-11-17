@@ -30,11 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.kerneldc.education.studentNotesService.domain.Grade;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
-import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
 import com.kerneldc.education.studentNotesService.dto.StudentDto;
 import com.kerneldc.education.studentNotesService.dto.transformer.SchoolYearTransformer;
@@ -255,7 +253,6 @@ public class StudentNotesResource {
 	@GET
 	@Path("/getStudentsBySchoolYearFromUserPreference/{username}")
 	@Produces(MediaType.APPLICATION_JSON)
-	@JsonView(View.SchoolYearExtended.class)
 	public SchoolYear getStudentsBySchoolYearFromUserPreference(
 		@PathParam("username") String username) {
 		
@@ -273,7 +270,6 @@ public class StudentNotesResource {
 	@GET
 	@Path("/getStudentDtosBySchoolYearFromUserPreference/{username}")
 	@Produces(MediaType.APPLICATION_JSON)
-	//@JsonView(View.SchoolYearExtended.class)
 	public SchoolYearDto getStudentDtosBySchoolYearFromUserPreference(
 		@PathParam("username") String username) {
 		

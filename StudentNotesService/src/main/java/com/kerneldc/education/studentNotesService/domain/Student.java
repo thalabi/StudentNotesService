@@ -26,9 +26,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import com.kerneldc.education.studentNotesService.domain.jsonView.View;
-
 @Entity
 @Table(name = "student", uniqueConstraints=@UniqueConstraint(columnNames={"first_name", "last_name"}))
 @NamedEntityGraphs({
@@ -45,13 +42,13 @@ public class Student extends AbstractPersistableEntity {
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@XmlTransient
-	@JsonView(View.Default.class)
+	//@JsonView(View.Default.class)
 	private Long id;
 	@Column(name = "first_name")
-	@JsonView(View.Default.class)
+	//@JsonView(View.Default.class)
 	private String firstName = "";
 	@Column(name = "last_name")
-	@JsonView(View.Default.class)
+	//@JsonView(View.Default.class)
 	private String lastName = "";
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -62,7 +59,7 @@ public class Student extends AbstractPersistableEntity {
 		inverseJoinColumns = @JoinColumn(name="grade_id"))
 	//@XmlElementWrapper(name="notes")
 	//@XmlElement(name="note")
-	@JsonView(View.Default.class)
+	//@JsonView(View.Default.class)
 	private Set<Grade> gradeSet = new LinkedHashSet<>();
 
 	@OneToMany(cascade = CascadeType.ALL/*, orphanRemoval = true*/)
@@ -73,12 +70,12 @@ public class Student extends AbstractPersistableEntity {
 		inverseJoinColumns = @JoinColumn(name="note_id"))
 	@XmlElementWrapper(name="notes")
 	@XmlElement(name="note")
-	@JsonView(View.Default.class)
+	//@JsonView(View.Default.class)
 	private Set<Note> noteSet = new LinkedHashSet<>();
 
 	@XmlTransient
 	@ManyToMany(/*cascade=CascadeType.ALL, */mappedBy="studentSet")
-	@JsonView(View.StudentExtended.class)
+	//@JsonView(View.StudentExtended.class)
 	private Set<SchoolYear> schoolYearSet = new HashSet<>();
     
 	public Long getId() {

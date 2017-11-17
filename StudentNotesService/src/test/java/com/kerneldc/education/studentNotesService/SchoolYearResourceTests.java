@@ -1,12 +1,13 @@
 package com.kerneldc.education.studentNotesService;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.sql.Date;
 import java.text.ParseException;
@@ -51,8 +52,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.education.studentNotesService.constants.Constants;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
-import com.kerneldc.education.studentNotesService.domain.jsonView.View;
 import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
+import com.kerneldc.education.studentNotesService.dto.transformer.SchoolYearTransformer;
 import com.kerneldc.education.studentNotesService.junit.MyTestExecutionListener;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
@@ -211,26 +212,20 @@ public class SchoolYearResourceTests implements InitializingBean {
 	@DirtiesContext
 	public void testSaveSchoolYearDtoForUpdate() throws ParseException {
 		SchoolYear schoolYear = schoolYearRepository.findOne(1l);
-		schoolYear.setSchoolYear(schoolYear.getSchoolYear()+" v1");
+		SchoolYearDto schoolYearDto = SchoolYearTransformer.entityToDto(schoolYear);
+		
+		schoolYearDto.setSchoolYear(schoolYearDto.getSchoolYear()+" v1");
 
-		String schoolYearJson = "";
-		try {
-			schoolYearJson = objectMapper.writerWithView(View.Default.class).writeValueAsString(schoolYear);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-			fail("Unable to serialize student object to JSON");
-		}
-
-		HttpEntity<String> httpEntity = new HttpEntity<>(schoolYearJson,httpHeaders);
-
-		ResponseEntity<SchoolYear> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/saveSchoolYearDto", HttpMethod.POST, httpEntity, SchoolYear.class);
+		HttpEntity<SchoolYearDto> httpEntity = new HttpEntity<>(schoolYearDto,httpHeaders);
+		
+		ResponseEntity<SchoolYearDto> response = testRestTemplate.exchange(BASE_URI+"/schoolYear/saveSchoolYearDto", HttpMethod.POST, httpEntity, SchoolYearDto.class);
 		assertEquals(HttpStatus.OK, response.getStatusCode());
-		SchoolYear savedSchoolYear = response.getBody();
-		assertNotNull(savedSchoolYear.getId());
-		assertEquals(schoolYear.getSchoolYear(), savedSchoolYear.getSchoolYear());
-		assertTrue(schoolYear.getStartDate().compareTo(savedSchoolYear.getStartDate()) == 0);
-		assertTrue(schoolYear.getEndDate().compareTo(savedSchoolYear.getEndDate()) == 0);
-		assertEquals(new Long(1l), savedSchoolYear.getVersion());
+		SchoolYearDto savedSchoolYearDto = response.getBody();
+		assertThat(savedSchoolYearDto.getId(), notNullValue());
+		assertThat(schoolYearDto.getSchoolYear(), equalTo(savedSchoolYearDto.getSchoolYear()));
+		assertThat(schoolYearDto.getStartDate().compareTo(savedSchoolYearDto.getStartDate()),  equalTo(0));
+		assertThat(schoolYearDto.getEndDate().compareTo(savedSchoolYearDto.getEndDate()), equalTo(0));
+		assertThat(savedSchoolYearDto.getVersion(), equalTo(1l));
 	}
 
 	@Test

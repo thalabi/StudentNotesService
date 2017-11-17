@@ -19,7 +19,7 @@ public class JerseyResourceConfig extends ResourceConfig {
 	public JerseyResourceConfig() {
 
 		// Create Jersey configuration with Jackson object mapper provider
-		super (/*JacksonObjectMapperProvider.class*/);
+		super (JacksonObjectMapperProvider.class);
 
 		// Logging
 		register(new LoggingFeature(
