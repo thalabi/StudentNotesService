@@ -71,7 +71,7 @@ public class UserPreferenceResource implements InitializingBean {
 		try {
 			UserPreference userPreference = userPreferenceRepository.findByUsername(username).get(0);
 			userPreferenceUiDto = UserPreferenceTransformer.entityToUiDto(userPreference);
-			LOGGER.debug("userPreferenceUiDto: {}", userPreferenceUiDto);
+			//LOGGER.debug("userPreferenceUiDto: {}", userPreferenceUiDto);
 		} catch (RuntimeException e) {
 			throw new SnsException(ExceptionUtils.getRootCauseMessage(e));
 		}

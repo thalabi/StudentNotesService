@@ -76,11 +76,11 @@ public class JwtTokenUtil {
 		// claims object is json, it needs to be deserialized
     	JsonNode jsonNodeList = objectMapper.convertValue(claims.get("authorities"), JsonNode.class);
     	Collection<GrantedAuthority> authorities = objectMapper.readValue(objectMapper.writeValueAsString(jsonNodeList), new TypeReference<Collection<SimpleGrantedAuthority>>(){});
-    	LOGGER.debug("authorities: {}", authorities);
+    	//LOGGER.debug("authorities: {}", authorities);
     	
     	user.setAuthorities(authorities);
     	user.setToken(token);
-		LOGGER.debug("Token parsed. User is {}", user);
+		//LOGGER.debug("Token parsed. User is {}", user);
 		return user;
 	}
 	
