@@ -46,7 +46,6 @@ import com.kerneldc.education.studentNotesService.domain.Grade;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
-import com.kerneldc.education.studentNotesService.dto.StudentDto;
 import com.kerneldc.education.studentNotesService.dto.ui.NoteUiDto;
 import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
@@ -651,16 +650,16 @@ public class StudentRepositoryTests implements InitializingBean {
 		//student1.getNoteList().size();
 	}
 	
-	@Test
-	public void testGetStudentDtosInSchoolYear() {
-		List<StudentDto> students = studentRepository.getStudentDtosInSchoolYear(1l);
-		assertThat(students, hasSize(3));
-	}
-	@Test
-	public void testGetStudentDtosNotInSchoolYear() {
-		List<StudentDto> students = studentRepository.getStudentDtosNotInSchoolYear(2l);
-		assertThat(students, hasSize(3));
-	}
+//	@Test
+//	public void testGetStudentDtosInSchoolYear() {
+//		List<StudentDto> students = studentRepository.getStudentDtosInSchoolYear(1l);
+//		assertThat(students, hasSize(3));
+//	}
+//	@Test
+//	public void testGetStudentDtosNotInSchoolYear() {
+//		List<StudentDto> students = studentRepository.getStudentDtosNotInSchoolYear(2l);
+//		assertThat(students, hasSize(3));
+//	}
 
 	@Test
 	@Commit

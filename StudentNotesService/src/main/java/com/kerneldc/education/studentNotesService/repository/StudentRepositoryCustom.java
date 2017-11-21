@@ -32,8 +32,8 @@ public interface StudentRepositoryCustom {
 	List<Student> getStudentsByListOfIds(List<Long> studentIds);
 	SchoolYear getStudentsByUsernameInUserPreference(String username);
 	
-	List<StudentDto> getStudentDtosInSchoolYear(Long schoolYearId);
-	List<StudentDto> getStudentDtosNotInSchoolYear(Long schoolYearId);
+//	List<StudentDto> getStudentDtosInSchoolYear(Long schoolYearId);
+//	List<StudentDto> getStudentDtosNotInSchoolYear(Long schoolYearId);
 	//List<StudentUiDto> getStudentsByUsername(String username);
 	List<StudentUiDto> getStudentsBySchoolYearIdAndListOfIds(Long schoolYearId, List<Long> studentIds);
 	List<StudentUiDto> getStudentGraphBySchoolYear(Long schoolYearId);

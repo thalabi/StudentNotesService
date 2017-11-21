@@ -19,7 +19,6 @@ import javax.transaction.Transactional;
 
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
-import org.hibernate.transform.AliasToBeanResultTransformer;
 import org.hibernate.type.StandardBasicTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,6 @@ import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.domain.Student_;
 import com.kerneldc.education.studentNotesService.domain.resultTransformer.StudentBasicResultTtransformer;
 import com.kerneldc.education.studentNotesService.domain.resultTransformer.StudentGrpahResultTtransformer;
-import com.kerneldc.education.studentNotesService.dto.StudentDto;
 import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
 
 
@@ -300,37 +298,37 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 	 		return schoolYears.iterator().next();
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	@Transactional
-	public List<StudentDto> getStudentDtosInSchoolYear(Long schoolYearId) {
-		Session session = entityManager.unwrap(Session.class);
-		return session
-				.createSQLQuery("select s.id, s.first_name as firstName, s.last_name as lastName, /*s.grade,*/ s.version\n"
-						+ "  from student s\n" + " where exists (select 1\n"
-						+ "                 from student_school_year ssy\n"
-						+ "                where ssy.student_id = s.id and ssy.school_year_id = :school_year_id)\n"
-						+ " order by first_name, last_name")
-				.addScalar("id", StandardBasicTypes.LONG).addScalar("firstName").addScalar("lastName")
-				.addScalar("version", StandardBasicTypes.LONG).setParameter("school_year_id", schoolYearId)
-				.setResultTransformer(new AliasToBeanResultTransformer(StudentDto.class)).list();
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	@Transactional
+//	public List<StudentDto> getStudentDtosInSchoolYear(Long schoolYearId) {
+//		Session session = entityManager.unwrap(Session.class);
+//		return session
+//				.createSQLQuery("select s.id, s.first_name as firstName, s.last_name as lastName, /*s.grade,*/ s.version\n"
+//						+ "  from student s\n" + " where exists (select 1\n"
+//						+ "                 from student_school_year ssy\n"
+//						+ "                where ssy.student_id = s.id and ssy.school_year_id = :school_year_id)\n"
+//						+ " order by first_name, last_name")
+//				.addScalar("id", StandardBasicTypes.LONG).addScalar("firstName").addScalar("lastName")
+//				.addScalar("version", StandardBasicTypes.LONG).setParameter("school_year_id", schoolYearId)
+//				.setResultTransformer(new AliasToBeanResultTransformer(StudentDto.class)).list();
+//	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	@Transactional
-	public List<StudentDto> getStudentDtosNotInSchoolYear(Long schoolYearId) {
-		Session session = entityManager.unwrap(Session.class);
-		return session
-				.createSQLQuery("select s.id, s.first_name as firstName, s.last_name as lastName, /*s.grade,*/ s.version\n"
-						+ "  from student s\n" + " where not exists (select 1\n"
-						+ "                 from student_school_year ssy\n"
-						+ "                where ssy.student_id = s.id and ssy.school_year_id = :school_year_id)\n"
-						+ " order by first_name, last_name")
-				.addScalar("id", StandardBasicTypes.LONG).addScalar("firstName").addScalar("lastName")
-				.addScalar("version", StandardBasicTypes.LONG).setParameter("school_year_id", schoolYearId)
-				.setResultTransformer(new AliasToBeanResultTransformer(StudentDto.class)).list();
-	}
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	@Transactional
+//	public List<StudentDto> getStudentDtosNotInSchoolYear(Long schoolYearId) {
+//		Session session = entityManager.unwrap(Session.class);
+//		return session
+//				.createSQLQuery("select s.id, s.first_name as firstName, s.last_name as lastName, /*s.grade,*/ s.version\n"
+//						+ "  from student s\n" + " where not exists (select 1\n"
+//						+ "                 from student_school_year ssy\n"
+//						+ "                where ssy.student_id = s.id and ssy.school_year_id = :school_year_id)\n"
+//						+ " order by first_name, last_name")
+//				.addScalar("id", StandardBasicTypes.LONG).addScalar("firstName").addScalar("lastName")
+//				.addScalar("version", StandardBasicTypes.LONG).setParameter("school_year_id", schoolYearId)
+//				.setResultTransformer(new AliasToBeanResultTransformer(StudentDto.class)).list();
+//	}
 	
 //	@Override
 //	@Transactional

@@ -1,7 +1,5 @@
 package com.kerneldc.education.studentNotesService;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -35,7 +33,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.education.studentNotesService.constants.Constants;
 import com.kerneldc.education.studentNotesService.domain.Student;
-import com.kerneldc.education.studentNotesService.dto.StudentDto;
 import com.kerneldc.education.studentNotesService.junit.MyTestExecutionListener;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 import com.kerneldc.education.studentNotesService.security.bean.User;
@@ -155,12 +152,12 @@ public class StudentNotesResourceTests {
 	}
 	
 	
-	@Test
-	public void testGetStudentDtosInSchoolYear() {
-		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
-		ResponseEntity<StudentDto[]> response = testRestTemplate.exchange(BASE_URI+"/getStudentDtosInSchoolYear/1", HttpMethod.GET, httpEntity, StudentDto[].class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-		StudentDto[] students = response.getBody();
-		assertThat(students.length, equalTo(3));
-	}	
+//	@Test
+//	public void testGetStudentDtosInSchoolYear() {
+//		HttpEntity<String> httpEntity = new HttpEntity<String>(httpHeaders);
+//		ResponseEntity<StudentDto[]> response = testRestTemplate.exchange(BASE_URI+"/getStudentDtosInSchoolYear/1", HttpMethod.GET, httpEntity, StudentDto[].class);
+//        assertEquals(HttpStatus.OK, response.getStatusCode());
+//		StudentDto[] students = response.getBody();
+//		assertThat(students.length, equalTo(3));
+//	}	
 }

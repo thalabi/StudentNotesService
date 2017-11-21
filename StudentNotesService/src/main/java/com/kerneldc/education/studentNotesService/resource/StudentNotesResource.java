@@ -34,7 +34,6 @@ import com.kerneldc.education.studentNotesService.domain.Grade;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
-import com.kerneldc.education.studentNotesService.dto.StudentDto;
 import com.kerneldc.education.studentNotesService.dto.transformer.SchoolYearTransformer;
 import com.kerneldc.education.studentNotesService.dto.transformer.StudentTransformer;
 import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
@@ -302,39 +301,39 @@ public class StudentNotesResource {
 		return studentUiDtoList;
 	}
 	
-	@GET
-	@Path("/getStudentDtosInSchoolYear/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<StudentDto> getStudentDtosInSchoolYear(
-		@PathParam("id") Long id) {
-		
-		LOGGER.debug("begin ...");
-		List<StudentDto> students = null;
-		try {
-			students = studentRepository.getStudentDtosInSchoolYear(id);
-		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
-		}
-		LOGGER.debug("end ...");
-		return students;
-	}
+//	@GET
+//	@Path("/getStudentDtosInSchoolYear/{id}")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public List<StudentDto> getStudentDtosInSchoolYear(
+//		@PathParam("id") Long id) {
+//		
+//		LOGGER.debug("begin ...");
+//		List<StudentDto> students = null;
+//		try {
+//			students = studentRepository.getStudentDtosInSchoolYear(id);
+//		} catch (RuntimeException e) {
+//			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
+//		}
+//		LOGGER.debug("end ...");
+//		return students;
+//	}
 	
-	@GET
-	@Path("/getStudentDtosNotInSchoolYear/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<StudentDto> getStudentDtosNotInSchoolYear(
-		@PathParam("id") Long id) {
-		
-		LOGGER.debug("begin ...");
-		List<StudentDto> students = null;
-		try {
-			students = studentRepository.getStudentDtosNotInSchoolYear(id);
-		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
-		}
-		LOGGER.debug("end ...");
-		return students;
-	}
+//	@GET
+//	@Path("/getStudentDtosNotInSchoolYear/{id}")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public List<StudentDto> getStudentDtosNotInSchoolYear(
+//		@PathParam("id") Long id) {
+//		
+//		LOGGER.debug("begin ...");
+//		List<StudentDto> students = null;
+//		try {
+//			students = studentRepository.getStudentDtosNotInSchoolYear(id);
+//		} catch (RuntimeException e) {
+//			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
+//		}
+//		LOGGER.debug("end ...");
+//		return students;
+//	}
 	
 	@GET
 	@Path("/getStudentsInSchoolYear/{schoolYearId}")

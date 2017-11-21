@@ -63,7 +63,7 @@ public class SchoolYearResource {
 	public List<SchoolYearDto> getAllSchoolYearDtos() {
 		
 		LOGGER.debug("begin ...");
-		List<SchoolYearDto> schoolYearDtos = new ArrayList<>();;
+		List<SchoolYearDto> schoolYearDtos = new ArrayList<>();
 		try {
 			//schoolYears = schoolYearRepository.findAllByOrderBySchoolYearAsc();
 			List<SchoolYear> schoolYears = schoolYearRepository.findAllByOrderByEndDateDesc();
