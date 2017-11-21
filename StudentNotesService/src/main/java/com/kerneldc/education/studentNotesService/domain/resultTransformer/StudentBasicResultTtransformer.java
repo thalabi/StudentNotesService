@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.hibernate.transform.ResultTransformer;
 
-import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
+import com.kerneldc.education.studentNotesService.dto.StudentDto;
 
 public class StudentBasicResultTtransformer implements ResultTransformer {
 
@@ -15,12 +15,12 @@ public class StudentBasicResultTtransformer implements ResultTransformer {
 
 	@Override
 	public Object transformTuple(Object[] tuple, String[] aliases) {
-		StudentUiDto studentUiDto = new StudentUiDto();
-		studentUiDto.setId(longFromObject(tuple[0]));
-		studentUiDto.setFirstName((String)tuple[1]);
-		studentUiDto.setLastName((String)tuple[2]);
-		studentUiDto.setVersion(longFromObject(tuple[3]));
-		return studentUiDto;
+		StudentDto studentDto = new StudentDto();
+		studentDto.setId(longFromObject(tuple[0]));
+		studentDto.setFirstName((String)tuple[1]);
+		studentDto.setLastName((String)tuple[2]);
+		studentDto.setVersion(longFromObject(tuple[3]));
+		return studentDto;
 	}
 
 	@SuppressWarnings("rawtypes")

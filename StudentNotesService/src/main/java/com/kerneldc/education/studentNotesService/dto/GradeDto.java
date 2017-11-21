@@ -1,24 +1,22 @@
 package com.kerneldc.education.studentNotesService.dto;
 
+import javax.xml.bind.annotation.XmlElement;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kerneldc.education.studentNotesService.bean.GradeEnum;
 
 public class GradeDto extends AbstractBaseDto {
 
 	private static final long serialVersionUID = 1L;
 
-	private Long id;
-	private GradeEnum grade;
+	@JsonProperty(value="grade")
+	@XmlElement(name="grade")
+	private GradeEnum gradeEnum;
 	
-	public Long getId() {
-		return id;
+	public GradeEnum getGradeEnum() {
+		return gradeEnum;
 	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public GradeEnum getGrade() {
-		return grade;
-	}
-	public void setGrade(GradeEnum grade) {
-		this.grade = grade;
+	public void setGradeEnum(GradeEnum gradeEnum) {
+		this.gradeEnum = gradeEnum;
 	}
 }

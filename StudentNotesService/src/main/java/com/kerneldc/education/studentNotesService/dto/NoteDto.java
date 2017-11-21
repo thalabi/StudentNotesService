@@ -2,20 +2,18 @@ package com.kerneldc.education.studentNotesService.dto;
 
 import java.sql.Timestamp;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import com.kerneldc.education.studentNotesService.util.XmlTimestampAdapter;
+
 public class NoteDto extends AbstractBaseDto {
 
 	private static final long serialVersionUID = 1L;
 
-	private Long id;
+	@XmlJavaTypeAdapter(XmlTimestampAdapter.class)
 	private Timestamp timestamp;
 	private String text;
 	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
 	public Timestamp getTimestamp() {
 		return timestamp;
 	}

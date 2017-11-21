@@ -33,10 +33,8 @@ import org.springframework.stereotype.Component;
 import com.kerneldc.education.studentNotesService.domain.Grade;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
-import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
-import com.kerneldc.education.studentNotesService.dto.transformer.SchoolYearTransformer;
+import com.kerneldc.education.studentNotesService.dto.StudentDto;
 import com.kerneldc.education.studentNotesService.dto.transformer.StudentTransformer;
-import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
 import com.kerneldc.education.studentNotesService.exception.SnsException;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
 import com.kerneldc.education.studentNotesService.repository.GradeRepository;
@@ -92,23 +90,23 @@ public class StudentNotesResource {
     @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    public StudentUiDto addStudentDetails(
-    	StudentUiDto studentUiDto) {
+    public StudentDto addStudentDetails(
+    	StudentDto studentDto) {
 
     	LOGGER.debug("begin ...");
-		LOGGER.debug("studentUiDto: {}", studentUiDto);
+		LOGGER.debug("studentDto: {}", studentDto);
 		Student student = new Student();
 		// firstName and lastName
-		student.setFirstName(studentUiDto.getFirstName());
-		student.setLastName(studentUiDto.getLastName());
+		student.setFirstName(studentDto.getFirstName());
+		student.setLastName(studentDto.getLastName());
 		// grade
-		SchoolYear schoolYear = schoolYearRepository.findOne(studentUiDto.getSchoolYearUiDto().getId());
+		SchoolYear schoolYear = schoolYearRepository.findOne(studentDto.getSchoolYearDto().getId());
 		student.addSchoolYear(schoolYear);
-		if (studentUiDto.getGradeUiDto().getGradeEnum() != null) {
+		if (studentDto.getGradeDto().getGradeEnum() != null) {
     		Grade grade = new Grade();
     		grade.setStudent(student);
     		grade.setSchoolYear(schoolYear);
-			grade.setGradeEnum(studentUiDto.getGradeUiDto().getGradeEnum());
+			grade.setGradeEnum(studentDto.getGradeDto().getGradeEnum());
 			student.getGradeSet().add(grade);
 		}
     	Student savedSudent;
@@ -118,9 +116,9 @@ public class StudentNotesResource {
 			LOGGER.error("Exception encountered: {}", e);
 			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
-    	StudentUiDto savedStudentUiDto =StudentTransformer.entityToUiDto(savedSudent);
+    	StudentDto savedStudentDto =StudentTransformer.entityToDto(savedSudent);
     	LOGGER.debug("end ...");
-    	return savedStudentUiDto;
+    	return savedStudentDto;
     }
 	
     @POST
@@ -128,29 +126,29 @@ public class StudentNotesResource {
     @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    public StudentUiDto updateStudentDetails(
-    	StudentUiDto studentUiDto) {
+    public StudentDto updateStudentDetails(
+    	StudentDto studentDto) {
 
     	LOGGER.debug("begin ...");
     	//Student student = StudentTransformer.uiDtoToEntity(studentUiDto);
 		Student student;
-		if (studentUiDto.getId() != null) {
-			student = studentRepository.getStudentByIdWithNoteListAndGradeList(studentUiDto.getId());
-			checkVersion(studentUiDto.getVersion(), student.getVersion());
+		if (studentDto.getId() != null) {
+			student = studentRepository.getStudentByIdWithNoteListAndGradeList(studentDto.getId());
+			checkVersion(studentDto.getVersion(), student.getVersion());
 		} else {
 			student = new Student();
 		}
 		// firstName and lastName
-		student.setFirstName(studentUiDto.getFirstName());
-		student.setLastName(studentUiDto.getLastName());
+		student.setFirstName(studentDto.getFirstName());
+		student.setLastName(studentDto.getLastName());
 		// grade
-		SchoolYear schoolYear = schoolYearRepository.findOne(studentUiDto.getSchoolYearUiDto().getId());
-		if (studentUiDto.getGradeUiDto().getGradeEnum() != null) {
+		SchoolYear schoolYear = schoolYearRepository.findOne(studentDto.getSchoolYearDto().getId());
+		if (studentDto.getGradeDto().getGradeEnum() != null) {
 			Grade grade = getStudentGradeForYear(student, schoolYear);
 			Set<Grade> gradeSet = student.getGradeSet();
 			//LOGGER.debug("gradeSet: {}", gradeSet);
 			gradeSet.remove(grade);
-			grade.setGradeEnum(studentUiDto.getGradeUiDto().getGradeEnum());
+			grade.setGradeEnum(studentDto.getGradeDto().getGradeEnum());
 			gradeSet.add(grade);
 		}
     	Student savedSudent;
@@ -161,9 +159,9 @@ public class StudentNotesResource {
 			LOGGER.error("Exception encountered: {}", e);
 			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
-    	StudentUiDto savedStudentUiDto =StudentTransformer.entityToUiDto(savedSudent);
+    	StudentDto savedStudentDto =StudentTransformer.entityToDto(savedSudent);
     	LOGGER.debug("end ...");
-    	return savedStudentUiDto;
+    	return savedStudentDto;
     }
 	
     private void checkVersion(Long clientVersion, Long entityVersion) {
@@ -266,39 +264,39 @@ public class StudentNotesResource {
 		return schoolYear;
 	}
 
-	@GET
-	@Path("/getStudentDtosBySchoolYearFromUserPreference/{username}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public SchoolYearDto getStudentDtosBySchoolYearFromUserPreference(
-		@PathParam("username") String username) {
-		
-		LOGGER.debug("begin ...");
-		SchoolYear schoolYear = null;
-		try {
-			schoolYear = studentRepository.getStudentsByUsernameInUserPreference(username);
-		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
-		}
-		SchoolYearDto schoolYearDto = SchoolYearTransformer.entityToDto(schoolYear);
-		LOGGER.debug("end ...");
-		return schoolYearDto;
-	}
+//	@GET
+//	@Path("/getStudentDtosBySchoolYearFromUserPreference/{username}")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public SchoolYearDto getStudentDtosBySchoolYearFromUserPreference(
+//		@PathParam("username") String username) {
+//		
+//		LOGGER.debug("begin ...");
+//		SchoolYear schoolYear = null;
+//		try {
+//			schoolYear = studentRepository.getStudentsByUsernameInUserPreference(username);
+//		} catch (RuntimeException e) {
+//			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
+//		}
+//		SchoolYearDto schoolYearDto = SchoolYearTransformer.entityToDto(schoolYear);
+//		LOGGER.debug("end ...");
+//		return schoolYearDto;
+//	}
 	
 	@GET
 	@Path("/getStudentGraphBySchoolYear/{schoolYearId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<StudentUiDto> getStudentGraphBySchoolYear(
+	public List<StudentDto> getStudentGraphBySchoolYear(
 		@PathParam("schoolYearId") Long schoolYearId) {
 		
 		LOGGER.debug("begin ...");
-		List<StudentUiDto> studentUiDtoList = null;
+		List<StudentDto> studentDtoList = null;
 		try {
-			studentUiDtoList = studentRepository.getStudentGraphBySchoolYear(schoolYearId);
+			studentDtoList = studentRepository.getStudentGraphBySchoolYear(schoolYearId);
 		} catch (RuntimeException e) {
 			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
 		LOGGER.debug("end ...");
-		return studentUiDtoList;
+		return studentDtoList;
 	}
 	
 //	@GET
@@ -338,35 +336,35 @@ public class StudentNotesResource {
 	@GET
 	@Path("/getStudentsInSchoolYear/{schoolYearId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<StudentUiDto> getStudentsInSchoolYear(
+	public List<StudentDto> getStudentsInSchoolYear(
 		@PathParam("schoolYearId") Long schoolYearId) throws SnsException {
 
 		LOGGER.debug("begin ...");
-		List<StudentUiDto> studentUiDtoList = null;
+		List<StudentDto> studentDtoList = null;
 		try {
-			studentUiDtoList = studentRepository.getStudentsInSchoolYear(schoolYearId);
+			studentDtoList = studentRepository.getStudentsInSchoolYear(schoolYearId);
 		} catch (RuntimeException e) {
 			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
 		LOGGER.debug("end ...");
-		return studentUiDtoList;
+		return studentDtoList;
 	}
 	
 	@GET
 	@Path("/getStudentsNotInSchoolYear/{schoolYearId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<StudentUiDto> getStudentsNotInSchoolYear(
+	public List<StudentDto> getStudentsNotInSchoolYear(
 		@PathParam("schoolYearId") Long schoolYearId) throws SnsException {
 
 		LOGGER.debug("begin ...");
-		List<StudentUiDto> studentUiDtoList = null;
+		List<StudentDto> studentDtoList = null;
 		try {
-			studentUiDtoList = studentRepository.getStudentsNotInSchoolYear(schoolYearId);
+			studentDtoList = studentRepository.getStudentsNotInSchoolYear(schoolYearId);
 		} catch (RuntimeException e) {
 			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
 		}
 		LOGGER.debug("end ...");
-		return studentUiDtoList;
+		return studentDtoList;
 	}
 	
 //	private void sortNoteSet(Set<NoteDto> noteSetDto) {
@@ -390,14 +388,14 @@ public class StudentNotesResource {
 //		noteSetDto.addAll(new LinkedHashSet<>(noteDtoList));
 //	}	
 //	
-//	private Set<NoteUiDto> sortNoteUiDtoSet(Set<NoteUiDto> noteUiDtoSet) {
-//		Comparator<NoteUiDto> comparator = new Comparator<NoteUiDto>() {
+//	private Set<NoteDto> sortNoteUiDtoSet(Set<NoteDto> noteUiDtoSet) {
+//		Comparator<NoteDto> comparator = new Comparator<NoteDto>() {
 //		    @Override
-//		    public int compare(NoteUiDto left, NoteUiDto right) {
+//		    public int compare(NoteDto left, NoteDto right) {
 //		    	return Long.valueOf(left.getTimestamp().getTime()).compareTo(right.getTimestamp().getTime());
 //		    }
 //		};
-//		TreeSet<NoteUiDto> sortedSet = new TreeSet<>(comparator);
+//		TreeSet<NoteDto> sortedSet = new TreeSet<>(comparator);
 //		sortedSet.addAll(noteUiDtoSet);
 //		return sortedSet;
 //	}	

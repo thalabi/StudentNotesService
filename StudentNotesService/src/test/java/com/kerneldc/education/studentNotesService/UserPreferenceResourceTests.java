@@ -38,8 +38,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.UserPreference;
+import com.kerneldc.education.studentNotesService.dto.UserPreferenceDto;
 import com.kerneldc.education.studentNotesService.dto.transformer.UserPreferenceTransformer;
-import com.kerneldc.education.studentNotesService.dto.ui.UserPreferenceUiDto;
 import com.kerneldc.education.studentNotesService.junit.MyTestExecutionListener;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.UserPreferenceRepository;
@@ -117,21 +117,21 @@ public class UserPreferenceResourceTests {
 
 	@Test
 	@DirtiesContext
-	public void testSaveUserPreferenceUiDto() throws ParseException {
+	public void testSaveUserPreferenceDto() throws ParseException {
 		
 		UserPreference userPreference = userPreferenceRepository.findByUsername("TestUser").get(0);
 		assertThat(userPreference.getSchoolYear().getId(), equalTo(1l));
 		SchoolYear schoolYear = schoolYearRepository.findOne(2l);
 		userPreference.setSchoolYear(schoolYear);
 		
-		UserPreferenceUiDto userPreferenceUiDto = UserPreferenceTransformer.entityToUiDto(userPreference);
+		UserPreferenceDto userPreferenceDto = UserPreferenceTransformer.entityToDto(userPreference);
 		
-		HttpEntity<UserPreferenceUiDto> httpEntity = new HttpEntity<UserPreferenceUiDto>(userPreferenceUiDto, httpHeaders);
-		ResponseEntity<UserPreferenceUiDto> response = testRestTemplate.exchange(
-				BASE_URI + "/userPreference/saveUserPreferenceUiDto", HttpMethod.POST, httpEntity, UserPreferenceUiDto.class);
+		HttpEntity<UserPreferenceDto> httpEntity = new HttpEntity<UserPreferenceDto>(userPreferenceDto, httpHeaders);
+		ResponseEntity<UserPreferenceDto> response = testRestTemplate.exchange(
+				BASE_URI + "/userPreference/saveUserPreferenceUiDto", HttpMethod.POST, httpEntity, UserPreferenceDto.class);
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 
-		UserPreferenceUiDto savedUserPreferenceUiDto = response.getBody();
-		assertThat(savedUserPreferenceUiDto.getSchoolYearUiDto().getId(), equalTo(2l));
+		UserPreferenceDto savedUserPreferenceDto = response.getBody();
+		assertThat(savedUserPreferenceDto.getSchoolYearDto().getId(), equalTo(2l));
 	}
 }

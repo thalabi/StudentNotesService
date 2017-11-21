@@ -20,8 +20,8 @@ import org.springframework.stereotype.Component;
 
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.UserPreference;
+import com.kerneldc.education.studentNotesService.dto.UserPreferenceDto;
 import com.kerneldc.education.studentNotesService.dto.transformer.UserPreferenceTransformer;
-import com.kerneldc.education.studentNotesService.dto.ui.UserPreferenceUiDto;
 import com.kerneldc.education.studentNotesService.exception.SnsException;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.UserPreferenceRepository;
@@ -63,20 +63,20 @@ public class UserPreferenceResource implements InitializingBean {
 	@GET
 	@Path("/getUiDtoByUsername/{username}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public UserPreferenceUiDto getUiDtoByUsername(
+	public UserPreferenceDto getDtoByUsername(
 		@PathParam("username") String username) throws SnsException {
 		
 		LOGGER.debug("begin ...");
-		UserPreferenceUiDto userPreferenceUiDto = new UserPreferenceUiDto();
+		UserPreferenceDto userPreferenceDto = new UserPreferenceDto();
 		try {
 			UserPreference userPreference = userPreferenceRepository.findByUsername(username).get(0);
-			userPreferenceUiDto = UserPreferenceTransformer.entityToUiDto(userPreference);
+			userPreferenceDto = UserPreferenceTransformer.entityToDto(userPreference);
 			//LOGGER.debug("userPreferenceUiDto: {}", userPreferenceUiDto);
 		} catch (RuntimeException e) {
 			throw new SnsException(ExceptionUtils.getRootCauseMessage(e));
 		}
 		LOGGER.debug("end ...");
-		return userPreferenceUiDto;
+		return userPreferenceDto;
 	}
 
     @POST
@@ -84,28 +84,28 @@ public class UserPreferenceResource implements InitializingBean {
     @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    public UserPreferenceUiDto saveUserPreferenceUiDto(
-    	UserPreferenceUiDto userPreferenceUiDto) throws SnsException {
+    public UserPreferenceDto saveUserPreferenceDto(
+    	UserPreferenceDto userPreferenceDto) throws SnsException {
 
     	LOGGER.debug("begin ...");
     	//UserPreference userPreference = UserPreferenceTransformer.uiDtoToEntity(userPreferenceUiDto);
-    	UserPreferenceUiDto savedUserPreferenceUiDto;
+    	UserPreferenceDto savedUserPreferenceDto;
     	try {
-    		UserPreference userPreference = userPreferenceRepository.findOne(userPreferenceUiDto.getId());
-    		checkVersion(userPreferenceUiDto.getVersion(), userPreference.getVersion());
-    		userPreference.setUsername(userPreferenceUiDto.getUsername());
-    		SchoolYear schoolYear = schoolYearRepository.findOne(userPreferenceUiDto.getSchoolYearUiDto().getId());
+    		UserPreference userPreference = userPreferenceRepository.findOne(userPreferenceDto.getId());
+    		checkVersion(userPreferenceDto.getVersion(), userPreference.getVersion());
+    		userPreference.setUsername(userPreferenceDto.getUsername());
+    		SchoolYear schoolYear = schoolYearRepository.findOne(userPreferenceDto.getSchoolYearDto().getId());
     		userPreference.setSchoolYear(schoolYear);
     		userPreference = userPreferenceRepository.save(userPreference);
     		// Flush is needed so that userPreference.version is incremented
     		userPreferenceEntityManager.flush();
-    		savedUserPreferenceUiDto = UserPreferenceTransformer.entityToUiDto(userPreference);
+    		savedUserPreferenceDto = UserPreferenceTransformer.entityToDto(userPreference);
 		} catch (RuntimeException e) {
 			LOGGER.error("Exception encountered: {}", e);
 			throw new SnsException(ExceptionUtils.getRootCauseMessage(e));
 		}
     	LOGGER.debug("end ...");
-    	return savedUserPreferenceUiDto;
+    	return savedUserPreferenceDto;
     }
 
     private void checkVersion(Long clientVersion, Long entityVersion) throws SnsException {

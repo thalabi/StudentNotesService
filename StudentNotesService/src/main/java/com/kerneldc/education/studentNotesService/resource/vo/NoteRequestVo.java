@@ -1,6 +1,6 @@
 package com.kerneldc.education.studentNotesService.resource.vo;
 
-import com.kerneldc.education.studentNotesService.dto.ui.NoteUiDto;
+import com.kerneldc.education.studentNotesService.dto.NoteDto;
 
 public class NoteRequestVo extends AbstractBaseVo {
 
@@ -8,7 +8,7 @@ public class NoteRequestVo extends AbstractBaseVo {
 
 	private Long studentId;
 	private Long studentVersion;
-	private NoteUiDto noteUiDto;
+	private NoteDto noteDto;
 	
 	public Long getStudentId() {
 		return studentId;
@@ -22,10 +22,10 @@ public class NoteRequestVo extends AbstractBaseVo {
 	public void setStudentVersion(Long studentVersion) {
 		this.studentVersion = studentVersion;
 	}
-	public NoteUiDto getNoteUiDto() {
-		return noteUiDto;
+	public NoteDto getNoteDto() {
+		return noteDto;
 	}
-	public void setNoteUiDto(NoteUiDto noteUiDto) {
-		this.noteUiDto = noteUiDto;
+	public void setNoteDto(NoteDto noteDto) {
+		this.noteDto = noteDto;
 	}
 }

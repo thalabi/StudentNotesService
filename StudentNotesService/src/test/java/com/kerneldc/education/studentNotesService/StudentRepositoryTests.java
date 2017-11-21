@@ -46,8 +46,8 @@ import com.kerneldc.education.studentNotesService.domain.Grade;
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
-import com.kerneldc.education.studentNotesService.dto.ui.NoteUiDto;
-import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
+import com.kerneldc.education.studentNotesService.dto.NoteDto;
+import com.kerneldc.education.studentNotesService.dto.StudentDto;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
 import com.kerneldc.education.studentNotesService.util.KdcCollectionUtils;
@@ -398,25 +398,25 @@ public class StudentRepositoryTests implements InitializingBean {
 		LOGGER.debug("s1.getId(): {}, s1n1.getId(): {}, s1n2.getId(): {}", s1.getId(), s1n1.getId(), s1n2.getId()); 
 		Timestamp fromTimestamp = Timestamp.valueOf(LocalDate.of(2018, 1, 1).atStartOfDay());
 		Timestamp toTimestamp = Timestamp.valueOf(LocalDate.of(2018, 1, 1).atStartOfDay());
-		List<StudentUiDto> students = studentRepository.getStudentsByTimestampRange(sy.getId(), fromTimestamp, toTimestamp);
+		List<StudentDto> students = studentRepository.getStudentsByTimestampRange(sy.getId(), fromTimestamp, toTimestamp);
 		assertEquals(1, students.size());
 		students.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp, toTimestamp));
 		
 		Timestamp fromTimestamp2 = Timestamp.valueOf(LocalDate.of(2018, 1, 2).atStartOfDay());
 		Timestamp toTimestamp2 = Timestamp.valueOf(LocalDate.of(2018, 1, 2).atStartOfDay());
-		List<StudentUiDto> students2 = studentRepository.getStudentsByTimestampRange(sy.getId(), fromTimestamp2, toTimestamp2);
+		List<StudentDto> students2 = studentRepository.getStudentsByTimestampRange(sy.getId(), fromTimestamp2, toTimestamp2);
 		assertEquals(1, students2.size());
 		students2.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp2, toTimestamp2));
 
 		Timestamp fromTimestamp3 = Timestamp.valueOf(LocalDate.of(2018, 1, 2).atStartOfDay());
 		Timestamp toTimestamp3 = Timestamp.valueOf(LocalDate.of(2018, 1, 3).atStartOfDay());
-		List<StudentUiDto> students3 = studentRepository.getStudentsByTimestampRange(sy.getId(), fromTimestamp3, toTimestamp3);
+		List<StudentDto> students3 = studentRepository.getStudentsByTimestampRange(sy.getId(), fromTimestamp3, toTimestamp3);
 		assertEquals(1, students3.size());
 		students3.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp3, toTimestamp3));
 
 		Timestamp fromTimestamp4 = Timestamp.valueOf(LocalDate.of(2018, 1, 3).atStartOfDay());
 		Timestamp toTimestamp4 = Timestamp.valueOf(LocalDate.of(2018, 1, 3).atStartOfDay());
-		List<StudentUiDto> students4 = studentRepository.getStudentsByTimestampRange(sy.getId(), fromTimestamp4, toTimestamp4);
+		List<StudentDto> students4 = studentRepository.getStudentsByTimestampRange(sy.getId(), fromTimestamp4, toTimestamp4);
 		assertEquals(0, students4.size());
 		students4.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp4, toTimestamp4));
 
@@ -447,29 +447,29 @@ public class StudentRepositoryTests implements InitializingBean {
 
 		Timestamp fromTimestamp5 = Timestamp.valueOf(LocalDate.of(2018, 2, 1).atStartOfDay());
 		Timestamp toTimestamp5 = Timestamp.valueOf(LocalDate.of(2018, 2, 10).atStartOfDay());
-		List<StudentUiDto> students5 = studentRepository.getStudentsByTimestampRange(sy.getId(), fromTimestamp5, toTimestamp5);
+		List<StudentDto> students5 = studentRepository.getStudentsByTimestampRange(sy.getId(), fromTimestamp5, toTimestamp5);
 		//assertEquals(2, students5.size());
 		students5.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp5, toTimestamp5));
 
 		Timestamp fromTimestamp6 = Timestamp.valueOf(LocalDate.of(2018, 2, 1).atStartOfDay());
 		Timestamp toTimestamp6 = Timestamp.valueOf(LocalDate.of(2018, 2, 2).atTime(LocalTime.MAX));
-		List<StudentUiDto> students6 = studentRepository.getStudentsByTimestampRange(sy.getId(), fromTimestamp6, toTimestamp6);
+		List<StudentDto> students6 = studentRepository.getStudentsByTimestampRange(sy.getId(), fromTimestamp6, toTimestamp6);
 		//assertEquals(2, students6.size());
 		students6.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp6, toTimestamp6));
 
 		Timestamp fromTimestamp7 = Timestamp.valueOf(LocalDate.of(2018, 2, 1).atStartOfDay());
 		Timestamp toTimestamp7 = Timestamp.valueOf(LocalDate.of(2018, 2, 1).atTime(LocalTime.MAX));
-		List<StudentUiDto> students7 = studentRepository.getStudentsByTimestampRange(sy.getId(), fromTimestamp7, toTimestamp7);
+		List<StudentDto> students7 = studentRepository.getStudentsByTimestampRange(sy.getId(), fromTimestamp7, toTimestamp7);
 		assertEquals(1, students7.size());
 		students7.stream().forEach(student->checkStudentHasAtLeastOneTimestampBetween(student, fromTimestamp7, toTimestamp7));
 	}
 	
-	private void checkStudentHasAtLeastOneTimestampBetween (StudentUiDto student, Timestamp fromTimestamp, Timestamp toTimestamp) {
-		assertTrue(student.getNoteUiDtoSet().stream().anyMatch(
+	private void checkStudentHasAtLeastOneTimestampBetween (StudentDto student, Timestamp fromTimestamp, Timestamp toTimestamp) {
+		assertTrue(student.getNoteDtoSet().stream().anyMatch(
 				note -> checkNotesTimestampIsBetween(note, fromTimestamp, toTimestamp)
 		));
 	}
-	private boolean checkNotesTimestampIsBetween (NoteUiDto note, Timestamp fromTimestamp, Timestamp toTimestamp) {
+	private boolean checkNotesTimestampIsBetween (NoteDto note, Timestamp fromTimestamp, Timestamp toTimestamp) {
 		return (note.getTimestamp().equals(fromTimestamp) || note.getTimestamp().after(fromTimestamp)) &&
 				(note.getTimestamp().equals(toTimestamp) || note.getTimestamp().before(toTimestamp));
 	}
@@ -716,19 +716,19 @@ public class StudentRepositoryTests implements InitializingBean {
 
 	@Test
 	public void testgetStudentsByUsernameAndListOfIds() {
-		List<StudentUiDto> students = studentRepository.getStudentsBySchoolYearIdAndListOfIds(Long.valueOf(1l), Arrays.asList(Long.valueOf(1l)));
+		List<StudentDto> students = studentRepository.getStudentsBySchoolYearIdAndListOfIds(Long.valueOf(1l), Arrays.asList(Long.valueOf(1l)));
 		assertThat(students, hasSize(1));
 	}
 
 	@Test
 	public void testGetStudentGraphBySchoolYear() {
-		List<StudentUiDto> students = studentRepository.getStudentGraphBySchoolYear(Long.valueOf(1l));
+		List<StudentDto> students = studentRepository.getStudentGraphBySchoolYear(Long.valueOf(1l));
 		assertThat(students, hasSize(3));
 	}
 	
 	@Test
 	public void testGetStudentsInSchoolYear2() {
-		List<StudentUiDto> students = studentRepository.getStudentsInSchoolYear(Long.valueOf(1l));
+		List<StudentDto> students = studentRepository.getStudentsInSchoolYear(Long.valueOf(1l));
 		assertThat(students.size(), greaterThan(0));
 	}
 }

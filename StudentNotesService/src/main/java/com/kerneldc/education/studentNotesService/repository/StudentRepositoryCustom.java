@@ -7,7 +7,6 @@ import java.util.Set;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.dto.StudentDto;
-import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
 
 public interface StudentRepositoryCustom {
 
@@ -27,16 +26,16 @@ public interface StudentRepositoryCustom {
 	
 	Set<Student> getLatestActiveStudents(int limit);
 	Set<Student> getLatestActiveStudents(String username, int limit);
-	List<StudentUiDto> getStudentsByTimestampRange(Long schoolYearId, Timestamp fromTimestamp, Timestamp toTimestamp);
+	List<StudentDto> getStudentsByTimestampRange(Long schoolYearId, Timestamp fromTimestamp, Timestamp toTimestamp);
 	
 	List<Student> getStudentsByListOfIds(List<Long> studentIds);
 	SchoolYear getStudentsByUsernameInUserPreference(String username);
 	
 //	List<StudentDto> getStudentDtosInSchoolYear(Long schoolYearId);
 //	List<StudentDto> getStudentDtosNotInSchoolYear(Long schoolYearId);
-	//List<StudentUiDto> getStudentsByUsername(String username);
-	List<StudentUiDto> getStudentsBySchoolYearIdAndListOfIds(Long schoolYearId, List<Long> studentIds);
-	List<StudentUiDto> getStudentGraphBySchoolYear(Long schoolYearId);
-	List<StudentUiDto> getStudentsInSchoolYear(Long schoolYearId);
-	List<StudentUiDto> getStudentsNotInSchoolYear(Long schoolYearId);
+	//List<StudentDto> getStudentsByUsername(String username);
+	List<StudentDto> getStudentsBySchoolYearIdAndListOfIds(Long schoolYearId, List<Long> studentIds);
+	List<StudentDto> getStudentGraphBySchoolYear(Long schoolYearId);
+	List<StudentDto> getStudentsInSchoolYear(Long schoolYearId);
+	List<StudentDto> getStudentsNotInSchoolYear(Long schoolYearId);
 }

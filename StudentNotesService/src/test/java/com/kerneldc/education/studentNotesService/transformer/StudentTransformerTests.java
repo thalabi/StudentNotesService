@@ -14,39 +14,39 @@ import org.junit.Test;
 
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
+import com.kerneldc.education.studentNotesService.dto.NoteDto;
+import com.kerneldc.education.studentNotesService.dto.StudentDto;
 import com.kerneldc.education.studentNotesService.dto.transformer.StudentTransformer;
-import com.kerneldc.education.studentNotesService.dto.ui.NoteUiDto;
-import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
 
 public class StudentTransformerTests {
 
 	@Ignore
 	@Test
-	public void testUiDtoToEntity_NoNotes_Success() {
-		StudentUiDto studentUiDto = getSimpleStudentUiDto();
-		Student student = StudentTransformer.uiDtoToEntity(studentUiDto);
-		checkSimpleStudentUiDtoProperties(student, studentUiDto);
+	public void testDtoToEntity_NoNotes_Success() {
+		StudentDto studentDto = getSimpleStudentDto();
+		Student student = StudentTransformer.dtoToEntity(studentDto);
+		checkSimpleStudentDtoProperties(student, studentDto);
 	}
 
 	@Ignore
 	@Test
-	public void testUiDtoToEntity_OneNote_Success() {
-		StudentUiDto studentUiDto = getSimpleStudentUiDto();
-		NoteUiDto noteUiDto1 = new NoteUiDto();
-		noteUiDto1.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
-		noteUiDto1.setText("text 1");
-		studentUiDto.setNoteUiDtoSet(new HashSet<>(Arrays.asList(noteUiDto1)));
-		Student student = StudentTransformer.uiDtoToEntity(studentUiDto);
+	public void testDtoToEntity_OneNote_Success() {
+		StudentDto studentDto = getSimpleStudentDto();
+		NoteDto noteDto1 = new NoteDto();
+		noteDto1.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+		noteDto1.setText("text 1");
+		studentDto.setNoteDtoSet(new HashSet<>(Arrays.asList(noteDto1)));
+		Student student = StudentTransformer.dtoToEntity(studentDto);
 		assertThat(student.getNoteSet(), hasSize(1));
 		Note note1 = student.getNoteSet().iterator().next();
-		assertThat(note1.getTimestamp(), equalTo(noteUiDto1.getTimestamp()));
-		assertThat(note1.getText(), equalTo(noteUiDto1.getText()));
-		checkSimpleStudentUiDtoProperties(student, studentUiDto);
+		assertThat(note1.getTimestamp(), equalTo(noteDto1.getTimestamp()));
+		assertThat(note1.getText(), equalTo(noteDto1.getText()));
+		checkSimpleStudentDtoProperties(student, studentDto);
 	}
 	
-	private void checkSimpleStudentUiDtoProperties(Student student, StudentUiDto studentUiDto) {
-		assertThat(student.getFirstName(), equalTo(studentUiDto.getFirstName()));
-		assertThat(student.getLastName(), equalTo(studentUiDto.getLastName()));
+	private void checkSimpleStudentDtoProperties(Student student, StudentDto studentDto) {
+		assertThat(student.getFirstName(), equalTo(studentDto.getFirstName()));
+		assertThat(student.getLastName(), equalTo(studentDto.getLastName()));
 		assertThat(student.getGradeSet(), hasSize(1));
 		//Grade grade = student.getGradeSet().iterator().next();
 		//assertThat(grade.getGradeEnum(), equalTo(studentUiDto.getGradeEnum()));
@@ -54,12 +54,12 @@ public class StudentTransformerTests {
 		//SchoolYear schoolYear = student.getSchoolYearSet().iterator().next();
 		//assertThat(schoolYear.getSchoolYear(), equalTo(studentUiDto.getSchoolYear()));
 	}
-	public static StudentUiDto getSimpleStudentUiDto() {
-		StudentUiDto studentUiDto = new StudentUiDto();
-		studentUiDto.setFirstName("first name");
-		studentUiDto.setLastName("last name");
+	public static StudentDto getSimpleStudentDto() {
+		StudentDto studentDto = new StudentDto();
+		studentDto.setFirstName("first name");
+		studentDto.setLastName("last name");
 		//studentUiDto.setGradeEnum(GradeEnum.JK);
 		//studentUiDto.setSchoolYear("2016-2017");
-		return studentUiDto;
+		return studentDto;
 	}
 }

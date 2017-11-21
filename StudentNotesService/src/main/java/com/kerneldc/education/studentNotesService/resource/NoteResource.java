@@ -18,12 +18,13 @@ import org.springframework.stereotype.Component;
 
 import com.kerneldc.education.studentNotesService.domain.Note;
 import com.kerneldc.education.studentNotesService.domain.Student;
+import com.kerneldc.education.studentNotesService.dto.NoteDto;
 import com.kerneldc.education.studentNotesService.dto.transformer.NoteTransformer;
-import com.kerneldc.education.studentNotesService.dto.ui.NoteUiDto;
 import com.kerneldc.education.studentNotesService.exception.SnsException;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
 import com.kerneldc.education.studentNotesService.repository.NoteRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
+import com.kerneldc.education.studentNotesService.repository.util.RepositoryUtils;
 import com.kerneldc.education.studentNotesService.resource.vo.NoteRequestVo;
 
 @Component
@@ -59,9 +60,9 @@ public class NoteResource implements InitializingBean {
     	NoteRequestVo noteRequestVo) throws SnsException {
 
     	LOGGER.debug("begin ...");
-		Student student = getAndCheckStudentVersion(noteRequestVo.getStudentId(), noteRequestVo.getStudentVersion());
-		NoteUiDto noteUiDto = noteRequestVo.getNoteUiDto();
-		Note note = NoteTransformer.uiDtoToEntity(noteUiDto);
+		Student student = RepositoryUtils.getAndCheckEntityVersion(noteRequestVo.getStudentId(), noteRequestVo.getStudentVersion(), studentRepository);
+		NoteDto noteDto = noteRequestVo.getNoteDto();
+		Note note = NoteTransformer.dtoToEntity(noteDto);
     	try {
     		noteRepository.save(note);
     		student.getNoteSet().add(note);
@@ -72,9 +73,9 @@ public class NoteResource implements InitializingBean {
     		LOGGER.error("Exception encountered: {}", e);
     		throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
     	}
-		noteUiDto = NoteTransformer.entityToUiDto(note);
+		noteDto = NoteTransformer.entityToDto(note);
 		noteRequestVo.setStudentVersion(student.getVersion());
-		noteRequestVo.setNoteUiDto(noteUiDto);
+		noteRequestVo.setNoteDto(noteDto);
     	LOGGER.debug("end ...");
 		return noteRequestVo;
     }
@@ -88,11 +89,11 @@ public class NoteResource implements InitializingBean {
     	NoteRequestVo noteRequestVo) throws SnsException {
 
     	LOGGER.debug("begin ...");
-    	Student student = getAndCheckStudentVersion(noteRequestVo.getStudentId(), noteRequestVo.getStudentVersion());
-		NoteUiDto noteUiDto = noteRequestVo.getNoteUiDto();
-		Note note = getAndCheckNoteVersion(noteUiDto.getId(), noteUiDto.getVersion());
-		note.setTimestamp(noteUiDto.getTimestamp());
-		note.setText(noteUiDto.getText());
+    	Student student = RepositoryUtils.getAndCheckEntityVersion(noteRequestVo.getStudentId(), noteRequestVo.getStudentVersion(), studentRepository);
+		NoteDto noteDto = noteRequestVo.getNoteDto();
+		Note note = RepositoryUtils.getAndCheckEntityVersion(noteDto.getId(), noteDto.getVersion(), noteRepository);
+		note.setTimestamp(noteDto.getTimestamp());
+		note.setText(noteDto.getText());
 		Note savedNote = null;
     	try {
     		savedNote = noteRepository.save(note);
@@ -102,9 +103,9 @@ public class NoteResource implements InitializingBean {
     		LOGGER.error("Exception encountered: {}", e);
     		throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
     	}
-		noteUiDto = NoteTransformer.entityToUiDto(savedNote);
+		noteDto = NoteTransformer.entityToDto(savedNote);
 		noteRequestVo.setStudentVersion(student.getVersion());
-		noteRequestVo.setNoteUiDto(noteUiDto);
+		noteRequestVo.setNoteDto(noteDto);
     	LOGGER.debug("end ...");
 		return noteRequestVo;
     }
@@ -118,9 +119,9 @@ public class NoteResource implements InitializingBean {
     	NoteRequestVo noteRequestVo) throws SnsException {
 
     	LOGGER.debug("begin ...");
-		Student student = getAndCheckStudentVersion(noteRequestVo.getStudentId(), noteRequestVo.getStudentVersion());
-		NoteUiDto noteUiDto = noteRequestVo.getNoteUiDto();
-		Note note = getAndCheckNoteVersion(noteUiDto.getId(), noteUiDto.getVersion());
+		Student student = RepositoryUtils.getAndCheckEntityVersion(noteRequestVo.getStudentId(), noteRequestVo.getStudentVersion(), studentRepository);
+		NoteDto noteDto = noteRequestVo.getNoteDto();
+		Note note = RepositoryUtils.getAndCheckEntityVersion(noteDto.getId(), noteDto.getVersion(), noteRepository);
 		boolean removed = student.getNoteSet().remove(note);
 		if (!/* note */removed) {
 			throw new SnsRuntimeException("Failed to remove note from noteSet");
@@ -134,30 +135,30 @@ public class NoteResource implements InitializingBean {
     		throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
     	}
 		noteRequestVo.setStudentVersion(student.getVersion());
-		noteRequestVo.setNoteUiDto(new NoteUiDto());
+		noteRequestVo.setNoteDto(new NoteDto());
     	LOGGER.debug("end ...");
 		return noteRequestVo;
     }
 
-	private Student getAndCheckStudentVersion(Long studentId, Long studentVersion) throws SnsException {
-    	Student student = studentRepository.findOne(studentId);
-    	if (student == null) {
-    		throw new SnsException(String.format("Student with id: %d no longer exists.", studentId));
-    	}
-    	if (!/* not */student.getVersion().equals(studentVersion)) {
-    		throw new SnsException("Student version has changed.");
-    	}
-    	return student;
-    }
-    
-    private Note getAndCheckNoteVersion(Long noteId, Long noteVersion) throws SnsException {
-    	Note note = noteRepository.findOne(noteId);
-    	if (note == null) {
-    		throw new SnsException(String.format("Note with id: %d no longer exists.", noteId));
-    	}
-    	if (!/* not */note.getVersion().equals(noteVersion)) {
-    		throw new SnsException("Note version has changed.");
-    	}
-    	return note;
-    }
+//	private Student getAndCheckStudentVersion(Long studentId, Long studentVersion) throws SnsException {
+//    	Student student = studentRepository.findOne(studentId);
+//    	if (student == null) {
+//    		throw new SnsException(String.format("Student with id: %d no longer exists.", studentId));
+//    	}
+//    	if (!/* not */student.getVersion().equals(studentVersion)) {
+//    		throw new SnsException("Student version has changed.");
+//    	}
+//    	return student;
+//    }
+//    
+//    private Note getAndCheckNoteVersion(Long noteId, Long noteVersion) throws SnsException {
+//    	Note note = noteRepository.findOne(noteId);
+//    	if (note == null) {
+//    		throw new SnsException(String.format("Note with id: %d no longer exists.", noteId));
+//    	}
+//    	if (!/* not */note.getVersion().equals(noteVersion)) {
+//    		throw new SnsException("Note version has changed.");
+//    	}
+//    	return note;
+//    }
 }

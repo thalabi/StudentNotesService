@@ -1,32 +1,31 @@
 package com.kerneldc.education.studentNotesService.dto;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class StudentDto extends AbstractBaseDto {
 
 	private static final long serialVersionUID = 1L;
+	
+	public static final String PROPERTY_ID = "id";
 
-	private Long id;
 	private String firstName;
 	private String lastName;
-//	private GradeEnum grade;
-	@JsonProperty(value="gradeSet")
-	private Set<GradeDto> gradeDtoSet;
-	//@XmlElement(name="noteList")
+	@JsonProperty(value="grade")
+	@XmlElement(name="grade")
+	private GradeDto gradeDto;
 	@JsonProperty(value="noteSet")
-	private Set<NoteDto> noteDtoSet;
-	//@XmlElement(name="schoolYearSet")
-	@JsonProperty(value="schoolYearSet")
-	private Set<SchoolYearDto> schoolYearDtoSet;
+	@XmlElementWrapper(name="notes")
+	@XmlElement(name="note")
+	private Set<NoteDto> noteDtoSet = new LinkedHashSet<>();
+	@JsonProperty(value="schoolYear")
+	private SchoolYearDto schoolYearDto;
 	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
 	public String getFirstName() {
 		return firstName;
 	}
@@ -39,17 +38,11 @@ public class StudentDto extends AbstractBaseDto {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-//	public GradeEnum getGrade() {
-//		return grade;
-//	}
-//	public void setGrade(GradeEnum grade) {
-//		this.grade = grade;
-//	}
-	public Set<GradeDto> getGradeDtoSet() {
-		return gradeDtoSet;
+	public GradeDto getGradeDto() {
+		return gradeDto;
 	}
-	public void setGradeDtoSet(Set<GradeDto> gradeDtoSet) {
-		this.gradeDtoSet = gradeDtoSet;
+	public void setGradeDto(GradeDto gradeDto) {
+		this.gradeDto = gradeDto;
 	}
 	public Set<NoteDto> getNoteDtoSet() {
 		return noteDtoSet;
@@ -57,10 +50,23 @@ public class StudentDto extends AbstractBaseDto {
 	public void setNoteDtoSet(Set<NoteDto> noteDtoSet) {
 		this.noteDtoSet = noteDtoSet;
 	}
-	public Set<SchoolYearDto> getSchoolYearDtoSet() {
-		return schoolYearDtoSet;
+//	public String getSchoolYear() {
+//		return schoolYear;
+//	}
+//	public void setSchoolYear(String schoolYear) {
+//		this.schoolYear = schoolYear;
+//	}
+	public SchoolYearDto getSchoolYearDto() {
+		return schoolYearDto;
 	}
-	public void setSchoolYearDtoSet(Set<SchoolYearDto> schoolYearDtoSet) {
-		this.schoolYearDtoSet = schoolYearDtoSet;
+	public void setSchoolYearDto(SchoolYearDto schoolYearDto) {
+		this.schoolYearDto = schoolYearDto;
+	}
+	// utility methods
+	public void addNoteDto(NoteDto noteDto) {
+//		if (noteDtoSet == null) {
+//			noteDtoSet = new LinkedHashSet<>();
+//		}
+		noteDtoSet.add(noteDto);
 	}
 }

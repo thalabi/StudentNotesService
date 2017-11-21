@@ -9,25 +9,25 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
+import com.kerneldc.education.studentNotesService.dto.StudentDto;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Students {
 
 	@XmlElement(name="student")
-	private List<StudentUiDto> studentList = new ArrayList<>();
+	private List<StudentDto> studentList = new ArrayList<>();
 
-	public List<StudentUiDto> getStudentList() {
+	public List<StudentDto> getStudentList() {
 		return studentList;
 	}
 
-	public void setStudentList(List<StudentUiDto> studentList) {
+	public void setStudentList(List<StudentDto> studentList) {
 		this.studentList = studentList;
 	}
 
 	// utility
-	public void setStudentList(Set<StudentUiDto> studentList) {
+	public void setStudentList(Set<StudentDto> studentList) {
 		this.studentList = new ArrayList<>(studentList);
 	}
 	

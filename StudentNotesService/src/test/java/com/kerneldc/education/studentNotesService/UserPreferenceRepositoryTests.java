@@ -24,8 +24,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.domain.UserPreference;
-import com.kerneldc.education.studentNotesService.dto.UserPreferenceDto;
-import com.kerneldc.education.studentNotesService.dto.transformer.UserPreferenceTransformer;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.UserPreferenceRepository;
 
@@ -81,16 +79,16 @@ public class UserPreferenceRepositoryTests implements InitializingBean {
 		assertEquals("2016-2017", userPreference.getSchoolYear().getSchoolYear());
 	}
 
-	@Test
-    public void testFindByUsername_CopyingToDto() {
-
-		assertTrue(userPreferenceRepository != null);
-		List<UserPreference> userPreferenceList = userPreferenceRepository.findByUsername("TestUser");
-		assertEquals(1, userPreferenceList.size());
-		UserPreference userPreference = userPreferenceList.get(0);
-		UserPreferenceDto userPreferenceDto = UserPreferenceTransformer.entityToDto(userPreference);
-		LOGGER.debug("userPreferenceDto: {}", userPreferenceDto);
-	}
+//	@Test
+//    public void testFindByUsername_CopyingToDto() {
+//
+//		assertTrue(userPreferenceRepository != null);
+//		List<UserPreference> userPreferenceList = userPreferenceRepository.findByUsername("TestUser");
+//		assertEquals(1, userPreferenceList.size());
+//		UserPreference userPreference = userPreferenceList.get(0);
+//		UserPreferenceDto userPreferenceDto = UserPreferenceTransformer.entityToDto(userPreference);
+//		LOGGER.debug("userPreferenceDto: {}", userPreferenceDto);
+//	}
 
 	@Test
 	@DirtiesContext

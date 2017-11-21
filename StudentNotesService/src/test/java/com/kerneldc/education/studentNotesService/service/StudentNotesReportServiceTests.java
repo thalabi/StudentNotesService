@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory;
 
 import com.kerneldc.education.studentNotesService.bean.GradeEnum;
 import com.kerneldc.education.studentNotesService.bean.Students;
-import com.kerneldc.education.studentNotesService.dto.ui.GradeUiDto;
-import com.kerneldc.education.studentNotesService.dto.ui.NoteUiDto;
-import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
+import com.kerneldc.education.studentNotesService.dto.GradeDto;
+import com.kerneldc.education.studentNotesService.dto.NoteDto;
+import com.kerneldc.education.studentNotesService.dto.StudentDto;
 
 public class StudentNotesReportServiceTests {
 
@@ -37,34 +37,34 @@ public class StudentNotesReportServiceTests {
 		// Create student # 1
 		String firstName = "first name testBeanToXml";
 		String lastName = "last name testBeanToXml";
-		StudentUiDto student = new StudentUiDto();
+		StudentDto student = new StudentDto();
 		student.setFirstName(firstName);
 		student.setLastName(lastName);
-		GradeUiDto gradeUiDto = new GradeUiDto();
-		gradeUiDto.setGradeEnum(GradeEnum.JK);
-		student.setGradeUiDto(gradeUiDto);
+		GradeDto gradeDto = new GradeDto();
+		gradeDto.setGradeEnum(GradeEnum.JK);
+		student.setGradeDto(gradeDto);
 		
 		String note1TimestampText = "2017-01-29 16:11";
 		String note1Text = "note 1 text testBeanToXml";
 		String note2TimestampText = "2017-01-29 16:12";
 		String note2Text = "note 2 text testBeanToXml";
-		NoteUiDto note1 = new NoteUiDto();
+		NoteDto note1 = new NoteDto();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 		LocalDateTime timestamp1 = LocalDateTime.parse(note1TimestampText, formatter);
 		note1.setTimestamp(Timestamp.valueOf(timestamp1));
 		note1.setText(note1Text);
-		NoteUiDto note2 = new NoteUiDto();
+		NoteDto note2 = new NoteDto();
 		LocalDateTime timestamp2 = LocalDateTime.parse(note2TimestampText, formatter);
 		note2.setTimestamp(Timestamp.valueOf(timestamp2));
 		note2.setText(note2Text);
 
-		student.setNoteUiDtoSet(new HashSet<>(Arrays.asList(note1, note2)));
+		student.setNoteDtoSet(new HashSet<>(Arrays.asList(note1, note2)));
 
 		// Create student # 2
 		String firstName2 = "first name 2 testBeanToXml";
 		String lastName2 = "last name 2 testBeanToXml";
 		//GradeEnum grade2 = GradeEnum.FOUR;
-		StudentUiDto student2 = new StudentUiDto();
+		StudentDto student2 = new StudentDto();
 		student2.setFirstName(firstName2);
 		student2.setLastName(lastName2);
 		//student2.setGradeEnum(grade2);

@@ -31,7 +31,7 @@ import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.domain.Student_;
 import com.kerneldc.education.studentNotesService.domain.resultTransformer.StudentBasicResultTtransformer;
 import com.kerneldc.education.studentNotesService.domain.resultTransformer.StudentGrpahResultTtransformer;
-import com.kerneldc.education.studentNotesService.dto.ui.StudentUiDto;
+import com.kerneldc.education.studentNotesService.dto.StudentDto;
 
 
 public class StudentRepositoryImpl implements StudentRepositoryCustom, InitializingBean {
@@ -332,7 +332,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 	
 //	@Override
 //	@Transactional
-//	public List<StudentUiDto> getStudentsByUsername(String username) {
+//	public List<StudentDto> getStudentsByUsername(String username) {
 //		Session session = entityManager.unwrap(Session.class);
 //		SQLQuery query = session.createSQLQuery(
 //				"select * "
@@ -342,9 +342,9 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 //		);
 //		query.setParameter("username", username);
 //		setDataTyes(query);
-//		query.setResultTransformer(new StudentGrpahResultTtransformer()/*new StudentUiDtoResultTtransformer()*/);
+//		query.setResultTransformer(new StudentGrpahResultTtransformer()/*new StudentDtoResultTtransformer()*/);
 //		@SuppressWarnings("unchecked")
-//		List<StudentUiDto> result = query.list();
+//		List<StudentDto> result = query.list();
 // 		LOGGER.debug("result.size(): {}", result.size());
 //		LOGGER.debug("result: {}", result);
 //		return result; //squery.list();
@@ -352,7 +352,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 
 	@Override
 	@Transactional
-	public List<StudentUiDto> getStudentsInSchoolYear(Long schoolYearId) {
+	public List<StudentDto> getStudentsInSchoolYear(Long schoolYearId) {
 		Session session = entityManager.unwrap(Session.class);
 		SQLQuery query = session.createSQLQuery(
 				"select s.id, s.first_name, s.last_name, s.version\n" + 
@@ -364,14 +364,14 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 		setGetStudentsInSchoolYear2DataTyes(query);
 		query.setResultTransformer(new StudentBasicResultTtransformer());
 		@SuppressWarnings("unchecked")
-		List<StudentUiDto> result = query.list();
+		List<StudentDto> result = query.list();
  		LOGGER.debug("result.size(): {}", result.size());
 		return result; //squery.list();
 	}
 
 	@Override
 	@Transactional
-	public List<StudentUiDto> getStudentsNotInSchoolYear(Long schoolYearId) {
+	public List<StudentDto> getStudentsNotInSchoolYear(Long schoolYearId) {
 		Session session = entityManager.unwrap(Session.class);
 		SQLQuery query = session.createSQLQuery(
 				"select s.id, s.first_name, s.last_name, s.version from student s\n" + 
@@ -385,14 +385,14 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 		setGetStudentsInSchoolYear2DataTyes(query);
 		query.setResultTransformer(new StudentBasicResultTtransformer());
 		@SuppressWarnings("unchecked")
-		List<StudentUiDto> result = query.list();
+		List<StudentDto> result = query.list();
  		LOGGER.debug("result.size(): {}", result.size());
 		return result; //squery.list();
 	}
 	
 	@Override
 	@Transactional
-	public List<StudentUiDto> getStudentsByTimestampRange(Long schoolYearId, Timestamp fromTimestamp, Timestamp toTimestamp) {
+	public List<StudentDto> getStudentsByTimestampRange(Long schoolYearId, Timestamp fromTimestamp, Timestamp toTimestamp) {
 		LOGGER.debug("fromTimestamp: {}, toTimestamp: {}", fromTimestamp, toTimestamp);
 		Session session = entityManager.unwrap(Session.class);
 		SQLQuery query = session.createSQLQuery(
@@ -406,9 +406,9 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 		query.setParameter("fromTimestamp", fromTimestamp);
 		query.setParameter("toTimestamp", toTimestamp);
 		setStudentGraphDataTyes(query);
-		query.setResultTransformer(new StudentGrpahResultTtransformer()/*new StudentUiDtoResultTtransformer()*/);
+		query.setResultTransformer(new StudentGrpahResultTtransformer()/*new StudentDtoResultTtransformer()*/);
 		@SuppressWarnings("unchecked")
-		List<StudentUiDto> result = query.list();
+		List<StudentDto> result = query.list();
  		LOGGER.debug("result.size(): {}", result.size());
 		//LOGGER.debug("result: {}", result);
 		return result; //squery.list();
@@ -416,7 +416,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 
 	@Override
 	@Transactional
-	public List<StudentUiDto> getStudentsBySchoolYearIdAndListOfIds(Long schoolYearId, List<Long> studentIds) {
+	public List<StudentDto> getStudentsBySchoolYearIdAndListOfIds(Long schoolYearId, List<Long> studentIds) {
 		LOGGER.debug("schoolYearId: {}, studentIds: {}", schoolYearId, studentIds);
 		Session session = entityManager.unwrap(Session.class);
 		SQLQuery query = session.createSQLQuery(
@@ -429,16 +429,16 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 		query.setParameter("schoolYearId", schoolYearId);
 		query.setParameterList("studentIds", studentIds);
 		setStudentGraphDataTyes(query);
-		query.setResultTransformer(new StudentGrpahResultTtransformer()/*new StudentUiDtoResultTtransformer()*/);
+		query.setResultTransformer(new StudentGrpahResultTtransformer()/*new StudentDtoResultTtransformer()*/);
 		@SuppressWarnings("unchecked")
-		List<StudentUiDto> result = query.list();
+		List<StudentDto> result = query.list();
  		LOGGER.debug("result.size(): {}", result.size());
 		return result;
 	}
 
 	@Override
 	@Transactional
-	public List<StudentUiDto> getStudentGraphBySchoolYear(Long schoolYearId) {
+	public List<StudentDto> getStudentGraphBySchoolYear(Long schoolYearId) {
 		Session session = entityManager.unwrap(Session.class);
 		SQLQuery query = session.createSQLQuery(
 				"select * "
@@ -450,7 +450,7 @@ public class StudentRepositoryImpl implements StudentRepositoryCustom, Initializ
 		setStudentGraphDataTyes(query);
 		query.setResultTransformer(new StudentGrpahResultTtransformer());
 		@SuppressWarnings("unchecked")
-		List<StudentUiDto> result = query.list();
+		List<StudentDto> result = query.list();
  		LOGGER.debug("result.size(): {}", result.size());
 		//LOGGER.debug("result: {}", result);
 		return result; //squery.list();

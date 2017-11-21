@@ -27,10 +27,11 @@ import com.kerneldc.education.studentNotesService.domain.SchoolYear;
 import com.kerneldc.education.studentNotesService.domain.Student;
 import com.kerneldc.education.studentNotesService.dto.SchoolYearDto;
 import com.kerneldc.education.studentNotesService.dto.transformer.SchoolYearTransformer;
-import com.kerneldc.education.studentNotesService.exception.RowNotFoundException;
+import com.kerneldc.education.studentNotesService.exception.SnsException;
 import com.kerneldc.education.studentNotesService.exception.SnsRuntimeException;
 import com.kerneldc.education.studentNotesService.repository.SchoolYearRepository;
 import com.kerneldc.education.studentNotesService.repository.StudentRepository;
+import com.kerneldc.education.studentNotesService.repository.util.RepositoryUtils;
 import com.kerneldc.education.studentNotesService.resource.vo.SaveRemoveStudentsToFromSchoolYearVo;
 
 @Component
@@ -57,8 +58,33 @@ public class SchoolYearResource {
 		return "Hello";
 	}
 
+//	@GET
+//	@Path("/getAllSchoolYearDtos")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public List<SchoolYearDto> getAllSchoolYearDtos() {
+//		
+//		LOGGER.debug("begin ...");
+//		List<SchoolYearDto> schoolYearDtos = new ArrayList<>();
+//		try {
+//			//schoolYears = schoolYearRepository.findAllByOrderBySchoolYearAsc();
+//			List<SchoolYear> schoolYears = schoolYearRepository.findAllByOrderByEndDateDesc();
+//			for (SchoolYear schoolYear : schoolYears) {
+//				SchoolYearDto schoolYearDto = SchoolYearTransformer.entityToDto(schoolYear);
+//				schoolYearDtos.add(schoolYearDto);
+//			}
+//		} catch (RuntimeException e) {
+//			LOGGER.error("Exception encountered: {}", e);
+//			throw new SnsRuntimeException(e.getClass().getSimpleName());
+//		}
+//		LOGGER.debug("end ...");
+//        for (SchoolYearDto schoolYearDto : schoolYearDtos) {
+//        	LOGGER.debug("schoolYearDto: {}", schoolYearDto);
+//        }
+//		return schoolYearDtos;
+//	}
+
 	@GET
-	@Path("/getAllSchoolYearDtos")
+	@Path("/getAllSchoolYearUiDtos")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<SchoolYearDto> getAllSchoolYearDtos() {
 		
@@ -76,12 +102,8 @@ public class SchoolYearResource {
 			throw new SnsRuntimeException(e.getClass().getSimpleName());
 		}
 		LOGGER.debug("end ...");
-        for (SchoolYearDto schoolYearDto : schoolYearDtos) {
-        	LOGGER.debug("schoolYearDto: {}", schoolYearDto);
-        }
 		return schoolYearDtos;
 	}
-
 //	@GET
 //	@Path("/getStudentsBySchoolYearId/{id}")
 //	@Produces(MediaType.APPLICATION_JSON)
@@ -100,23 +122,23 @@ public class SchoolYearResource {
 //		return schoolYear;
 //	}
 
-	@GET
-	@Path("/getStudentDtosBySchoolYearId/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public SchoolYearDto getStudentDtosBySchoolYearId(
-		@PathParam("id") Long id) throws RowNotFoundException {
-		
-		LOGGER.debug("begin ...");
-		SchoolYear schoolYear = null;
-		try {
-			schoolYear = schoolYearRepository.getById(id);
-		} catch (RuntimeException e) {
-			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
-		}
-		SchoolYearDto schoolYearDto = SchoolYearTransformer.entityToDto(schoolYear);
-		LOGGER.debug("end ...");
-		return schoolYearDto;
-	}
+//	@GET
+//	@Path("/getStudentDtosBySchoolYearId/{id}")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	public SchoolYearDto getStudentDtosBySchoolYearId(
+//		@PathParam("id") Long id) throws RowNotFoundException {
+//		
+//		LOGGER.debug("begin ...");
+//		SchoolYear schoolYear = null;
+//		try {
+//			schoolYear = schoolYearRepository.getById(id);
+//		} catch (RuntimeException e) {
+//			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
+//		}
+//		SchoolYearDto schoolYearDto = SchoolYearTransformer.entityToDto(schoolYear);
+//		LOGGER.debug("end ...");
+//		return schoolYearDto;
+//	}
 
 //	@POST
 //	@Path("/getLatestActiveStudentsBySchoolYearId")
@@ -136,14 +158,39 @@ public class SchoolYearResource {
 //		return schoolYears.iterator().next();
 //	}
 
+//    @POST
+//	@Path("/saveSchoolYearDto")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//	@Produces(MediaType.APPLICATION_JSON)
+//    public SchoolYearDto saveSchoolYearDto(SchoolYearDto schoolYearDto) {
+//
+//    	LOGGER.debug("begin ...");
+//		SchoolYear schoolYear = SchoolYearTransformer.dtoToEntity(schoolYearDto);
+//    	SchoolYear savedSchoolYear;
+//    	SchoolYearDto savedSchoolYearDto;
+//    	try {
+//    		savedSchoolYear = schoolYearRepository.save(schoolYear);
+//		} catch (RuntimeException e) {
+//			LOGGER.error("Exception encountered: {}", e);
+//			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
+//		}
+//    	savedSchoolYearDto = SchoolYearTransformer.entityToDto(savedSchoolYear);
+//    	LOGGER.debug("end ...");    	
+//    	return savedSchoolYearDto;
+//    }
+	
     @POST
-	@Path("/saveSchoolYearDto")
+	@Path("/saveSchoolYearUiDto")
     @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-    public SchoolYearDto saveSchoolYearDto(SchoolYearDto schoolYearDto) {
+    @Transactional
+    public SchoolYearDto saveSchoolYearDto(SchoolYearDto schoolYearDto) throws SnsException {
 
     	LOGGER.debug("begin ...");
-		SchoolYear schoolYear = SchoolYearTransformer.dtoToEntity(schoolYearDto);
+    	SchoolYear schoolYear = RepositoryUtils.getAndCheckEntityVersion(schoolYearDto.getId(), schoolYearDto.getVersion(), schoolYearRepository);
+    	schoolYear.setSchoolYear(schoolYearDto.getSchoolYear());
+    	schoolYear.setStartDate(schoolYearDto.getStartDate());
+    	schoolYear.setEndDate(schoolYearDto.getEndDate());
     	SchoolYear savedSchoolYear;
     	SchoolYearDto savedSchoolYearDto;
     	try {
@@ -156,8 +203,8 @@ public class SchoolYearResource {
     	LOGGER.debug("end ...");    	
     	return savedSchoolYearDto;
     }
-	
-	@DELETE
+
+    @DELETE
 	@Path("/deleteSchoolYearById/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -208,6 +255,4 @@ public class SchoolYearResource {
 		LOGGER.debug("end ...");
 		return "";
 	}
-
-
 }
