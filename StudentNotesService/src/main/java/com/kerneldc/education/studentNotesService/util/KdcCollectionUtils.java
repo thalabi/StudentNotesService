@@ -37,7 +37,7 @@ public class KdcCollectionUtils {
 	
 	@SuppressWarnings("unchecked")
 	public static <T,V> List<V> convertToList(Collection<T> collection,String keyPropertyName) {
-		List<V> result = new ArrayList<V>(); 
+		List<V> result = new ArrayList<>(); 
 		for (T entry : collection) {
 			try {
 				result.add((V) PropertyUtils.getNestedProperty(entry, keyPropertyName));
