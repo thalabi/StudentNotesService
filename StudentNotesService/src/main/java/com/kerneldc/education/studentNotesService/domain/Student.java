@@ -42,13 +42,10 @@ public class Student extends AbstractPersistableEntity {
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@XmlTransient
-	//@JsonView(View.Default.class)
 	private Long id;
 	@Column(name = "first_name")
-	//@JsonView(View.Default.class)
 	private String firstName = "";
 	@Column(name = "last_name")
-	//@JsonView(View.Default.class)
 	private String lastName = "";
 	
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -57,9 +54,6 @@ public class Student extends AbstractPersistableEntity {
 		name = "student_grade",
 		joinColumns = @JoinColumn(name = "student_id"),
 		inverseJoinColumns = @JoinColumn(name="grade_id"))
-	//@XmlElementWrapper(name="notes")
-	//@XmlElement(name="note")
-	//@JsonView(View.Default.class)
 	private Set<Grade> gradeSet = new LinkedHashSet<>();
 
 	@OneToMany(cascade = CascadeType.ALL/*, orphanRemoval = true*/)
@@ -70,12 +64,10 @@ public class Student extends AbstractPersistableEntity {
 		inverseJoinColumns = @JoinColumn(name="note_id"))
 	@XmlElementWrapper(name="notes")
 	@XmlElement(name="note")
-	//@JsonView(View.Default.class)
 	private Set<Note> noteSet = new LinkedHashSet<>();
 
 	@XmlTransient
 	@ManyToMany(/*cascade=CascadeType.ALL, */mappedBy="studentSet")
-	//@JsonView(View.StudentExtended.class)
 	private Set<SchoolYear> schoolYearSet = new HashSet<>();
     
 	public Long getId() {
