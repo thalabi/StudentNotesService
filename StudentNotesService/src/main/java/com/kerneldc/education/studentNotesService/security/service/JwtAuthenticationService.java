@@ -33,7 +33,7 @@ public class JwtAuthenticationService implements AuthenticationService {
 		LOGGER.debug("end ...");
 	}
 
-    public UserDetails authenticate(UserDetails user) throws UsernameNotFoundException, BadCredentialsException {
+    public UserDetails authenticate(UserDetails user) {
     	LOGGER.debug("begin ...");
     	LOGGER.debug("username: {}, password: {}", username, password);
     	
