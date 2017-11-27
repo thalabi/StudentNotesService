@@ -37,22 +37,24 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class JwtTokenUtil {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Thread.currentThread().getStackTrace()[1].getClassName());
+	private static final String AUTHORITIES = "authorities";
 
 	@Autowired
-	private KeyProvider keyProvider; 
+	private KeyProvider keyProvider;
+	
 	private Key key;
 	
 	@PostConstruct
 	public void init() {
 		key = keyProvider.getKey();
-		LOGGER.debug("key: {}", key.toString());
+		LOGGER.debug("key: {}", key);
 	}
 	
 	public String generate(String username, Collection<? extends GrantedAuthority>authorities) {
 		
 		Map<String, Object> claims = new HashMap<>();
 		claims.put(Claims.SUBJECT, username);
-		claims.put("authorities", authorities);
+		claims.put(AUTHORITIES, authorities);
 		String compactJws = Jwts.builder()
 				  .setClaims(claims)
 				  .signWith(SignatureAlgorithm.HS512, key)
@@ -74,13 +76,11 @@ public class JwtTokenUtil {
     	ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixIn.class);
 		// claims object is json, it needs to be deserialized
-    	JsonNode jsonNodeList = objectMapper.convertValue(claims.get("authorities"), JsonNode.class);
+    	JsonNode jsonNodeList = objectMapper.convertValue(claims.get(AUTHORITIES), JsonNode.class);
     	Collection<GrantedAuthority> authorities = objectMapper.readValue(objectMapper.writeValueAsString(jsonNodeList), new TypeReference<Collection<SimpleGrantedAuthority>>(){});
-    	//LOGGER.debug("authorities: {}", authorities);
     	
     	user.setAuthorities(authorities);
     	user.setToken(token);
-		//LOGGER.debug("Token parsed. User is {}", user);
 		return user;
 	}
 	
@@ -104,10 +104,10 @@ public class JwtTokenUtil {
         	ObjectMapper objectMapper = new ObjectMapper();
     		objectMapper.addMixIn(SimpleGrantedAuthority.class, SimpleGrantedAuthorityMixIn.class);
     		// claims object is json, it needs to be deserialized
-        	JsonNode jsonNodeList = objectMapper.convertValue(claims.get("authorities"), JsonNode.class);
+        	JsonNode jsonNodeList = objectMapper.convertValue(claims.get(AUTHORITIES), JsonNode.class);
         	authorities = objectMapper.readValue(objectMapper.writeValueAsString(jsonNodeList), new TypeReference<Collection<SimpleGrantedAuthority>>(){});
         } catch (Exception e) {
-        	e.printStackTrace();
+        	LOGGER.warn(e.getMessage());
         	authorities = null;
         }
         return authorities;
