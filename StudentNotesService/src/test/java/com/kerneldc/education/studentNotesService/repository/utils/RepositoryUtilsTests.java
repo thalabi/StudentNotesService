@@ -42,7 +42,7 @@ public class RepositoryUtilsTests {
 		assertThat(student, notNullValue());
 		
 		try {
-			RepositoryUtils.getAndCheckEntityVersion(1l, 7l, studentRepository);
+			RepositoryUtils.getAndCheckEntityVersion(1l, 7l, studentRepository, Student.class);
 		} catch (Exception e) {
 			assertThat(e, instanceOf(SnsException.class));
 			assertThat(e.getMessage(), equalTo("Student version has changed."));

@@ -181,6 +181,7 @@ public class StudentNotesResource {
     	}
     }
     
+    // TODO check version before deleting. Add /{version} to the url
 	@DELETE
 	@Path("/deleteStudentById/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -264,24 +265,6 @@ public class StudentNotesResource {
 		return schoolYear;
 	}
 
-//	@GET
-//	@Path("/getStudentDtosBySchoolYearFromUserPreference/{username}")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public SchoolYearDto getStudentDtosBySchoolYearFromUserPreference(
-//		@PathParam("username") String username) {
-//		
-//		LOGGER.debug("begin ...");
-//		SchoolYear schoolYear = null;
-//		try {
-//			schoolYear = studentRepository.getStudentsByUsernameInUserPreference(username);
-//		} catch (RuntimeException e) {
-//			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
-//		}
-//		SchoolYearDto schoolYearDto = SchoolYearTransformer.entityToDto(schoolYear);
-//		LOGGER.debug("end ...");
-//		return schoolYearDto;
-//	}
-	
 	@GET
 	@Path("/getStudentGraphBySchoolYear/{schoolYearId}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -298,41 +281,7 @@ public class StudentNotesResource {
 		LOGGER.debug("end ...");
 		return studentDtoList;
 	}
-	
-//	@GET
-//	@Path("/getStudentDtosInSchoolYear/{id}")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public List<StudentDto> getStudentDtosInSchoolYear(
-//		@PathParam("id") Long id) {
-//		
-//		LOGGER.debug("begin ...");
-//		List<StudentDto> students = null;
-//		try {
-//			students = studentRepository.getStudentDtosInSchoolYear(id);
-//		} catch (RuntimeException e) {
-//			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
-//		}
-//		LOGGER.debug("end ...");
-//		return students;
-//	}
-	
-//	@GET
-//	@Path("/getStudentDtosNotInSchoolYear/{id}")
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public List<StudentDto> getStudentDtosNotInSchoolYear(
-//		@PathParam("id") Long id) {
-//		
-//		LOGGER.debug("begin ...");
-//		List<StudentDto> students = null;
-//		try {
-//			students = studentRepository.getStudentDtosNotInSchoolYear(id);
-//		} catch (RuntimeException e) {
-//			throw new SnsRuntimeException(ExceptionUtils.getRootCauseMessage(e));
-//		}
-//		LOGGER.debug("end ...");
-//		return students;
-//	}
-	
+
 	@GET
 	@Path("/getStudentsInSchoolYear/{schoolYearId}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -367,36 +316,4 @@ public class StudentNotesResource {
 		return studentDtoList;
 	}
 	
-//	private void sortNoteSet(Set<NoteDto> noteSetDto) {
-//		Comparator<NoteDto> comparator = new Comparator<NoteDto>() {
-//		    @Override
-//		    public int compare(NoteDto left, NoteDto right) {
-//		    	return Long.valueOf(left.getTimestamp().getTime()).compareTo(right.getTimestamp().getTime());
-//		    }
-//		};
-//		List<NoteDto> noteDtoList = new ArrayList<>(noteSetDto);
-//		LOGGER.debug("before sort");
-//		for (NoteDto noteDto : noteDtoList) {
-//			LOGGER.debug("noteDto.getTimestamp(): {}", noteDto.getTimestamp());
-//		}
-//		Collections.sort(noteDtoList, comparator);
-//		LOGGER.debug("after sort");
-//		for (NoteDto noteDto : noteDtoList) {
-//			LOGGER.debug("noteDto.getTimestamp(): {}", noteDto.getTimestamp());
-//		}
-//		noteSetDto.clear();
-//		noteSetDto.addAll(new LinkedHashSet<>(noteDtoList));
-//	}	
-//	
-//	private Set<NoteDto> sortNoteUiDtoSet(Set<NoteDto> noteUiDtoSet) {
-//		Comparator<NoteDto> comparator = new Comparator<NoteDto>() {
-//		    @Override
-//		    public int compare(NoteDto left, NoteDto right) {
-//		    	return Long.valueOf(left.getTimestamp().getTime()).compareTo(right.getTimestamp().getTime());
-//		    }
-//		};
-//		TreeSet<NoteDto> sortedSet = new TreeSet<>(comparator);
-//		sortedSet.addAll(noteUiDtoSet);
-//		return sortedSet;
-//	}	
 }
